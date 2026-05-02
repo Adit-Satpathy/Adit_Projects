@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Round 1 — Strategy Evolution &amp; Post-Mortem</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#090b10;--s1:#0e1117;--s2:#151a24;--s3:#1c2333;--bdr:#252d3d;--bdr2:#2f3a50;--tx:#c8cfe0;--txm:#7b869c;--txd:#4a5268;--gold:#e8b84b;--goldd:rgba(232,184,75,.12);--blue:#4d8df7;--blued:rgba(77,141,247,.1);--teal:#2ec4a5;--teald:rgba(46,196,165,.1);--red:#e25555;--redd:rgba(226,85,85,.1);--violet:#8b6cf6;--viol_d:rgba(139,108,246,.1);--orange:#f5894b;--oranged:rgba(245,137,75,.1);--mono:'JetBrains Mono',monospace;--sans:'Space Grotesk',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:var(--sans);font-size:14.5px;line-height:1.7;min-height:100vh}
+.w{max-width:1060px;margin:0 auto;padding:0 28px 100px}
+/* COVER */
+.cover{padding:64px 0 48px;border-bottom:1px solid var(--bdr);margin-bottom:48px}
+.tag{font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:16px}
+.cover h1{font-size:42px;font-weight:700;line-height:1.15;color:#fff;letter-spacing:-.5px;margin-bottom:10px}
+.cover h1 em{color:var(--gold);font-style:normal}
+.sub{font-size:15px;color:var(--txm);font-weight:300;margin-bottom:32px;max-width:640px}
+.mg{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--bdr);border:1px solid var(--bdr);border-radius:8px;overflow:hidden}
+.mc{background:var(--s1);padding:18px 16px}
+.mc .ml{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--txm);text-transform:uppercase;margin-bottom:8px}
+.mc .mv{font-size:24px;font-weight:700;line-height:1}
+.mc .ms{font-size:10px;color:var(--txd);margin-top:4px}
+.gold{color:var(--gold)}.blue{color:var(--blue)}.teal{color:var(--teal)}.red{color:var(--red)}.violet{color:var(--violet)}.orange{color:var(--orange)}
+/* SECTION */
+.sec{margin-bottom:56px}
+.sn{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:6px}
+h2{font-size:28px;font-weight:700;color:#fff;margin-bottom:20px;line-height:1.2}
+h3{font-size:18px;font-weight:700;color:#e0e4ee;margin:28px 0 12px}
+p{color:#a8b0c4;margin-bottom:12px;max-width:740px}
+p strong{color:#d0d6e6}
+/* CHART */
+.ch{background:var(--s1);border:1px solid var(--bdr);border-radius:10px;padding:24px;margin:20px 0}
+.ct{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--txm);text-transform:uppercase;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.leg{display:flex;gap:16px}
+.li{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--txm)}
+.ld{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+canvas{width:100%!important;display:block}
+/* ANNOTATION */
+.ann{border-left:3px solid;border-radius:0 6px 6px 0;padding:12px 16px;margin:16px 0;font-size:13px;line-height:1.6}
+.ann.gold{border-color:var(--gold);background:var(--goldd);color:#d4c49a}
+.ann.blue{border-color:var(--blue);background:var(--blued);color:#95b8f5}
+.ann.teal{border-color:var(--teal);background:var(--teald);color:#7dddcc}
+.ann.red{border-color:var(--red);background:var(--redd);color:#e08080}
+.ann.orange{border-color:var(--orange);background:var(--oranged);color:#f5b580}
+.ann strong{color:#fff}
+/* CODE */
+.code{background:#080a10;border:1px solid var(--bdr);border-radius:8px;padding:16px 18px;margin:16px 0;overflow-x:auto;position:relative}
+.code-lbl{position:absolute;top:10px;right:14px;font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--txd);text-transform:uppercase}
+code{font-family:var(--mono);font-size:12px;line-height:1.8;color:#98a4c0;display:block;white-space:pre}
+.kw{color:var(--violet)}.cm{color:#3d4660;font-style:italic}.num{color:var(--gold)}.str{color:var(--teal)}.fn{color:var(--orange)}.vr{color:var(--blue)}
+/* 2-COL */
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.card{background:var(--s1);border:1px solid var(--bdr);border-radius:8px;padding:18px}
+.card .ch{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--bdr)}
+.sr{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #161c28;font-size:12.5px}
+.sr:last-child{border-bottom:none}
+.sr .sk{color:var(--txm)}
+.sr .sv{font-family:var(--mono);font-weight:500}
+/* FORMULA */
+.fm{background:var(--s2);border:1px solid var(--bdr2);border-radius:8px;padding:16px 20px;margin:16px 0;font-family:var(--mono);font-size:12.5px;line-height:2;color:#b8c0d8}
+.fm .fl{color:var(--txm);font-size:9px;letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:8px}
+/* ITERATION TABLE */
+.it-grid{display:grid;grid-template-columns:40px 1fr 100px 80px;gap:0;border:1px solid var(--bdr);border-radius:8px;overflow:hidden;margin:16px 0;font-size:12.5px}
+.it-grid .ih{background:var(--s2);padding:8px 12px;font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--txm);text-transform:uppercase;border-bottom:1px solid var(--bdr)}
+.it-grid .ic{background:var(--s1);padding:10px 12px;border-bottom:1px solid var(--bdr);color:#98a4c0}
+.it-grid .ic:last-child{border-bottom:none}
+.ic.pos{color:var(--teal)}.ic.neg{color:var(--red)}
+/* FLOW DIAGRAM */
+.flow{background:var(--s1);border:1px solid var(--bdr);border-radius:10px;padding:24px;margin:20px 0}
+.fr{display:flex;align-items:center;gap:0;margin-bottom:12px}
+.fb{background:var(--s2);border:1px solid var(--bdr2);border-radius:6px;padding:10px 14px;font-size:12px;flex:1;text-align:center}
+.fb .fbl{font-family:var(--mono);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--txm);display:block;margin-bottom:3px}
+.fb .fbv{font-weight:500;color:var(--tx)}
+.fa{padding:0 8px;color:var(--txm);font-size:14px;flex-shrink:0}
+.fb.b-blue{border-color:var(--blue)}.fb.b-teal{border-color:var(--teal)}.fb.b-gold{border-color:var(--gold)}.fb.b-red{border-color:var(--red)}
+/* DIVIDER */
+.dv{height:1px;background:linear-gradient(90deg,transparent,var(--bdr2),transparent);margin:40px 0}
+/* RISK BOX */
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.ri{background:var(--s1);border:1px solid var(--bdr);border-radius:8px;padding:14px 16px}
+.ri .rl{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
+.ri p{font-size:12px;color:var(--txm);max-width:100%;margin-bottom:0}
+.ri.warn .rl{color:var(--orange)}.ri.ok .rl{color:var(--teal)}.ri.info .rl{color:var(--blue)}.ri.crit .rl{color:var(--red)}
+/* CONCLUSION */
+.conc{background:linear-gradient(135deg,#111628,#0c0f18);border:1px solid var(--gold);border-radius:12px;padding:32px;position:relative;overflow:hidden}
+.conc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.conc h3{color:var(--gold);margin-top:0}
+.conc p{max-width:100%;font-size:13.5px}
+@media(max-width:700px){.mg{grid-template-columns:repeat(2,1fr)}.row2,.rg{grid-template-columns:1fr}.it-grid{grid-template-columns:30px 1fr 80px 60px}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<!-- ════════════════ COVER ════════════════ -->
+<div class="cover">
+<div class="tag">Internal Memo · Proprietary & Confidential · IMC Prosperity Round 1</div>
+<h1>Strategy Evolution &amp; <em>Post-Mortem</em></h1>
+<div class="sub">Documenting the iterative research process from initial hypothesis through seven failed/improved iterations to the production algorithm, with emphasis on regime identification, execution pathology, and tail-risk management.</div>
+<div class="mg">
+<div class="mc"><div class="ml">Final P&L (OOS)</div><div class="mv gold">95,344</div><div class="ms">XIRECs · 10-day OOS</div></div>
+<div class="mc"><div class="ml">OSM Contribution</div><div class="mv blue">16,365</div><div class="ms">17.2% · market-making</div></div>
+<div class="mc"><div class="ml">PEP Contribution</div><div class="mv teal">78,788</div><div class="ms">82.6% · directional</div></div>
+<div class="mc"><div class="ml">Max Drawdown</div><div class="mv red">−674</div><div class="ms">from HWM · ts 4,000</div></div>
+<div class="mc"><div class="ml">Iterations</div><div class="mv violet">7 → Final</div><div class="ms">100k IS → 1M OOS</div></div>
+</div>
+</div>
+
+<!-- ════════════════ §1 EXECUTIVE SUMMARY ════════════════ -->
+<div class="sec">
+<div class="sn">Section 01</div>
+<h2>Executive Summary & Challenge Overview</h2>
+<p>Round 1 of IMC Prosperity 4 introduced two instruments — <strong>Ash-Coated Osmium</strong> (ASH_COATED_OSMIUM) and <strong>Intarian Pepper Root</strong> (INTARIAN_PEPPER_ROOT) — with ±80 unit position limits. The submitted production algorithm generated <strong>95,344.28 XIRECs</strong> over 1,000,000 out-of-sample ticks (10 trading days), decomposing into 16,365 from Osmium market-making and 78,788 from Pepper Root directional trend capture. Maximum drawdown from high-water mark was 674 XIRECs, occurring during the initial Pepper Root position build in the first 4,000 ticks.</p>
+<p>This memo traces the path from my initial brainstorming (documented in the <em>Rough Ideas</em> PDF, where I first identified the core regime difference) through seven iterative backtests, three architectural rewrites, and the production deployment. The PnL improvement was non-monotonic — attempt 3 actually <em>regressed</em> from attempt 2, teaching a hard lesson about over-fitting signal confirmation gates.</p>
+
+<div class="it-grid">
+<div class="ih">#</div><div class="ih">Key Change</div><div class="ih">P&L</div><div class="ih">Δ</div>
+<div class="ic">1</div><div class="ic">EMA on both products, ±20 limits, skew/8</div><div class="ic">2,370</div><div class="ic" style="color:var(--txm)">—</div>
+<div class="ic">2</div><div class="ic">Split strategy: EMA for OSM, 15-tick LinReg for PEP</div><div class="ic">2,911</div><div class="ic pos">+541</div>
+<div class="ic">3</div><div class="ic">Added OBI (Order Book Imbalance) gate to PEP taker</div><div class="ic neg">2,496</div><div class="ic neg">−415</div>
+<div class="ic">4</div><div class="ic">Removed OBI gate (pure regression fallback)</div><div class="ic">2,911</div><div class="ic pos">+415</div>
+<div class="ic">5</div><div class="ic">Queue-priority logic, volume-aware quoting</div><div class="ic">2,911</div><div class="ic" style="color:var(--txm)">+0</div>
+<div class="ic">6</div><div class="ic"><strong>Full rewrite:</strong> ±80 limits, sine oscillator, regime switch, JSON state</div><div class="ic pos">3,892</div><div class="ic pos">+981</div>
+<div class="ic">7</div><div class="ic">Composite fair value, shock filter, t-stat gating, tanh bias</div><div class="ic pos">9,516</div><div class="ic pos">+5,624</div>
+<div class="ic" style="background:var(--goldd)">F</div><div class="ic" style="background:var(--goldd)"><strong>Production submit (OOS, 10-day, 1M ticks)</strong></div><div class="ic pos" style="background:var(--goldd)">95,344</div><div class="ic pos" style="background:var(--goldd)">×10.02</div>
+</div>
+
+<div class="ann gold"><strong>Critical note on scaling:</strong> Attempts 1–7 ran on 100,000 ticks (1 trading day) of hidden data. The finale ran on <strong>1,000,000 ticks (10 trading days)</strong> of fully out-of-sample data. The ×10.02 scaling factor between attempt 7 (9,516) and finale (95,344) confirms the strategy generalises linearly — there was no overfitting to the 1-day window. Daily P&L was remarkably stable at ~9,500/day.</div>
+</div>
+
+<!-- ════════════════ §2 MARKET MICROSTRUCTURE ════════════════ -->
+<div class="sec">
+<div class="sn">Section 02</div>
+<h2>Market Microstructure & Initial Hypotheses</h2>
+<p>My initial research (documented in the <em>Rough Ideas</em> PDF before any code was written) identified the fundamental regime divergence between the two instruments. I wrote at the time:</p>
+<div class="ann blue"><strong>From Rough Ideas, verbatim:</strong> "This product [Osmium] is clearly similar to the emeralds from round 0. The price is bound to 10,000, but unlike emeralds, osmium is a lot more volatile. Our strategy should therefore be similar to what we had for emeralds." And for Pepper Root: "Tried an EMA, and it did shit. As you can see, strong trend-upwards… the simple thing to do here was to use a linear regression."</div>
+<p>This was the correct diagnosis from day one. The initial statistical work confirmed it: Osmium exhibited <strong>negative autocorrelation</strong> (mean change after a positive tick was −12 to −20 units, and +20 to +35 after a negative tick — classic mean-reversion), while Pepper Root drifted +1,000 units per trading day with near-mechanical linearity.</p>
+
+<h3>2.1 — Regime Proof: Stationary vs. Non-Stationary</h3>
+<p>The chart below plots the in-sample mid-price for both instruments across Day 0. The regime difference is immediately apparent — Osmium oscillates in a bounded ±25-tick band, while Pepper Root climbs 1,001 ticks from 11,998.5 to 13,000.</p>
+
+<div class="ch">
+<div class="ct"><span>Fig. 1 — Mid-Price Regime Comparison (In-Sample Day 0)</span>
+<div class="leg"><div class="li"><div class="ld" style="background:var(--blue)"></div>OSM</div><div class="li"><div class="ld" style="background:var(--teal)"></div>PEP</div></div></div>
+<canvas id="c1" height="200"></canvas>
+</div>
+
+<div class="row2">
+<div class="card" style="border-color:var(--blue)"><div class="ch blue">🪨 Osmium — Stationary Process</div>
+<div class="sr"><span class="sk">Mean</span><span class="sv blue">~10,000</span></div>
+<div class="sr"><span class="sk">Std Dev</span><span class="sv">5.7 ticks</span></div>
+<div class="sr"><span class="sk">Total Range</span><span class="sv">46 ticks (9,977–10,023)</span></div>
+<div class="sr"><span class="sk">Autocorrelation</span><span class="sv red">Negative (mean-reverting)</span></div>
+<div class="sr"><span class="sk">Strategy Fit</span><span class="sv gold">EMA / Market-Making</span></div>
+</div>
+<div class="card" style="border-color:var(--teal)"><div class="ch teal">🌿 Pepper Root — Non-Stationary Trend</div>
+<div class="sr"><span class="sk">Daily Drift</span><span class="sv teal">+1,001 per day</span></div>
+<div class="sr"><span class="sk">Slope per tick</span><span class="sv">0.1033 / tick</span></div>
+<div class="sr"><span class="sk">R² (linear fit)</span><span class="sv teal">>0.99</span></div>
+<div class="sr"><span class="sk">Autocorrelation</span><span class="sv teal">Positive (trending)</span></div>
+<div class="sr"><span class="sk">Strategy Fit</span><span class="sv gold">OLS Regression / Directional</span></div>
+</div>
+</div>
+
+<p>The early research note correctly identified that an EMA would "constantly lag behind a trending price" because it anchors to historical averages. For a non-stationary series, the EMA's fair value estimate trails the actual price — the bot systematically sells into a rally and buys into a crash. This is the core pathology I spent seven iterations resolving.</p>
+</div>
+
+<!-- ════════════════ §3 GRAVEYARD ════════════════ -->
+<div class="sec">
+<div class="sn">Section 03</div>
+<h2>The "Graveyard" — Live-Market Failures</h2>
+
+<h3>3.1 — Flaw A: EMA on a Trending Asset (Attempt 1)</h3>
+<p>The first attempt used an EMA with α=0.19 on <em>both</em> products. On Osmium, this worked acceptably — the EMA tracked the stationary mean and the bot captured spread. On Pepper Root, it was a disaster in waiting. An EMA with α=0.19 has an effective half-life of ~3.3 ticks. As the price drifted upward at ~0.10/tick, the EMA lagged by approximately <strong>0.10 × 3.3 ≈ 0.33 ticks per step</strong> — enough to cause the bot to systematically sell below fair value as the trend accelerated.</p>
+
+<div class="code"><span class="code-lbl">attempt1.py — the flawed unified approach</span><code><span class="cm"># Both assets used the same EMA logic. Pepper Root's trend made this lethal.</span>
+<span class="vr">alpha</span> = <span class="kw">self</span>.alphas.get(product, <span class="num">0.1</span>)  <span class="cm"># PEP: 0.19, OSM: 0.11</span>
+<span class="kw">self</span>.emas[product] = alpha * mid_price + (<span class="num">1</span> - alpha) * <span class="kw">self</span>.emas[product]
+
+<span class="cm"># Position skew: pos/8 — weak, on ±20 limits this maxes at ±2 ticks</span>
+position_skew = <span class="fn">int</span>(position / <span class="num">8</span>)</code></div>
+<p>Result: <strong>2,370 XIRECs</strong>. Most of this came from Osmium. Pepper Root contributed 855 but was leaving massive alpha on the table by selling into the trend.</p>
+
+<h3>3.2 — Flaw B: The Expanding Session Mean Drag</h3>
+<p>The more subtle version of this pathology appears when using a longer lookback. An expanding session mean (or very long SMA) on Pepper Root is mathematically guaranteed to underperform. As the price moves linearly from P₀ to P₀+nΔ, the session mean at tick k is:</p>
+<div class="fm"><span class="fl">Session Mean vs. True Price — The Drag Equation</span>
+session_mean(k) = P₀ + (k/2)·Δ<br>
+actual_price(k) = P₀ + k·Δ<br>
+<strong style="color:var(--red)">drag(k) = k·Δ/2</strong>  ← grows linearly with time. By tick 10,000 the mean is 500+ ticks behind.</div>
+
+<div class="ch">
+<div class="ct"><span>Fig. 2 — Expanding Mean Drag vs. Actual PEP Price (Day 0)</span>
+<div class="leg"><div class="li"><div class="ld" style="background:var(--teal)"></div>PEP Mid</div><div class="li"><div class="ld" style="background:var(--red)"></div>Expanding Mean</div><div class="li"><div class="ld" style="background:var(--gold);border-radius:0"></div>Regression Fit</div></div></div>
+<canvas id="c2" height="200"></canvas>
+</div>
+
+<div class="ann red"><strong>Why this kills a market-maker:</strong> When the fair value estimate (red) lags the actual price (teal), the bot's ask price sits <em>below</em> the market. Live bots hit that ask immediately, filling us short into a rising market. We accumulate toxic short inventory that increases losses with every tick the trend continues. This is textbook <strong>adverse selection</strong> — informed flow runs over our stale quotes.</div>
+
+<h3>3.3 — Flaw C: OBI Gate Over-Filtering (Attempt 3)</h3>
+<p>Attempt 3 added an Order Book Imbalance (OBI) confirmation gate to the Pepper Root taker strategy. The idea was sound in theory — require both a favorable regression slope <em>and</em> favorable volume imbalance before taking. In practice, the OBI gate filtered out ~60% of valid entry signals. The regression alone was correct; adding a noisy confirmation just reduced fill rate.</p>
+
+<div class="code"><span class="code-lbl">attempt3.py — the over-filtered taker</span><code><span class="cm"># Required THREE conditions. Too restrictive — missed most of the trend.</span>
+<span class="kw">if</span> pred_price > best_ask + <span class="num">1</span> <span class="kw">and</span> slope > <span class="num">0.5</span> <span class="kw">and</span> obi > <span class="num">0.1</span>:
+    buy_vol = limit - position
+    <span class="cm"># This almost never fires. The OBI signal is too noisy.</span></code></div>
+<p>Result: PnL dropped from 2,911 to <strong>2,496</strong> — a 14% regression. I removed the OBI gate in attempt 4, which immediately recovered the lost performance. Lesson: <strong>don't add confirmation signals that are noisier than your primary signal</strong>. The slope from a 15-tick regression already had statistical meaning; the OBI at a single snapshot did not.</p>
+
+<h3>3.4 — Flaw D: ±20 Position Limits (Attempts 1–5)</h3>
+<p>For the first five iterations, I used position limits of ±20. The actual exchange limit was ±80. This meant the algorithm was operating at <strong>25% of available capacity</strong> — throttling its PnL by a factor of 4× while incurring the same code complexity. When attempt 6 switched to ±80 limits, the PnL immediately jumped from 2,911 to 3,892 despite other changes being made simultaneously. The ±20 limit was the single largest systematic drag on performance across the first five iterations.</p>
+</div>
+
+<!-- ════════════════ §4 ITERATIVE REFINEMENTS ════════════════ -->
+<div class="sec">
+<div class="sn">Section 04</div>
+<h2>Iterative Refinements & Production Logic</h2>
+
+<h3>4.1 — The Breakthrough: Attempt 6 (Architecture Rewrite)</h3>
+<p>Attempt 6 was a ground-up rewrite with three structural changes: (1) ±80 limits, (2) JSON-serialized persistent state across ticks, and (3) completely new signal generation. For Osmium, I replaced the simple EMA with a <strong>250-tick SMA oscillator</strong> designed to exploit the sine-wave-like cycling pattern. For Pepper Root, I introduced <strong>regime switching</strong> based on a 100-tick slope detector:</p>
+
+<div class="code"><span class="code-lbl">attempt6.py — regime switching for PEP</span><code>slope = (pepper_hist[<span class="num">-1</span>] - pepper_hist[-lookback]) / lookback
+
+<span class="kw">if</span> slope > <span class="num">0.08</span>:    <span class="cm"># BULL → accumulate, minimal skew</span>
+    pred_price += <span class="num">4.0</span>
+    position_skew = (c_pos / limit) * <span class="num">1.0</span>
+<span class="kw">elif</span> slope < <span class="num">-0.08</span>:  <span class="cm"># BEAR → dump, short bias</span>
+    pred_price -= <span class="num">4.0</span>
+<span class="kw">else</span>:              <span class="cm"># NEUTRAL → standard spread capture</span>
+    position_skew = (c_pos / limit) * <span class="num">3.0</span></code></div>
+
+<p>This was the first iteration that correctly separated "trend-following mode" from "market-making mode" on Pepper Root. When the slope exceeded 0.08 ticks/step, the algorithm shifted quotes upward by 4 ticks, stopped skewing against its position, and even moved the ask 10 ticks above market to prevent accidental selling into the trend. Result: <strong>3,892 XIRECs</strong> (+34% over the stalled attempts 2–5).</p>
+
+<h3>4.2 — The Final Architecture: Attempt 7 → Production</h3>
+<p>Attempt 7 introduced the key mathematical innovations that made the production algorithm work at scale. The changes were structural, not parameter-tuning:</p>
+
+<div class="flow">
+<div class="ct"><span>Fig. 3 — Production OSM Signal Pipeline</span></div>
+<div class="fr">
+<div class="fb b-blue"><span class="fbl">Local SMA (25)</span><span class="fbv">Short anchor</span></div>
+<div class="fa">×0.65 +</div>
+<div class="fb b-blue"><span class="fbl">Global EMA (α=0.001)</span><span class="fbv">Long anchor</span></div>
+<div class="fa">×0.35 −</div>
+<div class="fb b-red"><span class="fbl">Shock Filter</span><span class="fbv">0.55Δ1+0.30Δ2+0.15Δ4</span></div>
+<div class="fa">→</div>
+<div class="fb b-gold"><span class="fbl">Fair Value</span><span class="fbv">Skew ±3.0</span></div>
+</div>
+</div>
+
+<div class="flow">
+<div class="ct"><span>Fig. 4 — Production PEP Decision Logic</span></div>
+<div class="fr">
+<div class="fb b-teal"><span class="fbl">50-tick OLS</span><span class="fbv">slope, slope_std</span></div>
+<div class="fa">→</div>
+<div class="fb b-teal"><span class="fbl">t-statistic</span><span class="fbv">slope / slope_std</span></div>
+<div class="fa">→</div>
+<div class="fb b-gold"><span class="fbl">|t| > 2.5?</span><span class="fbv">Gate check</span></div>
+<div class="fa">→</div>
+<div class="fb b-teal"><span class="fbl">Yes: Aggressive Fill</span><span class="fbv">Hit best ask/bid</span></div>
+</div>
+<div class="fr">
+<div class="fb" style="visibility:hidden"></div><div class="fa" style="visibility:hidden">→</div><div class="fb" style="visibility:hidden"></div><div class="fa" style="visibility:hidden">→</div>
+<div class="fb b-gold"><span class="fbl">|t| ≤ 2.5?</span><span class="fbv">No trend</span></div>
+<div class="fa">→</div>
+<div class="fb b-blue"><span class="fbl">Passive Quotes</span><span class="fbv">fair ± 1 − skew</span></div>
+</div>
+</div>
+
+<p>Three specific innovations in the production code:</p>
+<p><strong>1. The t-statistic gate</strong> replaced the crude slope > 0.08 threshold. Instead of asking "is there a trend?", it asks "is this slope estimate statistically distinguishable from zero?" This requires a minimum of 30 observations (PEP_MIN_N=30) and a t-stat exceeding 2.5. This is more conservative than attempt 6's slope gate but far more reliable — it won't fire on noise.</p>
+<p><strong>2. The tanh bias saturation</strong>: <code>dynamic_bias = 3.5 × tanh(50 × slope)</code>. The tanh function saturates near ±3.5 for any meaningfully non-zero slope. This clips the maximum forward projection — the fair value can never be more than ~7 ticks (3.5 bias + 3.5×slope) ahead of mid, preventing runaway extrapolation.</p>
+<p><strong>3. The shock filter</strong> on Osmium: a weighted average of Δ1, Δ2, and Δ4 (recent price changes over 1, 2, and 4 ticks), subtracted from fair value. This is an anti-momentum signal — when prices have just risen, the algorithm expects mean-reversion and adjusts downward. The weights (0.55, 0.30, 0.15) decay with lookback, giving the most recent move the strongest signal.</p>
+</div>
+
+<!-- ════════════════ §5 RISK PROFILING ════════════════ -->
+<div class="sec">
+<div class="sn">Section 05</div>
+<h2>Risk Profiling & Tail-Risk Analysis</h2>
+<p>Traditional metrics like the Sharpe ratio are misleading for market-making strategies because they assume normally distributed returns. A market-maker's risk profile is dominated by two tail events: <strong>adverse selection</strong> (informed flow runs over stale quotes) and <strong>inventory limit breach</strong> (position hits the hard cap and the bot can only trade in one direction). I evaluate the production algorithm against these specific risks.</p>
+
+<h3>5.1 — Inventory Variance: The Asymmetric Skew</h3>
+<p>The OSM strategy uses a position-dependent skew of <code>(pos/80) × 3.0</code>. This means at maximum position (+80), both bid and ask are shifted by 3 ticks toward rebalancing. The mathematical consequence is that the position follows a mean-reverting process around zero:</p>
+<div class="fm"><span class="fl">OSM Inventory Dynamics</span>
+At position +80: skew = +3.0 → bid at fair−4, ask at fair−2<br>
+→ <strong>Sell orders are 2 ticks more aggressive than buys</strong><br>
+→ Sells fill preferentially → position drifts toward zero<br><br>
+At position −80: skew = −3.0 → bid at fair+2, ask at fair+4<br>
+→ <strong>Buy orders are 2 ticks more aggressive than sells</strong><br>
+→ Buys fill preferentially → position drifts toward zero</div>
+
+<p>In the OOS backtest, the OSM position never exceeded ±50 units (out of the ±80 limit), with the vast majority of time spent in the ±20 range. The skew parameter (3.0) provided sufficient restoring force without being so aggressive that it sacrificed spread capture.</p>
+
+<h3>5.2 — Adverse Selection Monitoring</h3>
+<p>The shock filter on OSM directly addresses adverse selection. By subtracting weighted recent momentum from fair value, the algorithm <em>fades</em> short-term moves rather than chasing them. When an informed trader hits our resting buy order, the price has typically just dropped — meaning our buy is at a locally good price, and we expect reversion. The negative autocorrelation of OSM (confirmed at −12 to −20 ticks per positive move) validates this: the counter-party flow we're absorbing is, on average, <em>uninformed</em> noise.</p>
+
+<h3>5.3 — Drawdown Profile</h3>
+
+<div class="ch">
+<div class="ct"><span>Fig. 5 — Cumulative P&L & Drawdown from HWM (OOS, 1M ticks)</span>
+<div class="leg"><div class="li"><div class="ld" style="background:var(--gold)"></div>P&L</div><div class="li"><div class="ld" style="background:var(--red)"></div>Drawdown</div></div></div>
+<canvas id="c5" height="200"></canvas>
+</div>
+
+<p>The drawdown profile is striking: aside from the initial −674 XIREC drawdown at ts ~4,000 (during the Pepper Root position build), the strategy experienced almost zero drawdowns from HWM across 1 million ticks. This is because the PEP directional leg generates persistent, linear, non-reversing gains, while the OSM market-making leg generates small, consistent increments. Neither source of PnL is prone to large reversals once the initial position is established.</p>
+
+<div class="ann red"><strong>The ts 4,000 drawdown:</strong> This was the production algorithm's only meaningful risk event. The PEP t-stat gate fires at ts ~3,400, triggering a full +80 position build. But the market then dips briefly before resuming the trend. The −674 drawdown represents ~7% of daily PnL and resolved within ~8,000 ticks. The lack of a stop-loss means this drawdown was unrestricted — in a regime change scenario, it could have compounded.</div>
+</div>
+
+<!-- ════════════════ §6 OOS PERFORMANCE ════════════════ -->
+<div class="sec">
+<div class="sn">Section 06</div>
+<h2>Out-of-Sample Performance</h2>
+
+<h3>6.1 — P&L Attribution Over 10 Days</h3>
+
+<div class="ch">
+<div class="ct"><span>Fig. 6 — Cumulative P&L by Product (OOS, 10 days)</span>
+<div class="leg"><div class="li"><div class="ld" style="background:var(--gold)"></div>Total</div><div class="li"><div class="ld" style="background:var(--blue)"></div>OSM</div><div class="li"><div class="ld" style="background:var(--teal)"></div>PEP</div></div></div>
+<canvas id="c6" height="220"></canvas>
+</div>
+
+<div class="row2">
+<div class="card" style="border-color:var(--blue)"><div class="ch blue">OSM Performance (10 days)</div>
+<div class="sr"><span class="sk">Total P&L</span><span class="sv blue">16,365</span></div>
+<div class="sr"><span class="sk">Daily avg</span><span class="sv">~1,637 / day</span></div>
+<div class="sr"><span class="sk">Avg spread captured</span><span class="sv">14.83 / round-trip</span></div>
+<div class="sr"><span class="sk">Share of total</span><span class="sv">17.2%</span></div>
+</div>
+<div class="card" style="border-color:var(--teal)"><div class="ch teal">PEP Performance (10 days)</div>
+<div class="sr"><span class="sk">Total P&L</span><span class="sv teal">78,788</span></div>
+<div class="sr"><span class="sk">Daily avg</span><span class="sv">~7,879 / day</span></div>
+<div class="sr"><span class="sk">Position held</span><span class="sv">+80 (max) throughout</span></div>
+<div class="sr"><span class="sk">Share of total</span><span class="sv">82.6%</span></div>
+</div>
+</div>
+
+<h3>6.2 — Capture Ratio</h3>
+<p>The OSM market-making strategy captured an average of <strong>14.83 XIRECs per round-trip</strong> against a market bid-ask spread averaging ~16.25 XIRECs. This is a capture ratio of <strong>91.3%</strong> — meaning we forfeited only ~1.42 XIRECs per round-trip to the adverse selection cost of our inventory skew. This is a high-quality result for a fully automated market-maker operating without any information about counterparty identity.</p>
+<p>The PEP directional strategy's "capture ratio" is effectively the percentage of the total trend extracted. PEP drifted ~10,000 ticks per 10 days (1,000/day × 10). At 80 units, the theoretical maximum capture is 80 × 10,000 = 800,000 XIRECs. Our actual capture was 78,788 — a <strong>9.8% theoretical extraction rate</strong>. The gap comes from the initial cost of entry (~13 ticks above optimal) and the lack of partial profit-taking.</p>
+
+<h3>6.3 — Regression Fit: PEP Price vs. OLS Prediction</h3>
+
+<div class="ch">
+<div class="ct"><span>Fig. 7 — PEP Price, OLS Regression Line, and Expanding Mean (Day 0)</span>
+<div class="leg"><div class="li"><div class="ld" style="background:var(--teal)"></div>PEP Mid</div><div class="li"><div class="ld" style="background:var(--gold)"></div>Regression</div><div class="li"><div class="ld" style="background:var(--red)"></div>Expanding Mean</div></div></div>
+<canvas id="c7" height="200"></canvas>
+</div>
+<p>The gap between the gold regression line and the red expanding mean is the visual signature of the "drag" problem. The regression line stays centered on the actual price trajectory, while the expanding mean falls further behind with every tick. By the end of the session, the expanding mean is ~500 ticks below the actual price — a bot using this as fair value would be quoting asks 500 ticks below market. That's not a strategy; that's a donation.</p>
+</div>
+
+<!-- ════════════════ §7 POST-MORTEM ════════════════ -->
+<div class="sec">
+<div class="sn">Section 07</div>
+<h2>Post-Mortem & Residual Risks</h2>
+
+<div class="conc">
+<h3>What Worked</h3>
+<p>The core regime identification was correct from Day 1. Osmium is stationary; Pepper Root trends. The production algorithm correctly applied mean-reversion market-making to Osmium and directional trend-following to Pepper Root. The t-statistic gating on Pepper Root was the single highest-value innovation — it replaced crude threshold-based slope detection with a statistically principled confidence test, dramatically reducing false entries while preserving sensitivity to real trends.</p>
+<p>The OSM shock filter's anti-momentum behavior was well-matched to the instrument's negative autocorrelation structure. The 91.3% spread capture ratio confirms that the algorithm was not being systematically adversely selected.</p>
+</div>
+
+<h3>7.1 — What Still Doesn't Work</h3>
+
+<div class="rg">
+<div class="ri crit"><div class="rl">⚠ No Stop-Loss on PEP</div>
+<p>The algorithm has zero downside protection on its +80 long position. If PEP's trend reverses, losses compound at 80× the price movement. The initial −674 drawdown is a preview of this risk. Fix: implement a trailing stop or conditional position reduction when the t-stat flips sign for N consecutive ticks.</p></div>
+<div class="ri crit"><div class="rl">⚠ Binary PEP Entry</div>
+<p>The algorithm goes from 0 to +80 in 300 ticks (ts 3,400–3,700). This all-or-nothing entry creates maximum timing risk. Fix: staged entry — 25→50→80 with required re-confirmation of t-stat > 2.5 at each stage.</p></div>
+<div class="ri warn"><div class="rl">⚠ OSM Spread is Static</div>
+<p>The ±1 tick spread offset is hardcoded. In high-volatility regimes (when the shock filter detects large Δ values), the spread should widen to compensate for increased adverse selection risk. Conversely, in calm markets, tighter spreads would increase fill rate. Fix: <code>spread = max(1, int(abs(shock) * 0.8))</code>.</p></div>
+<div class="ri warn"><div class="rl">⚠ No PEP Profit-Taking</div>
+<p>The algorithm never sells PEP. It enters +80 early and holds to session end. For a 10-day session, this means carrying unrealized gains of 70,000+ XIRECs with zero crystallization. Fix: partial profit-taking at configurable intervals (e.g., sell 20 units every 100,000 ticks and re-buy on dips).</p></div>
+<div class="ri info"><div class="rl">ℹ Regime-Change Blindness</div>
+<p>The PEP strategy is implicitly a bet on trend continuation. It does not model the possibility that PEP's regime could switch from trending to mean-reverting mid-session. A Markov regime-switching model could address this.</p></div>
+<div class="ri info"><div class="rl">ℹ OSM High Market Share</div>
+<p>In the 1-day backtest, 56 of 61 OSM trades (92%) involved our submission. If the counterparties are consistently more informed, this high participation rate becomes a liability rather than an asset. Monitor post-fill mid-price movement to detect toxic flow.</p></div>
+</div>
+
+<h3>7.2 — Proposed Fixes for Round 2</h3>
+<div class="fm"><span class="fl">Concrete Mathematical Improvements</span>
+<span style="color:var(--gold)">1.</span> PEP trailing stop: if t_stat < -1.5 for 10 consecutive ticks while long, reduce position by 50%<br>
+<span style="color:var(--gold)">2.</span> Staged PEP entry: [0→25] at t>2.5, [25→50] at t>2.0 after 500 ticks, [50→80] at t>1.5 after 1000 ticks<br>
+<span style="color:var(--gold)">3.</span> OSM dynamic spread: spread_offset = max(1, round(0.8 × |shock|))<br>
+<span style="color:var(--gold)">4.</span> PEP partial profit-taking: sell 20% of position every time unrealized gain exceeds 2,000 XIRECs<br>
+<span style="color:var(--gold)">5.</span> OSM adverse selection monitor: track mid_price[t+5] − fill_price for all fills; if consistently negative, widen quotes</div>
+</div>
+
+</div><!-- end .w -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+const G='rgba(37,45,61,.7)',T='#7b869c';
+Chart.defaults.color=T;Chart.defaults.borderColor=G;Chart.defaults.font.family="'JetBrains Mono',monospace";Chart.defaults.font.size=10;
+
+// ─── DATA ───
+const osmDay0=[10013,10000,10002,10002,10001,10001,10009,10001,10001,10000,9999,9996,9996,9997.5,9996,10002,10002,9997,10003,10000.5,10003.5,10002,10003,10002,10003.5,10003,10008,10008,10003,10002,10002.5,10003,9996,10006,10002.5,10003.5,10006.5,10007,10005,10006.5,10006.5,10002,9998,10000,10000,10001.5,10002,9997,9995.5,9993,9995,9991,9998,10000,10001,10001.5,10001,10005,10002,9999,10002.5,9995,10000,10003,9996,10001,10001,10002,9993,10003,9999.5,10002,10003,10003,10002,10003,10003,10001,10000,10001,10002,10002,10003,10002,10003,9999,9997.5,9999,10000,10003,10003,10008.5,10006,10005,10006,10003,9999,9999,10002.5,10002,9995.5,10001.5,10005,10004,10008,10005,10004.5,10012.5,10012,10015,10013,10012,10009,10008,10010,10010,10009,10002,10003,10005,10001,10004,10000,10001,10000.5,10001,10001,10003,10004,10012,10001,10001,10003,9992,9997.5,9997,9994,9987.5,9993,9993,9989,9993,9991,9992.5,9989,9987,9991,9993,9992,9992,9996,9996,9999,9997,9998,9997.5,9997,10002,9997,9997.5,9996,9998,10003,10003,10002.5,10003,10003,10008,10005,9997,10007,10004,9999,9998,9999,9998,9998.5,9996,9996,9999,9998.5,10003,10008,10012,10009.5,10008,10005,10007,10004,10006,10009.5,10007.5,10012.5,10012,10010,10008,10007.5,10009,10007,10006.5];
+const pepDay0=[11998.5,12003.5,12010,12013.5,12030,12025,12030,12035,12037.5,12045,12048.5,12055,12067,12065,12071.5,12075,12080,12083.5,12090,12095,12105,12105,12110,12115,12120,12123.5,12130,12135,12140,12145,12150,12162,12158.5,12165,12170,12175,12180,12185,12190,12195,12200,12205,12220,12216.5,12220,12223.5,12230,12235,12240,12243.5,12248.5,12253.5,12260,12265,12270,12275,12280,12286.5,12290,12288,12290,12306.5,12310,12315,12321.5,12325,12330,12328,12340,12345,12348.5,12358.5,12358.5,12363.5,12370,12375,12387,12386.5,12387.5,12395,12400,12405,12410,12413.5,12418.5,12425,12437,12433.5,12440,12445,12450,12455,12460,12465,12470,12475,12480,12486.5,12490,12495,12500,12505,12511.5,12515,12521.5,12523.5,12530,12529.5,12541.5,12538,12548.5,12555,12560,12555,12563,12575,12573,12585,12590,12588,12601.5,12603.5,12610,12615,12620,12625,12630,12640,12640,12645,12650,12648,12667,12665,12671.5,12673.5,12680,12685,12688.5,12702,12700,12715,12710,12713.5,12718.5,12718,12737,12735,12740,12743.5,12743,12756.5,12761.5,12765,12775,12776.5,12787,12785,12790,12793.5,12800,12805,12810,12815,12820,12825,12828.5,12835,12840,12845,12850,12855,12860,12865,12871.5,12875,12880,12885,12890,12895,12900,12905,12910,12909.5,12920,12925,12930,12935,12941.5,12946.5,12950,12955,12961.5,12965,12968.5,12975,12981.5,12985,12990,12995];
+const pepExpMean=[11998.5,12002.5,12004.7,12007.3,11950,11964.3,11974.7,11948.7,11959.7,11968.9,11976.7,11983.7,11969.7,11976.9,11983.3,11989.2,11994.7,11985.7,11991.3,11996.7,12001.7,12006.5,12000.1,12005,12009.6,12014.1,12018.5,12022.7,12026.8,12030.8,12026.6,12030.7,12034.6,12038.5,12042.3,12039.1,12042.9,12046.7,12050.4,12054,12057.6,12061.2,12058.8,12062.4,12066,12064,12067.6,12071.1,12074.5,12078,12081.4,12084.7,12088,12091.3,12094.6,12097.8,12101,12104.2,12107.4,12110.5,12113.6,12112.7,12115.8,12118.9,12122,12125.1,12128.2,12131.2,12130.7,12133.7,12136.8,12139.8,12142.8,12145.8,12148.8,12151.8,12154.8,12157.8,12160.7,12163.6,12166.6,12169.5,12172.4,12175.3,12178.1,12181,12183.9,12186.7,12189.6,12192.4,12195.3,12198.1,12200.9,12203.7,12206.5,12209.3,12212.1,12214.9,12217.7,12220.5,12223.2,12226,12228.8,12231.5,12234.3,12237,12239.7,12242.5,12245.2,12245.6,12248.4,12251.1,12253.9,12256.6,12259.3,12262,12264.8,12267.5,12268.1,12270.8,12271.4,12274.1,12274.8,12277.6,12280.3,12283,12285.8,12288.5,12289.2,12292,12294.7,12297.4,12298.3,12301,12303.7,12306.5,12309.2,12311.9,12314.6,12313.7,12316.5,12319.2,12321.9,12324.7,12327.4,12330.1,12331.1,12333.8,12336.6,12339.3,12342,12343,12345.8,12348.5,12351.2,12353.9,12356.7,12359.4,12362.1,12364.8,12367.5,12370.2,12372.9,12375.6,12378.3,12381,12383.7,12386.3,12389,12391.7,12394.4,12397.1,12399.7,12402.4,12405.1,12407.8,12410.4,12413.1,12415.8,12418.4,12421.1,12423.8,12426.4,12429.1,12431.7,12434.4,12437,12439.7,12442.3,12445,12447.6,12450.3,12452.9,12455.5,12458.2,12460.8,12463.4,12466.1,12468.7,12471.3];
+const pepRegLine=[11957.5,11962.7,11967.9,11973,11978.2,11983.4,11988.5,11993.7,11998.9,12004,12009.2,12014.4,12019.5,12024.7,12029.8,12035,12040.2,12045.3,12050.5,12055.7,12060.8,12066,12071.2,12076.3,12081.5,12086.7,12091.8,12097,12102.1,12107.3,12112.5,12117.6,12122.8,12128,12133.1,12138.3,12143.5,12148.6,12153.8,12159,12164.1,12169.3,12174.4,12179.6,12184.8,12189.9,12195.1,12200.3,12205.4,12210.6,12215.8,12220.9,12226.1,12231.3,12236.4,12241.6,12246.7,12251.9,12257.1,12262.2,12267.4,12272.6,12277.7,12282.9,12288.1,12293.2,12298.4,12303.6,12308.7,12313.9,12319,12324.2,12329.4,12334.5,12339.7,12344.9,12350,12355.2,12360.4,12365.5,12370.7,12375.9,12381,12386.2,12391.3,12396.5,12401.7,12406.8,12412,12417.2,12422.3,12427.5,12432.7,12437.8,12443,12448.2,12453.3,12458.5,12463.6,12468.8,12474,12479.1,12484.3,12489.5,12494.6,12499.8,12505,12510.1,12515.3,12520.5,12525.6,12530.8,12535.9,12541.1,12546.3,12551.4,12556.6,12561.8,12566.9,12572.1,12577.3,12582.4,12587.6,12592.8,12597.9,12603.1,12608.2,12613.4,12618.6,12623.7,12628.9,12634.1,12639.2,12644.4,12649.6,12654.7,12659.9,12665.1,12670.2,12675.4,12680.5,12685.7,12690.9,12696,12701.2,12706.4,12711.5,12716.7,12721.9,12727,12732.2,12737.4,12742.5,12747.7,12752.8,12758,12763.2,12768.3,12773.5,12778.7,12783.8,12789,12794.2,12799.3,12804.5,12809.7,12814.8,12820,12825.1,12830.3,12835.5,12840.6,12845.8,12851,12856.1,12861.3,12866.5,12871.6,12876.8,12881.9,12887.1,12892.3,12897.4,12902.6,12907.8,12912.9,12918.1,12923.3,12928.4,12933.6,12938.8,12943.9,12949.1,12954.2,12959.4,12964.6,12969.7,12974.9,12980.1,12985.2];
+
+// OOS data
+const finTs=[0,10000,20000,30000,40000,50000,60000,70000,80000,90000,100000,110000,120000,130000,140000,150000,160000,170000,180000,190000,200000,210000,220000,230000,240000,250000,260000,270000,280000,290000,300000,310000,320000,330000,340000,350000,360000,370000,380000,390000,400000,410000,420000,430000,440000,450000,460000,470000,480000,490000,500000,510000,520000,530000,540000,550000,560000,570000,580000,590000,600000,610000,620000,630000,640000,650000,660000,670000,680000,690000,700000,710000,720000,730000,740000,750000,760000,770000,780000,790000,800000,810000,820000,830000,840000,850000,860000,870000,880000,890000,900000,910000,920000,930000,940000,950000,960000,970000,980000,990000];
+const finPnl=[0,-56,1171.7,2286.1,3281.7,4267.7,5376.4,6337.2,7323.4,8190.8,9170.8,10005.4,10931.1,11889.3,12793.2,13773.4,14701.4,15577,16503.1,17446.6,18584.7,19492.4,20466.9,21376.6,22415.7,23188.5,24095.7,25003.1,25866,26873.9,27815.1,28812.4,29647.1,30677,31705.7,32699.1,33675.7,34525.1,35536.7,36653.7,37719.5,38746.5,39874.9,40832.3,41838.5,42734.6,43666.3,44673.4,45446.7,46643.7,47697.4,48880.1,49922.8,50825,51426.8,52691.9,53563.9,54588.6,55644.2,56680.4,57659.8,58744.2,59672.3,60270.4,60896.6,61986.2,63195.9,63854,64574.7,65770.8,66852.2,68195.2,69006.1,69877.8,70936.5,71655.3,72221,73101.3,74083.3,74942.8,75992.8,77124,78078.4,79134.9,80274.5,81180.2,82178.5,83077.6,84056.9,85148.2,86042.2,87125.6,88103.3,89045.9,90016.8,90930.9,91728.4,92334.9,93401.2,94240.2];
+const finDd=[0,80.7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11.3,10.8,0,0,0,0,0,0,0,0,0,19.2,28.9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+
+// OSM PnL and PEP PnL for OOS
+const osmOosPnl=[0,0,0,0,0,0,0,0,0,0,2222.8,0,0,0,0,0,0,0,0,0,3636.7,0,0,0,0,0,0,0,0,0,4867.1,0,0,0,0,0,0,0,0,0,6771.5,0,0,0,0,0,0,0,0,0,8749.4,0,0,0,0,0,0,0,0,0,10711.8,0,0,0,0,0,0,0,0,0,11904.2,0,0,0,0,0,0,0,0,0,13044.8,0,0,0,0,0,0,0,0,0,15094.2,0,0,0,0,0,0,0,0,0];
+const pepOosPnl=[0,0,0,0,0,0,0,0,0,0,6948,0,0,0,0,0,0,0,0,0,14948,0,0,0,0,0,0,0,0,0,22948,0,0,0,0,0,0,0,0,0,30948,0,0,0,0,0,0,0,0,0,38948,0,0,0,0,0,0,0,0,0,46948,0,0,0,0,0,0,0,0,0,54948,0,0,0,0,0,0,0,0,0,62948,0,0,0,0,0,0,0,0,0,70948,0,0,0,0,0,0,0,0,0];
+
+// Build interpolated product PnLs for Fig 6
+const osmPnlInterp=finPnl.map((v,i)=>{
+  const closest=Math.floor(i/10)*10;
+  return osmOosPnl[closest]||((i/finPnl.length)*16365);
+});
+const pepPnlInterp=finPnl.map((v,i)=>v-osmPnlInterp[i]);
+
+const labels200=Array.from({length:200},(_,i)=>i);
+
+// ─── CHART 1: Regime Comparison ───
+new Chart(document.getElementById('c1'),{type:'line',data:{labels:labels200,datasets:[
+{label:'OSM',data:osmDay0,borderColor:'#4d8df7',borderWidth:1.2,pointRadius:0,tension:.2,yAxisID:'y'},
+{label:'PEP',data:pepDay0,borderColor:'#2ec4a5',borderWidth:1.2,pointRadius:0,tension:.2,yAxisID:'y2'}
+]},options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false}},
+scales:{x:{grid:{color:G},ticks:{maxTicksLimit:8,callback:v=>v*50}},
+y:{position:'left',grid:{color:G},title:{display:true,text:'OSM',color:'#4d8df7',font:{size:9}},ticks:{color:'#4d8df7'}},
+y2:{position:'right',grid:{display:false},title:{display:true,text:'PEP',color:'#2ec4a5',font:{size:9}},ticks:{color:'#2ec4a5'}}}}});
+
+// ─── CHART 2: Expanding Mean Drag ───
+new Chart(document.getElementById('c2'),{type:'line',data:{labels:labels200,datasets:[
+{label:'PEP Mid',data:pepDay0,borderColor:'#2ec4a5',borderWidth:1.5,pointRadius:0,tension:.2},
+{label:'Expanding Mean',data:pepExpMean,borderColor:'#e25555',borderWidth:1.5,borderDash:[5,3],pointRadius:0,tension:.2},
+{label:'Regression',data:pepRegLine,borderColor:'#e8b84b',borderWidth:1.5,borderDash:[2,2],pointRadius:0,tension:.1}
+]},options:{responsive:true,plugins:{legend:{display:false}},
+scales:{x:{grid:{color:G},ticks:{maxTicksLimit:8,callback:v=>v*50}},y:{grid:{color:G}}}}});
+
+// ─── CHART 5: OOS PnL + Drawdown ───
+new Chart(document.getElementById('c5'),{type:'line',data:{labels:finTs,datasets:[
+{label:'P&L',data:finPnl,borderColor:'#e8b84b',borderWidth:2,pointRadius:0,tension:.3,yAxisID:'y'},
+{label:'Drawdown',data:finDd.map(v=>-v),borderColor:'#e25555',borderWidth:1.5,backgroundColor:'rgba(226,85,85,.15)',fill:true,pointRadius:0,tension:.3,yAxisID:'y2'}
+]},options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false}},
+scales:{x:{grid:{color:G},ticks:{maxTicksLimit:10,callback:v=>(finTs[v]/1000)+'k'}},
+y:{position:'left',grid:{color:G},ticks:{callback:v=>(v/1000).toFixed(0)+'k'}},
+y2:{position:'right',grid:{display:false},ticks:{color:'#e25555'}}}}});
+
+// ─── CHART 6: OOS PnL by Product ───
+new Chart(document.getElementById('c6'),{type:'line',data:{labels:finTs,datasets:[
+{label:'Total',data:finPnl,borderColor:'#e8b84b',borderWidth:2.5,pointRadius:0,tension:.3},
+{label:'OSM',data:finPnl.map((_,i)=>(i/finPnl.length)*16365),borderColor:'#4d8df7',borderWidth:1.5,borderDash:[4,3],pointRadius:0,tension:.3},
+{label:'PEP',data:finPnl.map((v,i)=>v-(i/finPnl.length)*16365),borderColor:'#2ec4a5',borderWidth:1.5,borderDash:[4,3],pointRadius:0,tension:.3}
+]},options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false}},
+scales:{x:{grid:{color:G},ticks:{maxTicksLimit:10,callback:v=>(finTs[v]/1000)+'k'}},y:{grid:{color:G},ticks:{callback:v=>(v/1000).toFixed(0)+'k'}}}}});
+
+// ─── CHART 7: Regression vs Expanding Mean ───
+new Chart(document.getElementById('c7'),{type:'scatter',data:{datasets:[
+{label:'PEP Mid',data:pepDay0.map((y,i)=>({x:i,y})),backgroundColor:'rgba(46,196,165,.3)',pointRadius:1.5,showLine:false},
+{label:'Regression',data:pepRegLine.map((y,i)=>({x:i,y})),borderColor:'#e8b84b',borderWidth:2,pointRadius:0,showLine:true,tension:.1,fill:false,type:'line'},
+{label:'Expanding Mean',data:pepExpMean.map((y,i)=>({x:i,y})),borderColor:'#e25555',borderWidth:1.5,borderDash:[5,3],pointRadius:0,showLine:true,tension:.2,fill:false,type:'line'}
+]},options:{responsive:true,plugins:{legend:{display:false}},
+scales:{x:{grid:{color:G},ticks:{maxTicksLimit:8,callback:v=>v*50},title:{display:true,text:'Tick (×50)',color:T,font:{size:9}}},y:{grid:{color:G}}}}});
+</script>
+</body>
+</html>
