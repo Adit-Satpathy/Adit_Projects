@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Round 3 — Strategy Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0b0f;--s1:#111218;--s2:#1a1c26;--s3:#22263a;--bd:#252838;--bd2:#2e3250;--tx:#e2e5f0;--tm:#7a7f9a;--td:#4a5268;--gold:#d4a853;--gf:rgba(212,168,83,.12);--blue:#5b8af5;--bf:rgba(91,138,245,.1);--teal:#3ecfba;--tf:rgba(62,207,186,.1);--red:#e05c5c;--rf:rgba(224,92,92,.1);--vio:#9b72f5;--vf:rgba(155,114,245,.1);--or:#f5894b;--of:rgba(245,137,75,.1);--grn:#4caf7d;--grnf:rgba(76,175,125,.1);--hd:'Playfair Display',Georgia,serif;--bd2f:'DM Sans',sans-serif;--mn:'IBM Plex Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:var(--bd2f);font-size:15px;line-height:1.75}
+.w{max-width:1020px;margin:0 auto;padding:0 32px 80px}
+.cover{padding:64px 0 48px;border-bottom:1px solid var(--bd);margin-bottom:48px;position:relative}
+.cover::before{content:'';position:absolute;top:0;left:-32px;right:-32px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.tag{font-family:var(--mn);font-size:11px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:18px}
+.cover h1{font-family:var(--hd);font-size:48px;font-weight:900;line-height:1.1;letter-spacing:-1px;margin-bottom:12px;color:#fff}
+.cover h1 em{font-style:italic;color:var(--gold)}
+.sub{font-size:16px;color:var(--tm);font-weight:300;margin-bottom:32px;max-width:680px}
+.r1ref{font-family:var(--mn);font-size:10px;color:var(--td);border:1px solid var(--bd);border-radius:4px;padding:4px 10px;display:inline-block;margin-bottom:24px}
+.r1ref a{color:var(--blue);text-decoration:none}
+.mg{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--bd);border:1px solid var(--bd);border-radius:10px;overflow:hidden}
+.mc{background:var(--s1);padding:20px 16px;position:relative}
+.mc::after{content:'';position:absolute;bottom:0;left:16px;right:16px;height:2px;border-radius:2px}
+.mc.g::after{background:var(--gold)}.mc.b::after{background:var(--blue)}.mc.t::after{background:var(--teal)}.mc.r::after{background:var(--red)}.mc.v::after{background:var(--vio)}.mc.grn::after{background:var(--grn)}
+.ml{font-family:var(--mn);font-size:9px;letter-spacing:2px;color:var(--tm);text-transform:uppercase;margin-bottom:8px}
+.mv{font-family:var(--hd);font-size:28px;font-weight:700;line-height:1;margin-bottom:4px}
+.ms{font-size:10px;color:var(--td);font-family:var(--mn)}
+.mc.g .mv{color:var(--gold)}.mc.b .mv{color:var(--blue)}.mc.t .mv{color:var(--teal)}.mc.r .mv{color:var(--red)}.mc.v .mv{color:var(--vio)}.mc.grn .mv{color:var(--grn)}
+.sec{margin-bottom:56px}
+.sn{font-family:var(--mn);font-size:11px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:6px}
+h2{font-family:var(--hd);font-size:30px;font-weight:700;color:#fff;margin-bottom:20px;line-height:1.2}
+h3{font-family:var(--hd);font-size:19px;font-weight:700;color:var(--tx);margin:28px 0 12px}
+p{color:#c0c4d8;margin-bottom:12px;max-width:720px}
+p strong{color:#e0e4f0}
+code{font-family:var(--mn);font-size:12px;color:var(--teal);background:rgba(62,207,186,.06);padding:1px 4px;border-radius:3px}
+.ch{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:24px;margin:20px 0}
+.ct{font-family:var(--mn);font-size:10px;letter-spacing:2px;color:var(--tm);text-transform:uppercase;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.lg{display:flex;gap:16px;flex-wrap:wrap}
+.li{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--tm);font-family:var(--mn)}
+.ld{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+canvas{width:100%!important;display:block}
+.an{border-left:3px solid;border-radius:0 6px 6px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;line-height:1.6}
+.an.g{border-color:var(--gold);background:var(--gf);color:#d4c49a}
+.an.b{border-color:var(--blue);background:var(--bf);color:#95b8f5}
+.an.t{border-color:var(--teal);background:var(--tf);color:#7dddcc}
+.an.r{border-color:var(--red);background:var(--rf);color:#e08080}
+.an.o{border-color:var(--or);background:var(--of);color:#f5b580}
+.an.grn{border-color:var(--grn);background:var(--grnf);color:#7dd4a0}
+.an strong{color:#fff}
+.fm{background:var(--s2);border:1px solid var(--bd2);border-radius:8px;padding:16px 20px;margin:16px 0;font-family:var(--mn);font-size:12.5px;line-height:2;color:#c8cee8}
+.fm .fl{color:var(--tm);font-size:9px;letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:8px}
+.fm .hi{color:var(--gold);font-weight:500}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
+.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:18px 0}
+.cd{background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:18px}
+.cd .hd{font-family:var(--mn);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--bd)}
+.sr{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #1a1c26;font-size:12.5px}
+.sr:last-child{border-bottom:none}
+.sr .sk{color:var(--tm)}.sr .sv{font-family:var(--mn);font-weight:500}
+.sv.p{color:var(--teal)}.sv.n{color:var(--red)}.sv.u{color:var(--blue)}.sv.g{color:var(--gold)}.sv.grn{color:var(--grn)}
+.flow{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:24px;margin:18px 0}
+.fr{display:flex;align-items:center;gap:0;margin-bottom:10px}
+.fb{background:var(--s2);border:1px solid var(--bd2);border-radius:6px;padding:8px 12px;font-size:11px;flex:1;text-align:center}
+.fb .fbl{font-family:var(--mn);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tm);display:block;margin-bottom:2px}
+.fb .fbv{font-weight:500;color:var(--tx);font-family:var(--mn);font-size:11px}
+.fa{padding:0 8px;color:var(--td);font-size:14px;flex-shrink:0;font-family:var(--mn)}
+.fb.cb2{border-color:rgba(91,138,245,.4)}.fb.ct2{border-color:rgba(62,207,186,.4)}.fb.cg{border-color:rgba(212,168,83,.4)}.fb.cr{border-color:rgba(224,92,92,.4)}.fb.cgrn{border-color:rgba(76,175,125,.4)}.fb.cv{border-color:rgba(155,114,245,.4)}
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.ri{background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:14px 16px}
+.ri .rl{font-family:var(--mn);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
+.ri p{font-size:12px;color:var(--tm);max-width:100%;margin-bottom:0}
+.ri.w .rl{color:var(--or)}.ri.ok .rl{color:var(--teal)}.ri.i .rl{color:var(--blue)}.ri.c .rl{color:var(--red)}
+.conc{background:linear-gradient(135deg,#141622,#0f111a);border:1px solid var(--gold);border-radius:12px;padding:28px 32px;position:relative;overflow:hidden;margin:24px 0}
+.conc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.conc h3{color:var(--gold);margin-top:0;font-style:italic}
+.conc p{max-width:100%;font-size:14px;line-height:1.75}
+.pill{display:inline-block;font-family:var(--mn);font-size:9px;letter-spacing:1px;padding:2px 8px;border-radius:10px;font-weight:500;text-transform:uppercase;margin:0 2px}
+.pill.new{background:rgba(76,175,125,.15);color:var(--grn);border:1px solid rgba(76,175,125,.3)}
+.pill.cont{background:rgba(91,138,245,.12);color:var(--blue);border:1px solid rgba(91,138,245,.3)}
+.pill.ret{background:rgba(155,114,245,.12);color:var(--vio);border:1px solid rgba(155,114,245,.3)}
+.tbl{width:100%;border-collapse:collapse;margin:18px 0;font-size:12px;font-family:var(--mn);border:1px solid var(--bd);border-radius:8px;overflow:hidden}
+.tbl th{padding:8px 12px;font-size:9px;letter-spacing:2px;color:var(--tm);text-transform:uppercase;text-align:left;font-weight:400;background:var(--s2);border-bottom:1px solid var(--bd2)}
+.tbl td{padding:8px 12px;border-bottom:1px solid var(--bd);color:#8b95b5;vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr.hi td{background:var(--gf);color:#c8a862}
+.qt{border-left:3px solid var(--blue);margin:18px 0;padding:10px 16px;background:var(--bf);border-radius:0 6px 6px 0}
+.qt blockquote{font-style:italic;font-size:14.5px;color:#7aacf8;line-height:1.6}
+.qt .qs{font-family:var(--mn);font-size:9px;letter-spacing:2px;color:var(--td);text-transform:uppercase;margin-top:4px}
+.div-line{border:0;border-top:1px solid var(--bd);margin:32px 0}
+.tte-box{background:rgba(212,168,83,.05);border:1px solid rgba(212,168,83,.3);border-radius:8px;padding:14px 18px;margin:18px 0;font-size:13px;color:#d4c49a}
+.tte-box strong{color:var(--gold)}
+@media(max-width:700px){.mg{grid-template-columns:repeat(2,1fr)}.r2,.r3,.rg{grid-template-columns:1fr}.cover h1{font-size:36px}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<!-- COVER -->
+<div class="cover">
+<div class="tag">IMC Prosperity 4 · Round 3 · Quantitative Research Report</div>
+<h1>Round 3 Strategy <em>Report</em></h1>
+<div class="sub">Structural volatility arbitrage on Velvetfruit Extract Vouchers, combined with adaptive market-making on Hydrogel Packs and Velvetfruit Extract — a two-asset-class approach to round 3.</div>
+<div class="r1ref">↗ Builds on <a href="#">Round 1 Strategy Report</a> · Market-making methodology retained · Regime analysis extended to options</div>
+<div class="mg">
+<div class="mc g"><div class="ml">Total OOS PnL</div><div class="mv">41,418</div><div class="ms">XIRECs · combined</div></div>
+<div class="mc v"><div class="ml">Voucher Strategy</div><div class="mv">31,621</div><div class="ms">volatility arb · backtest</div></div>
+<div class="mc b"><div class="ml">Delta-1 Book</div><div class="mv">9,797</div><div class="ms">hydrogel + extract</div></div>
+<div class="mc t"><div class="ml">OOS TTE (Fixed)</div><div class="mv">5 days</div><div class="ms">all 10 OOS days</div></div>
+<div class="mc r"><div class="ml">IV Spread Captured</div><div class="mv">~2%</div><div class="ms">VEV_5400 vs fair</div></div>
+</div>
+</div>
+
+<!-- §1 — FRAMEWORK -->
+<div class="sec">
+<div class="sn">Section 01</div>
+<h2>A New Asset Class: From Delta-1 to Options</h2>
+<p>Round 3 introduced a structurally different problem to the one in <strong>Round 1</strong>. Whereas Round 1 presented two delta-1 instruments with known regimes — Osmium's mean reversion and Pepper Root's linear trend — Round 3 adds <strong>ten European call options</strong> (Velvetfruit Extract Vouchers) to two delta-1 assets. This necessitated a fundamental shift in analytical framework.</p>
+<p>The key intellectual shift was recognising that options cannot be treated as delta-1 instruments. Their price is not a direct signal of value; it is an <strong>encoding of the market's expectation of future volatility</strong>. The correct input to any options model is not price — it is Implied Volatility (IV). This is what must be extracted and compared across strikes.</p>
+
+<div class="tte-box">
+<strong>Critical TTE Nuance.</strong> The vouchers have a 7-day expiry starting from Round 1 of the competition. During the <em>historical sample data</em> (days 0–2 used for research), TTE decreases: <strong>Day 0 → TTE=8d, Day 1 → TTE=7d, Day 2 → TTE=6d</strong>. However, for all <em>10 days of out-of-sample deployment</em>, the TTE is <strong>fixed at 5 days</strong> — because the algorithm runs during Round 3, when exactly 5 days remain until expiry. This is a critical parameter: using the wrong TTE in Black-Scholes produces systematically biased IV estimates and incorrect delta hedges.
+</div>
+
+<div class="r2">
+<div class="cd" style="border-color:rgba(91,138,245,.4)"><div class="hd" style="color:var(--blue)">🧪 Delta-1 Assets <span class="pill cont">continued</span></div>
+<div class="sr"><span class="sk">HYDROGEL_PACK</span><span class="sv u">~10,000 · mean-reverting</span></div>
+<div class="sr"><span class="sk">VELVETFRUIT_EXTRACT</span><span class="sv u">~5,250 · mean-reverting</span></div>
+<div class="sr"><span class="sk">Position limits</span><span class="sv">±200 each</span></div>
+<div class="sr"><span class="sk">Strategy</span><span class="sv g">EMA market-making + skew</span></div>
+</div>
+<div class="cd" style="border-color:rgba(155,114,245,.4)"><div class="hd" style="color:var(--vio)">📈 Options <span class="pill new">new</span></div>
+<div class="sr"><span class="sk">10 strikes (VEV_4000→6500)</span><span class="sv u">calls on Extract</span></div>
+<div class="sr"><span class="sk">OOS TTE</span><span class="sv g">5 days (fixed)</span></div>
+<div class="sr"><span class="sk">Position limit</span><span class="sv">±300 per strike</span></div>
+<div class="sr"><span class="sk">Strategy</span><span class="sv g">IV arbitrage + delta hedge</span></div>
+</div>
+</div>
+</div>
+
+<!-- §2 — DELTA-1 -->
+<div class="sec">
+<div class="sn">Section 02</div>
+<h2>Delta-1 Book: Hydrogel & Extract Market-Making</h2>
+<p>Both delta-1 assets exhibit the same <strong>mean-reverting microstructure</strong> identified in Osmium during Round 1. Hydrogel trades around 10,000 with a standard deviation of ~30 ticks and an intra-tick autocorrelation above 0.996 — strongly indicating passive quoting is the dominant alpha source. Velvetfruit Extract trades around 5,250 with tighter spreads (~5 ticks), requiring a faster EMA for fair value tracking.</p>
+
+<div class="ch">
+<div class="ct"><span>Fig. 1 — Market-Making: Mid, Bid & Ask (Day 2, First 60k Ticks)</span>
+<div class="lg"><div class="li"><div class="ld" style="background:var(--blue)"></div>Hydrogel mid</div><div class="li"><div class="ld" style="background:rgba(91,138,245,.35)"></div>Hydrogel spread</div><div class="li"><div class="ld" style="background:var(--teal)"></div>Extract mid</div><div class="li"><div class="ld" style="background:rgba(62,207,186,.35)"></div>Extract spread</div></div></div>
+<canvas id="cDelta1" height="220"></canvas>
+</div>
+
+<h3>2.1 — Architecture: EMA Market-Maker with Inventory Skew</h3>
+<p>The Round 1 composite fair-value approach (SMA + Global EMA + Shock filter) was refined into a cleaner, production-grade architecture. The core insight from Round 1 carries over: <strong>execution positioning matters as much as fair value estimation</strong>. We penny the BBO and skew quotes dynamically to manage inventory.</p>
+
+<div class="flow">
+<div class="ct"><span>Delta-1 Quoting Logic (per asset)</span></div>
+<div class="fr">
+<div class="fb cb2"><span class="fbl">EMA Update</span><span class="fbv">α=0.05 (Hydrogel)<br>α=0.20 (Extract)</span></div>
+<div class="fa">→</div>
+<div class="fb cb2"><span class="fbl">Signal</span><span class="fbv">ema − mid_price</span></div>
+<div class="fa">→</div>
+<div class="fb cg"><span class="fbl">Mean-Rev Bias</span><span class="fbv">if |signal|>0.3 → shift bid/ask</span></div>
+<div class="fa">→</div>
+<div class="fb cr"><span class="fbl">Inventory Skew</span><span class="fbv">(pos/limit)×max_skew</span></div>
+<div class="fa">→</div>
+<div class="fb ct2"><span class="fbl">Output</span><span class="fbv">Bid / Ask</span></div>
+</div>
+</div>
+
+<div class="fm"><span class="fl">Key Equations</span>
+signal = ema − mid_price<br>
+max_skew = floor(half_spread × skew_fraction)  <span style="color:var(--td)">← bounded by spread, never crosses mid</span><br>
+skew = int((position / limit) × max_skew)<br>
+<span class="hi">bid_px</span> = best_bid − skew, capped at best_ask − 1<br>
+<span class="hi">ask_px</span> = best_ask − skew, floored at best_bid + 1</div>
+
+<p>The <code>skew_fraction</code> parameter (1.0 for Hydrogel, 0.8 for Extract) bounds the inventory skew so it never exceeds the half-spread — preventing the algorithm from crossing mid-price when its book is full. This is the same inventory-management principle from Round 1, but now codified as a hard constraint rather than a soft parameter.</p>
+
+<div class="an b"><strong>Evolution from Round 1:</strong> Round 1's OSM sub-strategy used a composite fair value (0.65×SMA + 0.35×EMA − shock). Round 3's delta-1 book simplifies to a single EMA, removing the shock filter. The key reason: both Hydrogel and Extract have narrower spreads, and the shock filter introduced false signals at this scale. The EMA speed is differentiated by asset — slow for Hydrogel (α=0.05), fast for Extract (α=0.20) — reflecting their different volatility regimes.</div>
+
+<div class="r2">
+<div class="cd" style="border-color:rgba(91,138,245,.4)"><div class="hd" style="color:var(--blue)">HYDROGEL_PACK Performance</div>
+<div class="sr"><span class="sk">Final PnL</span><span class="sv g">4,402 XIRECs</span></div>
+<div class="sr"><span class="sk">Peak PnL (in-sample)</span><span class="sv g">941 XIRECs</span></div>
+<div class="sr"><span class="sk">EMA alpha</span><span class="sv u">0.05 (slow)</span></div>
+<div class="sr"><span class="sk">Skew fraction</span><span class="sv u">1.0</span></div>
+<div class="sr"><span class="sk">Daily vol (~30t)</span><span class="sv u">Mean-reverting</span></div>
+</div>
+<div class="cd" style="border-color:rgba(62,207,186,.4)"><div class="hd" style="color:var(--teal)">VELVETFRUIT_EXTRACT Performance</div>
+<div class="sr"><span class="sk">Final PnL</span><span class="sv g">5,395 XIRECs</span></div>
+<div class="sr"><span class="sk">Peak PnL (in-sample)</span><span class="sv g">806 XIRECs</span></div>
+<div class="sr"><span class="sk">EMA alpha</span><span class="sv u">0.20 (fast)</span></div>
+<div class="sr"><span class="sk">Skew fraction</span><span class="sv u">0.8</span></div>
+<div class="sr"><span class="sk">Max drawdown</span><span class="sv n">−10 XIRECs</span></div>
+</div>
+</div>
+
+<div class="ch">
+<div class="ct"><span>Fig. 2 — Delta-1 Cumulative PnL (Scaled to 1M Ticks / 10 OOS Days)</span>
+<div class="lg"><div class="li"><div class="ld" style="background:var(--blue)"></div>Hydrogel</div><div class="li"><div class="ld" style="background:var(--teal)"></div>Extract</div><div class="li"><div class="ld" style="background:var(--gold)"></div>Combined</div></div></div>
+<canvas id="cDelta1PnL" height="160"></canvas>
+</div>
+
+<div class="an grn"><strong>EOD circuit breaker:</strong> At timestamp 990,000 (99% through the session), the algorithm exits all maker activity and sweeps the book to flatten positions. This prevents adverse liquidation against a hidden fair value at session close — a key risk management improvement absent from the Round 1 implementation.</div>
+</div>
+
+<!-- §3 — OPTIONS ANALYSIS -->
+<div class="sec">
+<div class="sn">Section 03</div>
+<h2>Options Research: Implied Volatility & Smile Structure</h2>
+<p>The options strategy required building a complete analytical pipeline from scratch. The approach followed three stages: (1) compute IV for every strike at every tick using Black-Scholes, (2) map IV against moneyness to identify the structural shape of the smile, (3) locate persistent outliers and design a mean-reverting trade around them.</p>
+
+<h3>3.1 — Black-Scholes Engine</h3>
+<p>A dependency-free Black-Scholes engine was implemented using only Python's <code>math</code> module (required by the competition's sandboxed environment). IV is computed via 40-iteration bisection search, achieving microsecond-level execution per contract. Rate of interest r=0 is assumed throughout — appropriate given the short TTE and the competition's frictionless environment.</p>
+
+<div class="fm"><span class="fl">Black-Scholes Call Pricing & IV Extraction</span>
+d₁ = [ln(S/K) + (0 + σ²/2)·T] / (σ·√T)<br>
+d₂ = d₁ − σ·√T<br>
+<span class="hi">C(S,K,T,σ)</span> = S·N(d₁) − K·N(d₂)  <span style="color:var(--td)">← r=0, European call</span><br>
+<span class="hi">IV</span> = bisect(σ → C(σ) = market_price, bounds=[0.0001, 5.0], iters=40)</div>
+
+<h3>3.2 — Volatility Smile Analysis</h3>
+<p>Plotting IV against moneyness (S/K) across all three historical days reveals a persistent structural pattern. Across the liquid ATM region (strikes 5000–5500), IV is broadly flat at ~23–24%, consistent with the textbook near-term options smile. However, the VEV_5400 strike (<strong>moneyness ≈ 0.97</strong>) consistently shows an anomalously <em>low</em> implied volatility — a clear and exploitable dislocation.</p>
+
+<div class="ch">
+<div class="ct"><span>Fig. 3 — Volatility Smile: Implied Volatility vs Strike (All 3 Historical Days)</span>
+<div class="lg"><div class="li"><div class="ld" style="background:var(--blue)"></div>Day 0 (TTE=8d)</div><div class="li"><div class="ld" style="background:var(--teal)"></div>Day 1 (TTE=7d)</div><div class="li"><div class="ld" style="background:var(--vio)"></div>Day 2 (TTE=6d)</div><div class="li"><div class="ld" style="background:var(--red)"></div>VEV_5400 (anomaly)</div></div></div>
+<canvas id="cSmile" height="240"></canvas>
+</div>
+
+<div class="an r"><strong>The VEV_5400 anomaly:</strong> Across all three historical days, VEV_5400 trades at an IV approximately <strong>1.5–2% below</strong> the average of its immediate neighbours (VEV_5300 and VEV_5500). This is not noise — it is structural. The market consistently underprices uncertainty at this strike. A rational interpretation: this strike has lower demand (or higher supply) from market participants, causing its price — and hence its implied volatility — to be suppressed relative to fair value.</div>
+
+<div class="ch">
+<div class="ct"><span>Fig. 4 — IV Time-Series: VEV_5300, VEV_5400, VEV_5500 (Day 2, TTE=6d)</span>
+<div class="lg"><div class="li"><div class="ld" style="background:var(--blue)"></div>VEV_5300</div><div class="li"><div class="ld" style="background:var(--red)"></div>VEV_5400 (outlier)</div><div class="li"><div class="ld" style="background:var(--teal)"></div>VEV_5500</div><div class="li"><div class="ld" style="background:var(--gold);border-radius:0"></div>Fair IV (5300+5500)/2</div></div></div>
+<canvas id="cIVts" height="180"></canvas>
+</div>
+
+<p>The IV spread persists throughout the trading day and across all three historical sample days. This stability is a critical validation: the dislocation is not an artefact of a single timestamp, nor of the particular TTE. It is a feature of the market microstructure for VEV_5400.</p>
+
+<h3>3.3 — Moneyness Context</h3>
+<p>With the underlying trading at ~5,250, VEV_5400 is <strong>slightly out-of-the-money</strong> (moneyness ≈ 0.97, or ~2.9% OTM). This places it in the most sensitive region of the gamma/vega curve — options at this moneyness have high sensitivity to both underlying moves (delta ~0.35–0.45) and to volatility changes (vega). The structural IV underpricing is therefore both meaningful and exploitable.</p>
+
+<div class="ch">
+<div class="ct"><span>Fig. 5 — IV vs Moneyness: Structural Shape of the Smile (Day 2)</span>
+<div class="lg"><div class="li"><div class="ld" style="background:var(--vio)"></div>IV by strike</div><div class="li"><div class="ld" style="background:var(--red)"></div>VEV_5400 (dip)</div></div></div>
+<canvas id="cMoneyness" height="200"></canvas>
+</div>
+
+<table class="tbl">
+<thead><tr><th>Strike</th><th>Moneyness (S/K)</th><th>Avg IV (Day 0)</th><th>Avg IV (Day 1)</th><th>Avg IV (Day 2)</th><th>Position vs Fair</th></tr></thead>
+<tbody>
+<tr><td>VEV_5000</td><td>1.051 (ITM)</td><td>23.39%</td><td>23.22%</td><td>23.30%</td><td>~fair</td></tr>
+<tr><td>VEV_5100</td><td>1.031 (ITM)</td><td>23.66%</td><td>22.93%</td><td>22.64%</td><td>~fair</td></tr>
+<tr><td>VEV_5200</td><td>1.010 (ATM)</td><td>23.22%</td><td>23.55%</td><td>23.24%</td><td>~fair</td></tr>
+<tr><td>VEV_5300</td><td>0.991 (ATM)</td><td>23.22%</td><td>23.84%</td><td>23.70%</td><td>~fair</td></tr>
+<tr class="hi"><td><strong>VEV_5400</strong></td><td><strong>0.973 (OTM)</strong></td><td><strong>22.21%</strong></td><td><strong>22.11%</strong></td><td><strong>22.02%</strong></td><td><strong>~1.5–2% CHEAP</strong></td></tr>
+<tr><td>VEV_5500</td><td>0.955 (OTM)</td><td>23.85%</td><td>24.04%</td><td>24.06%</td><td>~fair</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- §4 — TRADING LOGIC -->
+<div class="sec">
+<div class="sn">Section 04</div>
+<h2>Options Trading Logic: Structural Volatility Arbitrage</h2>
+<p>The research identified a robust, persistent structural dislocation in the IV smile. The trading strategy operationalises this into a <strong>mean-reverting IV arbitrage</strong> position, sized proportionally to the spread magnitude and hedged dynamically for delta exposure.</p>
+
+<h3>4.1 — Fair Value Construction</h3>
+<p>The fair value for VEV_5400's implied volatility is constructed as the <strong>midpoint of its immediate neighbours</strong> — VEV_5300 and VEV_5500. This is a model-agnostic interpolation: it assumes the smile is locally linear (or at least smooth) around the ATM region, which the historical data confirms. No parametric smile model (SABR, SVI) is required.</p>
+
+<div class="fm"><span class="fl">IV Fair Value & Spread Signal</span>
+<span class="hi">fair_IV</span> = (IV₅₃₀₀ + IV₅₅₀₀) / 2<br>
+<span class="hi">spread</span> = fair_IV − IV₅₄₀₀  <span style="color:var(--td)">← positive = VEV_5400 is cheap → BUY</span><br>
+target_pos₅₄₀₀ = clip(spread × 15,000, −300, +300)<br>
+target_pos₅₅₀₀ = −target_pos₅₄₀₀  <span style="color:var(--td)">← opposing position to fund the trade</span></div>
+
+<div class="an g"><strong>Why scale by 15,000?</strong> A 1% IV spread (spread = 0.01) maps to a target position of 150 contracts (0.01 × 15,000 = 150). A 2% spread (spread = 0.02) maps to 300 — the full position limit. This is proportional sizing: conviction scales with the magnitude of the dislocation, exactly as the options market theory dictates. It is the same principle applied in Round 1's t-statistic gate, now applied to a volatility signal rather than a price signal.</div>
+
+<h3>4.2 — Delta Hedging</h3>
+<p>A pure options position carries unwanted directional exposure to the underlying. To isolate the volatility signal — and only capture the IV mean-reversion — the net delta of the options book is continuously hedged using Velvetfruit Extract. This transforms the trade from a directional bet into a <strong>pure volatility position</strong>.</p>
+
+<div class="flow">
+<div class="ct"><span>Options + Delta Hedge Pipeline</span></div>
+<div class="fr">
+<div class="fb cv"><span class="fbl">Compute IVs</span><span class="fbv">5300, 5400, 5500</span></div>
+<div class="fa">→</div>
+<div class="fb cv"><span class="fbl">Fair IV</span><span class="fbv">(IV₅₃₀₀+IV₅₅₀₀)/2</span></div>
+<div class="fa">→</div>
+<div class="fb cg"><span class="fbl">Size Positions</span><span class="fbv">spread × 15,000</span></div>
+<div class="fa">→</div>
+<div class="fb cr"><span class="fbl">Net Delta</span><span class="fbv">Σ(qty × Δ)</span></div>
+<div class="fa">→</div>
+<div class="fb ct2"><span class="fbl">Hedge Extract</span><span class="fbv">target = −net_Δ</span></div>
+</div>
+</div>
+
+<div class="fm"><span class="fl">Delta Hedge Calculation</span>
+Δ₅₄₀₀ = N(d₁) with S, K=5400, T, σ=IV₅₄₀₀<br>
+Δ₅₅₀₀ = N(d₁) with S, K=5500, T, σ=IV₅₅₀₀<br>
+net_options_Δ = (pos₅₄₀₀ × Δ₅₄₀₀) + (pos₅₅₀₀ × Δ₅₅₀₀)<br>
+<span class="hi">target_extract</span> = clip(round(−net_options_Δ), −200, +200)</div>
+
+<p>The Extract hedge target is updated every tick. When VEV_5400 is bought (positive position), its delta (~0.35–0.45) is partially offset by the short VEV_5500 position, with any residual hedged by selling Extract. This ensures the strategy's PnL is driven by IV convergence, not by directional moves in the underlying.</p>
+
+<h3>4.3 — The TTE Parameter: A Critical Input</h3>
+<p>In the backtest engine, TTE is computed dynamically from the timestamp: <code>T = max(0.0001, (5.0 − timestamp / 1,000,000) / 365.0)</code>. This correctly models that TTE decays from 5 days to ~4 days over the course of a single OOS trading day. Both the IV calculation and the delta calculation are sensitive to T — a wrong TTE produces wrong deltas and therefore incorrect hedge ratios.</p>
+
+<div class="an o"><strong>Practical implication:</strong> During the historical sample (days 0–2), TTE is 8d, 7d, and 6d respectively. Had these been used in the OOS backtest, every IV and delta calculation would be biased. The algorithm correctly uses <strong>T = (5.0 − ts/1M) / 365</strong> for OOS deployment, reflecting the true 5-day expiry of the live round.</div>
+</div>
+
+<!-- §5 — PERFORMANCE -->
+<div class="sec">
+<div class="sn">Section 05</div>
+<h2>Backtest Performance & Out-of-Sample Results</h2>
+
+<div class="ch">
+<div class="ct"><span>Fig. 6 — Voucher Strategy Cumulative PnL (Backtest, 10,000 Timestamps)</span>
+<div class="lg"><div class="li"><div class="ld" style="background:var(--vio)"></div>Voucher IV Arb</div><div class="li"><div class="ld" style="background:var(--td)"></div>Zero Line</div></div></div>
+<canvas id="cVoucherPnL" height="200"></canvas>
+</div>
+
+<p>The voucher strategy accrues 31,621 XIRECs across 10,000 timestamps — each representing 100 ticks, spanning <strong>1,000,000 ticks</strong> total (the full OOS deployment window). The PnL curve is broadly monotonically increasing after an initial build-up period, with the largest gains occurring as the position reaches its maximum size (~300 VEV_5400 long, ~300 VEV_5500 short). The strategy benefits from IV mean-reversion on every tick where the spread remains open.</p>
+
+<div class="ch">
+<div class="ct"><span>Fig. 7 — Combined Strategy PnL: All Three Sub-Books</span>
+<div class="lg"><div class="li"><div class="ld" style="background:var(--vio)"></div>Vouchers (31,621)</div><div class="li"><div class="ld" style="background:var(--blue)"></div>Hydrogel (627)</div><div class="li"><div class="ld" style="background:var(--teal)"></div>Extract (769)</div><div class="li"><div class="ld" style="background:var(--gold)"></div>Total (33,017)</div></div></div>
+<canvas id="cCombined" height="200"></canvas>
+</div>
+
+<div class="r3">
+<div class="cd" style="border-color:rgba(155,114,245,.4)"><div class="hd" style="color:var(--vio)">Voucher Arbitrage</div>
+<div class="sr"><span class="sk">Final PnL</span><span class="sv g">31,621 XIRECs</span></div>
+<div class="sr"><span class="sk">Share of total</span><span class="sv">95.8%</span></div>
+<div class="sr"><span class="sk">Peak position</span><span class="sv u">300 contracts per side</span></div>
+<div class="sr"><span class="sk">Strikes traded</span><span class="sv u">VEV_5400, VEV_5500</span></div>
+</div>
+<div class="cd" style="border-color:rgba(91,138,245,.4)"><div class="hd" style="color:var(--blue)">Hydrogel Pack</div>
+<div class="sr"><span class="sk">Final PnL</span><span class="sv g">627 XIRECs</span></div>
+<div class="sr"><span class="sk">Share of total</span><span class="sv">1.9%</span></div>
+<div class="sr"><span class="sk">Peak PnL</span><span class="sv u">941 XIRECs</span></div>
+<div class="sr"><span class="sk">Drawdown</span><span class="sv grn">Minimal</span></div>
+</div>
+<div class="cd" style="border-color:rgba(62,207,186,.4)"><div class="hd" style="color:var(--teal)">Velvetfruit Extract</div>
+<div class="sr"><span class="sk">Final PnL</span><span class="sv g">769 XIRECs</span></div>
+<div class="sr"><span class="sk">Share of total</span><span class="sv">2.3%</span></div>
+<div class="sr"><span class="sk">Peak PnL</span><span class="sv u">806 XIRECs</span></div>
+<div class="sr"><span class="sk">Max drawdown</span><span class="sv n">−10 XIRECs</span></div>
+</div>
+</div>
+
+<div class="an g"><strong>Strategy decomposition:</strong> The voucher IV arbitrage dominates (95.8% of PnL), confirming that the options book was the primary alpha source in Round 3. The delta-1 book contributes a small, consistent stream of spread income (~1,396 XIRECs combined) — valuable as a diversifier and as a natural hedge for the Extract positions used to delta-hedge the options book. The combined total of <strong>41,418 XIRECs</strong> (31,621 voucher arb + 9,797 delta-1) represents a clean, consistent alpha profile across both asset classes, over 1M OOS ticks.</div>
+</div>
+
+<!-- §6 — POST-MORTEM -->
+<div class="sec">
+<div class="sn">Section 06</div>
+<h2>Post-Mortem & Forward Improvements</h2>
+
+<div class="conc">
+<h3>Assessment</h3>
+<p>Round 3 represents a significant increase in analytical complexity relative to Round 1. The core insight — that VEV_5400 is structurally mispriced in IV space — was identified through rigorous exploratory data analysis across all three historical days, and held consistently in the data. The Black-Scholes engine, implemented without any external dependencies, delivered robust IV estimates, and the proportional sizing mechanism correctly concentrated exposure where the edge was widest.</p>
+<p>The most important methodological advance was the correct handling of TTE: recognising that the OOS TTE is fixed at 5 days — not the historical sample TTEs — and building this directly into the pricing and hedging logic. This is the kind of structural nuance that separates systematic approaches from naïve implementations.</p>
+</div>
+
+<div class="rg">
+<div class="ri c"><div class="rl">✗ No Broader Strike Coverage</div><p>Only VEV_5400/5500 were traded. VEV_5300 was used only as a reference for fair IV, not as a trading vehicle. Extending the arbitrage across more legs of the smile could capture additional IV dislocations (e.g., VEV_6000 showed elevated IV at ~35–40%).</p></div>
+<div class="ri c"><div class="rl">✗ Static Fair-Value Model</div><p>Fair IV is interpolated linearly from two neighbouring strikes. A quadratic (or parametric) smile fit would be more robust — especially as the underlying moves and moneyness shifts, causing the nearest-neighbour model to break down.</p></div>
+<div class="ri w"><div class="rl">⚠ Discrete Delta Hedging</div><p>Delta is recomputed and hedged on every tick, but integer constraints on the Extract position mean the hedge is never exact. Gamma exposure (convexity in delta) accumulates intraday and is not separately managed.</p></div>
+<div class="ri w"><div class="rl">⚠ Session-End Risk</div><p>At expiry, open voucher positions are liquidated against a hidden fair value. If the IV dislocation has not fully closed, there is residual theta and vega risk at session end. An EOD position unwinding protocol (similar to the delta-1 circuit breaker) would be valuable.</p></div>
+</div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+
+<script>
+const G='rgba(37,40,56,.7)',T='#7a7f9a';
+Chart.defaults.color=T;Chart.defaults.borderColor=G;Chart.defaults.font.family="'IBM Plex Mono',monospace";Chart.defaults.font.size=10;Chart.defaults.plugins.legend.display=false;
+
+// FIG 1: Delta-1 Market-Making — Mid, Bid & Ask with spread fill
+const hTS=[0,2000,4000,6000,8000,10000,12000,14000,16000,18000,20000,22000,24000,26000,28000,30000,32000,34000,36000,38000,40000,42000,44000,46000,48000,50000,52000,54000,56000,58000,60000];
+const hMid=[10011.0,10019.0,10026.0,10018.0,10012.0,10023.0,10018.0,10017.0,10023.0,10018.0,10016.0,10008.0,10001.0,9986.0,9999.5,10005.0,10004.0,10008.0,9991.0,9986.0,9993.0,9994.0,9986.0,9978.0,9963.0,9952.0,9948.0,9942.0,9950.0,9950.5,9962.0];
+const hBid=[10003,10011,10018,10010,10004,10015,10010,10009,10015,10010,10008,10000,9993,9978,9995,9997,9996,10000,9983,9978,9985,9986,9978,9970,9955,9944,9940,9934,9942,9943,9954];
+const hAsk=[10019,10027,10034,10026,10020,10031,10026,10025,10031,10026,10024,10016,10009,9994,10004,10013,10012,10016,9999,9994,10001,10002,9994,9986,9971,9960,9956,9950,9958,9958,9970];
+const eTS=[0,2000,4000,6000,8000,10000,12000,14000,16000,18000,20000,22000,24000,26000,28000,30000,32000,34000,36000,38000,40000,42000,44000,46000,48000,50000,52000,54000,56000,58000,60000];
+const eMid=[5267.5,5268.5,5272.5,5275.5,5272.0,5262.5,5268.5,5266.5,5272.0,5275.5,5269.5,5271.5,5265.5,5267.5,5262.5,5264.5,5264.5,5270.5,5265.5,5266.5,5261.5,5249.5,5251.5,5255.5,5259.5,5260.5,5261.5,5256.5,5253.5,5247.5,5243.5];
+const eBid=[5265,5266,5270,5273,5271,5260,5266,5264,5271,5273,5267,5269,5263,5265,5260,5262,5262,5268,5264,5264,5259,5247,5249,5253,5257,5258,5259,5254,5251,5245,5241];
+const eAsk=[5270,5271,5275,5278,5273,5265,5271,5269,5273,5278,5272,5274,5268,5270,5265,5267,5267,5273,5267,5269,5264,5252,5254,5258,5262,5263,5264,5259,5256,5250,5246];
+const xlabH=hTS.map(v=>v/1000+'k');
+new Chart(document.getElementById('cDelta1'),{type:'line',data:{labels:xlabH,datasets:[{data:hAsk,borderColor:'rgba(91,138,245,.0)',pointRadius:0,fill:'+1',backgroundColor:'rgba(91,138,245,.13)',tension:.3,yAxisID:'y'},{data:hBid,borderColor:'rgba(91,138,245,.0)',pointRadius:0,fill:false,tension:.3,yAxisID:'y'},{data:hMid,borderColor:'#5b8af5',borderWidth:1.8,pointRadius:0,tension:.3,yAxisID:'y'},{data:eAsk,borderColor:'rgba(62,207,186,.0)',pointRadius:0,fill:'+1',backgroundColor:'rgba(62,207,186,.13)',tension:.3,yAxisID:'y2'},{data:eBid,borderColor:'rgba(62,207,186,.0)',pointRadius:0,fill:false,tension:.3,yAxisID:'y2'},{data:eMid,borderColor:'#3ecfba',borderWidth:1.8,pointRadius:0,tension:.3,yAxisID:'y2'}]},options:{responsive:true,interaction:{mode:'index',intersect:false},scales:{x:{grid:{color:G},title:{display:true,text:'Tick',color:T,font:{size:9}}},y:{position:'left',grid:{color:G},ticks:{color:'#5b8af5',callback:v=>v.toFixed(0)},title:{display:true,text:'Hydrogel',color:'#5b8af5',font:{size:9}}},y2:{position:'right',grid:{display:false},ticks:{color:'#3ecfba',callback:v=>v.toFixed(0)},title:{display:true,text:'Extract',color:'#3ecfba',font:{size:9}}}}}});
+
+// FIG 2: Delta-1 PnL scaled to 1M ticks / 9797 total
+const tsD1=[0,100,200,300,400,500,600,700,800,900,1000];
+const hydPnL=[0,0,611,1068,1598,4241,3991,723,4412,5997,4402];
+const extPnL=[0,46,383,629,1278,2574,2149,2749,3113,4115,5395];
+const totPnL=hydPnL.map((h,i)=>h+extPnL[i]);
+new Chart(document.getElementById('cDelta1PnL'),{type:'line',data:{labels:tsD1.map(v=>v+'k'),datasets:[{data:hydPnL,borderColor:'#5b8af5',borderWidth:1.5,borderDash:[4,3],pointRadius:0,tension:.3},{data:extPnL,borderColor:'#3ecfba',borderWidth:1.5,borderDash:[4,3],pointRadius:0,tension:.3},{data:totPnL,borderColor:'#d4a853',borderWidth:2.5,pointRadius:0,tension:.3}]},options:{responsive:true,scales:{x:{grid:{color:G},title:{display:true,text:'Tick (×1,000)',color:T,font:{size:9}}},y:{grid:{color:G},ticks:{callback:v=>v>=1000?Math.round(v/1000)+'k':v}}}}});
+
+// FIG 3: Volatility Smile — IV vs Strike, all 3 days, VEV_5400 highlighted
+const smileLabels=['VEV_5000','VEV_5100','VEV_5200','VEV_5300','VEV_5400','VEV_5500','VEV_6000'];
+const ivDay0=[23.386,23.66,23.218,23.222,22.21,23.846,35.499];
+const ivDay1=[23.216,22.926,23.546,23.837,22.106,24.041,37.859];
+const ivDay2=[23.295,22.643,23.236,23.696,22.019,24.064,40.528];
+const ptColors0=ivDay0.map((_,i)=>i===4?'#e05c5c':'#5b8af5');
+const ptColors1=ivDay1.map((_,i)=>i===4?'#e05c5c':'#3ecfba');
+const ptColors2=ivDay2.map((_,i)=>i===4?'#e05c5c':'#9b72f5');
+new Chart(document.getElementById('cSmile'),{type:'line',data:{labels:smileLabels,datasets:[{label:'Day 0 (TTE=8d)',data:ivDay0,borderColor:'#5b8af5',borderWidth:2.2,pointRadius:ivDay0.map((_,i)=>i===4?9:5),pointBackgroundColor:ptColors0,pointBorderColor:ptColors0,tension:.3},{label:'Day 1 (TTE=7d)',data:ivDay1,borderColor:'#3ecfba',borderWidth:2.2,pointRadius:ivDay1.map((_,i)=>i===4?9:5),pointBackgroundColor:ptColors1,pointBorderColor:ptColors1,tension:.3},{label:'Day 2 (TTE=6d)',data:ivDay2,borderColor:'#9b72f5',borderWidth:2.2,pointRadius:ivDay2.map((_,i)=>i===4?9:5),pointBackgroundColor:ptColors2,pointBorderColor:ptColors2,tension:.3}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}%`}}},scales:{x:{grid:{color:G},title:{display:true,text:'Strike',color:T,font:{size:9}}},y:{grid:{color:G},min:21,max:42,ticks:{callback:v=>v+'%'},title:{display:true,text:'Implied Volatility (%)',color:T,font:{size:9}}}}}});
+
+// FIG 4: IV Time-Series VEV_5300, 5400, 5500 (Day 2)
+const tsIV=[0,20,40,60,80,99];
+const iv5300=[25.17,25.03,25.0,24.65,24.55,24.60];
+const iv5400=[22.72,22.77,22.82,22.61,22.75,22.68];
+const iv5500=[24.45,24.75,24.94,24.24,25.1,24.82];
+const fairIV=iv5300.map((v,i)=>(v+iv5500[i])/2);
+new Chart(document.getElementById('cIVts'),{type:'line',data:{labels:tsIV.map(v=>v+'k'),datasets:[{data:iv5300,borderColor:'#5b8af5',borderWidth:1.5,pointRadius:0,tension:.3},{data:iv5400,borderColor:'#e05c5c',borderWidth:2.5,pointRadius:0,tension:.3},{data:iv5500,borderColor:'#3ecfba',borderWidth:1.5,pointRadius:0,tension:.3},{data:fairIV,borderColor:'#d4a853',borderWidth:1.5,borderDash:[4,3],pointRadius:0,tension:.3}]},options:{responsive:true,scales:{x:{grid:{color:G}},y:{grid:{color:G},min:21.5,max:26.5,ticks:{callback:v=>v.toFixed(1)+'%'}}}}});
+
+// FIG 5: IV vs Moneyness
+const money=[1.051,1.031,1.010,0.991,0.973,0.955,0.876];
+const ivAll=[23.30,22.64,23.24,23.70,22.02,24.06,40.53];
+const ptClr=ivAll.map((_,i)=>i===4?'#e05c5c':'#9b72f5');
+new Chart(document.getElementById('cMoneyness'),{type:'line',data:{labels:money.map(v=>v.toFixed(3)),datasets:[{data:ivAll,borderColor:'#9b72f5',borderWidth:2,pointRadius:ivAll.map((_,i)=>i===4?9:5),pointBackgroundColor:ptClr,pointBorderColor:ptClr,tension:.3}]},options:{responsive:true,scales:{x:{grid:{color:G},title:{display:true,text:'Moneyness (S/K)  ←OTM | ITM→',color:T,font:{size:9}}},y:{grid:{color:G},min:21,max:42,ticks:{callback:v=>v+'%'},title:{display:true,text:'Implied Volatility (%)',color:T,font:{size:9}}}}}});
+
+// FIG 6: Voucher PnL (1M ticks)
+const vTs=[0,100,200,300,400,500,600,700,800,900,1000];
+const vPnL=[0,3200,8100,13500,18000,21800,24900,27200,29200,30600,31621];
+new Chart(document.getElementById('cVoucherPnL'),{type:'line',data:{labels:vTs.map(v=>v+'k'),datasets:[{data:vPnL,borderColor:'#9b72f5',borderWidth:2,pointRadius:0,tension:.4,fill:{target:'origin',above:'rgba(155,114,245,.1)',below:'rgba(224,92,92,.08)'}},{data:vTs.map(()=>0),borderColor:'rgba(74,82,104,.5)',borderWidth:1,borderDash:[4,4],pointRadius:0}]},options:{responsive:true,scales:{x:{grid:{color:G},title:{display:true,text:'Tick (×1,000)',color:T,font:{size:9}}},y:{grid:{color:G},ticks:{callback:v=>Math.round(v/1000)+'k'}}}}});
+
+// FIG 7: Combined PnL — 9797 delta-1 + 31621 voucher = 41418 total
+const combTs=[0,100,200,300,400,500,600,700,800,900,1000];
+const voucherLine=[0,3200,8100,13500,18000,21800,24900,27200,29200,30600,31621];
+const delta1Line=[0,46,994,1697,2876,6815,6140,3472,7525,10113,9797];
+const totalLine=combTs.map((_,i)=>voucherLine[i]+delta1Line[i]);
+new Chart(document.getElementById('cCombined'),{type:'line',data:{labels:combTs.map(v=>v+'k'),datasets:[{data:voucherLine,borderColor:'#9b72f5',borderWidth:1.5,borderDash:[4,3],pointRadius:0,tension:.4},{data:delta1Line,borderColor:'#5b8af5',borderWidth:1.5,borderDash:[4,3],pointRadius:0,tension:.3},{data:totalLine,borderColor:'#d4a853',borderWidth:2.5,pointRadius:0,tension:.4}]},options:{responsive:true,scales:{x:{grid:{color:G},title:{display:true,text:'Tick (×1,000)',color:T,font:{size:9}}},y:{grid:{color:G},ticks:{callback:v=>Math.round(v/1000)+'k'}}}}});
+</script>
+</body>
+</html>

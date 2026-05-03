@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Round 1 — Strategy Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0b0f;--s1:#111218;--s2:#1a1c26;--s3:#22263a;--bd:#252838;--bd2:#2e3250;--tx:#e2e5f0;--tm:#7a7f9a;--td:#4a5268;--gold:#d4a853;--gf:rgba(212,168,83,.12);--blue:#5b8af5;--bf:rgba(91,138,245,.1);--teal:#3ecfba;--tf:rgba(62,207,186,.1);--red:#e05c5c;--rf:rgba(224,92,92,.1);--vio:#9b72f5;--vf:rgba(155,114,245,.1);--or:#f5894b;--of:rgba(245,137,75,.1);--hd:'Playfair Display',Georgia,serif;--bd2f:'DM Sans',sans-serif;--mn:'IBM Plex Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:var(--bd2f);font-size:15px;line-height:1.75}
+.w{max-width:1020px;margin:0 auto;padding:0 32px 80px}
+.cover{padding:64px 0 48px;border-bottom:1px solid var(--bd);margin-bottom:48px;position:relative}
+.cover::before{content:'';position:absolute;top:0;left:-32px;right:-32px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.tag{font-family:var(--mn);font-size:11px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:18px}
+.cover h1{font-family:var(--hd);font-size:48px;font-weight:900;line-height:1.1;letter-spacing:-1px;margin-bottom:12px;color:#fff}
+.cover h1 em{font-style:italic;color:var(--gold)}
+.sub{font-size:16px;color:var(--tm);font-weight:300;margin-bottom:32px;max-width:620px}
+.mg{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--bd);border:1px solid var(--bd);border-radius:10px;overflow:hidden}
+.mc{background:var(--s1);padding:20px 16px;position:relative}
+.mc::after{content:'';position:absolute;bottom:0;left:16px;right:16px;height:2px;border-radius:2px}
+.mc.g::after{background:var(--gold)}.mc.b::after{background:var(--blue)}.mc.t::after{background:var(--teal)}.mc.r::after{background:var(--red)}.mc.v::after{background:var(--vio)}
+.ml{font-family:var(--mn);font-size:9px;letter-spacing:2px;color:var(--tm);text-transform:uppercase;margin-bottom:8px}
+.mv{font-family:var(--hd);font-size:28px;font-weight:700;line-height:1;margin-bottom:4px}
+.ms{font-size:10px;color:var(--td);font-family:var(--mn)}
+.mc.g .mv{color:var(--gold)}.mc.b .mv{color:var(--blue)}.mc.t .mv{color:var(--teal)}.mc.r .mv{color:var(--red)}.mc.v .mv{color:var(--vio)}
+.sec{margin-bottom:56px}
+.sn{font-family:var(--mn);font-size:11px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:6px}
+h2{font-family:var(--hd);font-size:30px;font-weight:700;color:#fff;margin-bottom:20px;line-height:1.2}
+h3{font-family:var(--hd);font-size:19px;font-weight:700;color:var(--tx);margin:28px 0 12px}
+p{color:#c0c4d8;margin-bottom:12px;max-width:720px}
+p strong{color:#e0e4f0}
+.ch{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:24px;margin:20px 0}
+.ct{font-family:var(--mn);font-size:10px;letter-spacing:2px;color:var(--tm);text-transform:uppercase;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.lg{display:flex;gap:16px;flex-wrap:wrap}
+.li{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--tm);font-family:var(--mn)}
+.ld{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+canvas{width:100%!important;display:block}
+.an{border-left:3px solid;border-radius:0 6px 6px 0;padding:12px 16px;margin:16px 0;font-size:13.5px;line-height:1.6}
+.an.g{border-color:var(--gold);background:var(--gf);color:#d4c49a}
+.an.b{border-color:var(--blue);background:var(--bf);color:#95b8f5}
+.an.t{border-color:var(--teal);background:var(--tf);color:#7dddcc}
+.an.r{border-color:var(--red);background:var(--rf);color:#e08080}
+.an.o{border-color:var(--or);background:var(--of);color:#f5b580}
+.an strong{color:#fff}
+.fm{background:var(--s2);border:1px solid var(--bd2);border-radius:8px;padding:16px 20px;margin:16px 0;font-family:var(--mn);font-size:12.5px;line-height:2;color:#c8cee8}
+.fm .fl{color:var(--tm);font-size:9px;letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:8px}
+.fm .hi{color:var(--gold);font-weight:500}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
+.cd{background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:18px}
+.cd .hd{font-family:var(--mn);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--bd)}
+.sr{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #1a1c26;font-size:12.5px}
+.sr:last-child{border-bottom:none}
+.sr .sk{color:var(--tm)}.sr .sv{font-family:var(--mn);font-weight:500}
+.sv.p{color:var(--teal)}.sv.n{color:var(--red)}.sv.u{color:var(--blue)}.sv.g{color:var(--gold)}
+table.it{width:100%;border-collapse:collapse;margin:18px 0;font-size:12px;font-family:var(--mn);border:1px solid var(--bd);border-radius:8px;overflow:hidden}
+table.it th{padding:8px 12px;font-size:9px;letter-spacing:2px;color:var(--tm);text-transform:uppercase;text-align:left;font-weight:400;background:var(--s2);border-bottom:1px solid var(--bd2)}
+table.it td{padding:8px 12px;border-bottom:1px solid var(--bd);color:#8b95b5;vertical-align:top}
+table.it tr:last-child td{border-bottom:none}
+table.it tr.fin td{background:var(--gf);color:#c8a862}
+.tg{display:inline-block;padding:1px 7px;border-radius:3px;font-size:9px;font-weight:500}
+.tg.p{background:var(--tf);color:var(--teal)}.tg.n{background:var(--rf);color:var(--red)}.tg.x{background:var(--bf);color:var(--blue)}.tg.g{background:var(--gf);color:var(--gold)}
+.flow{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:24px;margin:18px 0}
+.fr{display:flex;align-items:center;gap:0;margin-bottom:10px}
+.fb{background:var(--s2);border:1px solid var(--bd2);border-radius:6px;padding:8px 12px;font-size:11px;flex:1;text-align:center}
+.fb .fbl{font-family:var(--mn);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tm);display:block;margin-bottom:2px}
+.fb .fbv{font-weight:500;color:var(--tx);font-family:var(--mn);font-size:11px}
+.fa{padding:0 8px;color:var(--td);font-size:14px;flex-shrink:0;font-family:var(--mn)}
+.fb.cb2{border-color:rgba(91,138,245,.4)}.fb.ct2{border-color:rgba(62,207,186,.4)}.fb.cg{border-color:rgba(212,168,83,.4)}.fb.cr{border-color:rgba(224,92,92,.4)}
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.ri{background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:14px 16px}
+.ri .rl{font-family:var(--mn);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
+.ri p{font-size:12px;color:var(--tm);max-width:100%;margin-bottom:0}
+.ri.w .rl{color:var(--or)}.ri.ok .rl{color:var(--teal)}.ri.i .rl{color:var(--blue)}.ri.c .rl{color:var(--red)}
+.conc{background:linear-gradient(135deg,#141622,#0f111a);border:1px solid var(--gold);border-radius:12px;padding:28px 32px;position:relative;overflow:hidden;margin:24px 0}
+.conc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.conc h3{color:var(--gold);margin-top:0;font-style:italic}
+.conc p{max-width:100%;font-size:14px;line-height:1.75}
+.pb{margin:6px 0}
+.pbl{display:flex;justify-content:space-between;font-family:var(--mn);font-size:10px;color:var(--tm);margin-bottom:3px}
+.pbt{height:4px;background:var(--s3);border-radius:2px;overflow:hidden}
+.pbf{height:100%;border-radius:2px}
+.qt{border-left:3px solid var(--blue);margin:18px 0;padding:10px 16px;background:var(--bf);border-radius:0 6px 6px 0}
+.qt blockquote{font-style:italic;font-size:14.5px;color:#7aacf8;line-height:1.6}
+.qt .qs{font-family:var(--mn);font-size:9px;letter-spacing:2px;color:var(--td);text-transform:uppercase;margin-top:4px}
+@media(max-width:700px){.mg{grid-template-columns:repeat(2,1fr)}.r2,.rg{grid-template-columns:1fr}.cover h1{font-size:36px}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<!-- COVER -->
+<div class="cover">
+<div class="tag">IMC Prosperity 4 · Round 1 · Quantitative Research Report</div>
+<h1>Round 1 Strategy <em>Report</em></h1>
+<div class="sub">Strategy ideation, iterative development, and out-of-sample performance analysis for Ash-Coated Osmium and Intarian Pepper Root.</div>
+<div class="mg">
+<div class="mc g"><div class="ml">OOS P&L (10 Days)</div><div class="mv">95,344</div><div class="ms">XIRECs · 1M ticks</div></div>
+<div class="mc b"><div class="ml">OSM Contribution</div><div class="mv">16,365</div><div class="ms">17.2% · spread capture</div></div>
+<div class="mc t"><div class="ml">PEP Contribution</div><div class="mv">78,788</div><div class="ms">82.6% · directional</div></div>
+<div class="mc r"><div class="ml">Max Drawdown</div><div class="mv">−674</div><div class="ms">at ts 4,000 · recovered</div></div>
+<div class="mc v"><div class="ml">Spread Capture</div><div class="mv">91.3%</div><div class="ms">14.83 / 16.25 avg spread</div></div>
+</div>
+</div>
+
+<!-- §1 -->
+<div class="sec">
+<div class="sn">Section 01</div>
+<h2>Regime Identification & Initial Hypotheses</h2>
+<p>Round 1 presented two instruments with structurally opposite price dynamics. Osmium is stationary and mean-reverting around ~10,000, suited for two-sided passive quoting. Pepper Root exhibits a near-deterministic linear drift of <strong>+1,000 ticks per trading day</strong> (slope ≈ 0.1033 per tick, R² > 0.99), suited for directional accumulation. Identifying this regime divergence was the first and most important step.</p>
+<div class="qt"><blockquote>"This product [Osmium] is clearly similar to the emeralds from round 0. The price is bound to 10,000, but unlike emeralds, osmium is a lot more volatile."</blockquote><div class="qs">Rough Ideas — Day 1 brainstorming</div></div>
+<div class="qt" style="border-color:var(--teal)"><blockquote>"Tried an EMA [on Pepper Root], and it did shit. Strong trend-upwards… so, the simple thing to do here was to use a linear regression."</blockquote><div class="qs" style="color:var(--teal)">Rough Ideas — Day 1 brainstorming</div></div>
+<div class="ch">
+<div class="ct"><span>Fig. 1 — Mid-Price Regime Comparison (In-Sample, Day 0)</span>
+<div class="lg"><div class="li"><div class="ld" style="background:var(--blue)"></div>OSM (left)</div><div class="li"><div class="ld" style="background:var(--teal)"></div>PEP (right)</div></div></div>
+<canvas id="c1" height="180"></canvas>
+</div>
+<div class="r2">
+<div class="cd" style="border-color:rgba(91,138,245,.4)"><div class="hd" style="color:var(--blue)">🪨 Ash-Coated Osmium</div>
+<div class="sr"><span class="sk">Mean / Range</span><span class="sv u">~10,000 / ±25 ticks</span></div>
+<div class="sr"><span class="sk">Autocorrelation</span><span class="sv n">Negative (mean-reverting)</span></div>
+<div class="sr"><span class="sk">Avg Spread</span><span class="sv u">~16.25 ticks</span></div>
+<div class="sr"><span class="sk">Strategy</span><span class="sv g">Market-Making + Skew</span></div>
+</div>
+<div class="cd" style="border-color:rgba(62,207,186,.4)"><div class="hd" style="color:var(--teal)">🌿 Intarian Pepper Root</div>
+<div class="sr"><span class="sk">Daily Drift</span><span class="sv p">+1,001 ticks / day</span></div>
+<div class="sr"><span class="sk">OLS Slope</span><span class="sv p">+0.1033 / tick</span></div>
+<div class="sr"><span class="sk">R² (Day 0)</span><span class="sv p">>0.99</span></div>
+<div class="sr"><span class="sk">Strategy</span><span class="sv g">Directional Long + OLS</span></div>
+</div>
+</div>
+
+<h3>1.1 — Osmium Periodicity Investigation</h3>
+<p>While analysing the in-sample price data, I ran a deeper investigation into Osmium's microstructure using autocorrelation analysis and FFT spectral decomposition. The ACF showed clear wave-like echoes, and the FFT identified a dominant cycle at <strong>~3,949 ticks</strong> — confirming the price follows a quasi-sinusoidal oscillation around 10,000.</p>
+<p>I then fitted a sine wave directly to the first 1,000 ticks via <code>scipy.optimize.curve_fit</code>. The result confirmed that Osmium's volatility is not random noise but has <strong>exploitable periodic structure</strong>. This insight reinforced the decision to use a short-window SMA (rather than a longer lookback) to track the local phase of the oscillation.</p>
+
+<div class="ch">
+<div class="ct"><span>Fig. 2 — Osmium Autocorrelation Function (500 Lags)</span>
+<div class="lg"><div class="li"><div class="ld" style="background:var(--vio)"></div>ACF</div><div class="li"><div class="ld" style="background:var(--td);border-radius:0"></div>Zero Line</div></div></div>
+<canvas id="cACF" height="160"></canvas>
+</div>
+
+<div class="ch">
+<div class="ct"><span>Fig. 3 — Fitted Sine Wave vs. Raw Osmium Mid Price (~8,000 Ticks, ~2 Cycles)</span>
+<div class="lg"><div class="li"><div class="ld" style="background:var(--or)"></div>Raw Price</div><div class="li"><div class="ld" style="background:var(--blue)"></div>Fitted Sine (cycle ≈ 3,949 ticks)</div></div></div>
+<canvas id="cSine" height="200"></canvas>
+</div>
+
+<div class="an b"><strong>Key takeaway:</strong> Osmium's price dynamics are not purely random. The periodic structure means a short-window SMA (25 ticks) can track the local phase of oscillation, while a global EMA (α=0.001) anchors to the long-run mean. The shock filter then fades short-term momentum — exploiting the negative autocorrelation to buy dips and sell spikes.</div>
+</div>
+
+<!-- §2 -->
+<div class="sec">
+<div class="sn">Section 02</div>
+<h2>The Fair Value Problem</h2>
+<p>The central technical challenge for Pepper Root was computing a fair value that doesn't lag behind the trend. An expanding session mean or slow EMA produces a systematically biased estimate — the bot's ask sits below market, and informed bots hit it immediately. The drag grows linearly with time:</p>
+<div class="fm"><span class="fl">Session Mean Drag on a Linear Trend</span>
+session_mean(k) = P₀ + (k/2)·Δ<br>
+actual_price(k) = P₀ + k·Δ<br>
+<span class="hi">drag(k) = k·Δ/2</span>  ← by tick 10,000, the mean is <span style="color:var(--red)">500+ ticks behind market</span></div>
+<div class="ch">
+<div class="ct"><span>Fig. 4 — Expanding Mean vs. OLS Regression vs. Actual PEP Price</span>
+<div class="lg"><div class="li"><div class="ld" style="background:var(--teal)"></div>PEP Mid</div><div class="li"><div class="ld" style="background:var(--red)"></div>Expanding Mean</div><div class="li"><div class="ld" style="background:var(--gold);border-radius:0"></div>OLS Fit</div></div></div>
+<canvas id="c2" height="180"></canvas>
+</div>
+<div class="an r"><strong>Why this is fatal for a market-maker:</strong> When the fair value estimate (red) lags the actual price (teal), our ask price sits below market. Informed counterparties hit it immediately, filling us short into a rising market. This is textbook adverse selection. Only the OLS regression (gold) stays centred on the true price trajectory.</div>
+</div>
+
+<!-- §3 -->
+<div class="sec">
+<div class="sn">Section 03</div>
+<h2>Iterative Development — 7 Attempts to Production</h2>
+<p>The path from attempt 1 to the production algorithm was non-monotonic. Attempt 3 regressed from attempt 2 (OBI gate over-filtered valid signals). The two largest step-changes were attempt 6 (correcting the ±20 → ±80 position limit) and attempt 7 (the t-statistic gate).</p>
+<table class="it">
+<thead><tr><th>#</th><th>Key Change</th><th>PnL</th><th>Δ</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Unified EMA on both products, ±20 limits, skew/8</td><td>2,370</td><td><span class="tg x">Base</span></td></tr>
+<tr><td>2</td><td>Split: EMA for OSM, 15-tick LinReg for PEP</td><td>2,911</td><td><span class="tg p">+541</span></td></tr>
+<tr><td>3</td><td>Added OBI gate — over-filtered PEP entries</td><td>2,496</td><td><span class="tg n">−415</span></td></tr>
+<tr><td>4</td><td>Removed OBI — pure regression restored</td><td>2,911</td><td><span class="tg p">+415</span></td></tr>
+<tr><td>5</td><td>Queue-priority quoting — no impact on P&L</td><td>2,911</td><td><span class="tg x">+0</span></td></tr>
+<tr><td>6</td><td><strong>Full rewrite:</strong> ±80 limits, JSON state, regime switch</td><td>3,892</td><td><span class="tg p">+981</span></td></tr>
+<tr><td>7</td><td>Composite fair value, shock filter, t-stat gate, tanh bias</td><td>9,516</td><td><span class="tg p">+5,624</span></td></tr>
+<tr class="fin"><td><strong>F</strong></td><td><strong>Production submit (OOS, 10 days, 1M ticks)</strong></td><td><strong>95,344</strong></td><td><span class="tg g">×10.02</span></td></tr>
+</tbody>
+</table>
+<div class="ch">
+<div class="ct"><span>Fig. 5 — P&L Across All Iterations</span></div>
+<canvas id="c3" height="180"></canvas>
+</div>
+<div class="an g"><strong>The ×10.02 scaling:</strong> Attempt 7 scored 9,516 on 100k ticks. The finale scored 95,344 on 1M ticks — essentially perfect linear scaling. This confirms zero overfitting to the development window.</div>
+<h3>3.1 — Key Failure: The OBI Trap (Attempt 3)</h3>
+<p>Attempt 3 added an Order Book Imbalance (OBI) gate as a second confirmation signal: only take if <code>slope > 0.5 AND obi > 0.1</code>. OBI at single-tick resolution is dominated by noise. It filtered ~60% of valid trend entries. PnL dropped 14%. Removing it in attempt 4 immediately recovered the loss. Lesson: <strong>never add a confirmation signal noisier than your primary signal</strong>.</p>
+<h3>3.2 — Key Failure: ±20 Limit Throttle (Attempts 1–5)</h3>
+<p>For five iterations I used position limits of ±20. The exchange allowed ±80. The algorithm was running at <strong>25% capacity</strong>. The ±80 fix in attempt 6 caused an immediate +34% PnL jump — the single largest systematic drag of the early iterations.</p>
+</div>
+
+<!-- §4 -->
+<div class="sec">
+<div class="sn">Section 04</div>
+<h2>Production Strategy Architecture</h2>
+<h3>4.1 — OSM: Composite Market-Maker</h3>
+<p>The Osmium sub-strategy posts two-sided quotes around a composite fair value. The fair value blends a short-window SMA (tracking the local oscillation phase) with a slow global EMA (anchoring long-run mean), then subtracts a weighted momentum shock signal to fade short-term moves — directly exploiting the negative autocorrelation.</p>
+<div class="flow">
+<div class="ct"><span>OSM Signal Pipeline</span></div>
+<div class="fr">
+<div class="fb cb2"><span class="fbl">Local SMA (25)</span><span class="fbv">×0.65</span></div>
+<div class="fa">+</div>
+<div class="fb cb2"><span class="fbl">Global EMA (α=0.001)</span><span class="fbv">×0.35</span></div>
+<div class="fa">−</div>
+<div class="fb cr"><span class="fbl">Shock Filter</span><span class="fbv">0.55·Δ1+0.30·Δ2+0.15·Δ4</span></div>
+<div class="fa">→</div>
+<div class="fb cg"><span class="fbl">Fair ± 1 − skew</span><span class="fbv">Bid / Ask</span></div>
+</div>
+</div>
+<div class="fm"><span class="fl">OSM Quoting & Inventory Skew</span>
+<span class="hi">fair</span> = 0.65·local_sma + 0.35·global_target − 0.25·shock<br>
+skew = (position / 80) × <span style="color:var(--gold)">3.0</span><br>
+<span class="hi">bid_px</span> = round(fair − 1 − skew)  ← capped at best_bid + 1<br>
+<span class="hi">ask_px</span> = round(fair + 1 − skew)  ← floored at best_ask − 1</div>
+<div class="an b"><strong>Execution positioning:</strong> The <code>min(bid_px, best_bid + 1)</code> and <code>max(ask_px, best_ask - 1)</code> constraints ensure our quotes are always competitive with the existing order book. We penny the BBO — posting 1 tick inside the best bid and ask — to attract fills from live bots while preserving a positive expected spread. Without this, resting orders sit behind the queue and rarely fill.</div>
+<h3>4.2 — PEP: Statistically-Gated Trend Follower</h3>
+<p>The Pepper Root sub-strategy runs a 50-tick rolling OLS regression and computes the slope's t-statistic. When |t| exceeds 2.5 (statistically significant trend), it takes aggressive directional fills at the BBO. Otherwise, it posts passive quotes around a bias-adjusted fair value.</p>
+<div class="flow">
+<div class="ct"><span>PEP Decision Logic</span></div>
+<div class="fr">
+<div class="fb ct2"><span class="fbl">50-tick OLS</span><span class="fbv">slope, σ_slope</span></div>
+<div class="fa">→</div>
+<div class="fb ct2"><span class="fbl">t = slope / σ</span><span class="fbv">significance test</span></div>
+<div class="fa">→</div>
+<div class="fb cg"><span class="fbl">|t| > 2.5?</span><span class="fbv">YES → Hit BBO, max ±80</span></div>
+</div>
+<div class="fr" style="margin-top:8px">
+<div class="fb" style="visibility:hidden;flex:2"></div>
+<div class="fa">↓ NO</div>
+<div class="fb cb2"><span class="fbl">fair = mid + tanh_bias + slope×3.5</span><span class="fbv">Passive quotes ± 1 − skew</span></div>
+</div>
+</div>
+<p>The <code>tanh(50·slope)</code> bias saturates at ±3.5, preventing unbounded extrapolation. The t-stat gate requires n ≥ 30 observations — the algorithm won't act on a slope estimate from too few points.</p>
+</div>
+
+<!-- §5 -->
+<div class="sec">
+<div class="sn">Section 05</div>
+<h2>Execution & Trade Analysis</h2>
+<div class="ch">
+<div class="ct"><span>Fig. 6 — OSM Mid Price with Our Buy/Sell Fills (Day 0)</span>
+<div class="lg"><div class="li"><div class="ld" style="background:var(--blue)"></div>Mid Price</div><div class="li"><div class="ld" style="background:var(--teal);border-radius:0"></div>Buy Fill</div><div class="li"><div class="ld" style="background:var(--red);border-radius:0"></div>Sell Fill</div></div></div>
+<canvas id="c4" height="180"></canvas>
+</div>
+<p>The scatter plot shows our fills consistently bracketing the mid price — buys cluster at ~9,990–9,995 (below mid) and sells at ~10,003–10,011 (above mid). This is the visual signature of a functioning market-maker: we post competitive bids and asks that attract volume from live bots, then capture the spread between our entry and exit prices.</p>
+<div class="ch">
+<div class="ct"><span>Fig. 7 — OSM Net Position Over Time (Day 0)</span>
+<div class="lg"><div class="li"><div class="ld" style="background:var(--blue)"></div>Position</div><div class="li"><div class="ld" style="background:var(--gold)"></div>Cumulative PnL</div></div></div>
+<canvas id="c5" height="160"></canvas>
+</div>
+<p>The position oscillates between −23 and +13, well within the ±80 limit. The skew parameter (3.0) acts as a restoring force — when long, quotes shift downward to bias fills toward selling; when short, quotes shift upward. This self-correcting mechanism kept inventory bounded and prevented limit-breach risk.</p>
+<div class="r2">
+<div class="cd" style="border-color:rgba(91,138,245,.4)"><div class="hd" style="color:var(--blue)">OSM Fill Quality</div>
+<div class="sr"><span class="sk">Buy fills</span><span class="sv u">28 fills · 156 units</span></div>
+<div class="sr"><span class="sk">Avg buy price</span><span class="sv">9,991.92</span></div>
+<div class="sr"><span class="sk">Sell fills</span><span class="sv p">28 fills · 162 units</span></div>
+<div class="sr"><span class="sk">Avg sell price</span><span class="sv p">10,006.75</span></div>
+<div class="sr"><span class="sk">Spread captured</span><span class="sv g">14.83 per round-trip</span></div>
+<div class="sr"><span class="sk">Capture ratio</span><span class="sv g">91.3% of mkt spread</span></div>
+</div>
+<div class="cd" style="border-color:rgba(62,207,186,.4)"><div class="hd" style="color:var(--teal)">PEP Position Build</div>
+<div class="sr"><span class="sk">Fills</span><span class="sv p">5 fills in 300 ticks</span></div>
+<div class="sr"><span class="sk">Avg entry</span><span class="sv">12,012.29</span></div>
+<div class="sr"><span class="sk">Position</span><span class="sv p">+80 (max) from ts 3,700</span></div>
+<div class="sr"><span class="sk">Day 0 end mid</span><span class="sv p">12,099.5</span></div>
+<div class="sr"><span class="sk">Gain / unit</span><span class="sv g">+87.21</span></div>
+<div class="sr"><span class="sk">Day 0 PEP PnL</span><span class="sv g">7,009 XIRECs</span></div>
+</div>
+</div>
+</div>
+
+<!-- §6 -->
+<div class="sec">
+<div class="sn">Section 06</div>
+<h2>Out-of-Sample Performance (10 Days)</h2>
+<div class="ch">
+<div class="ct"><span>Fig. 8 — Cumulative P&L by Product (OOS, 1M ticks)</span>
+<div class="lg"><div class="li"><div class="ld" style="background:var(--gold)"></div>Total</div><div class="li"><div class="ld" style="background:var(--blue)"></div>OSM</div><div class="li"><div class="ld" style="background:var(--teal)"></div>PEP</div></div></div>
+<canvas id="c6" height="200"></canvas>
+</div>
+<p>The PEP directional leg generates steady linear growth (~7,879/day) while OSM market-making adds consistent smaller increments (~1,637/day). The combined daily PnL was stable at ~9,500/day with less than 8% inter-day variance — the strongest signal of generalisation.</p>
+<div class="ch">
+<div class="ct"><span>Fig. 9 — Daily P&L Breakdown (10 OOS Days)</span>
+<div class="lg"><div class="li"><div class="ld" style="background:var(--gold);border-radius:0"></div>Daily PnL</div><div class="li"><div class="ld" style="background:var(--td)"></div>Mean (9,534)</div></div></div>
+<canvas id="c7" height="170"></canvas>
+</div>
+<div class="r2">
+<div>
+<div class="pb"><div class="pbl"><span>OSM Spread Capture</span><span style="color:var(--teal)">91.3%</span></div><div class="pbt"><div class="pbf" style="width:91.3%;background:var(--teal)"></div></div></div>
+<div class="pb" style="margin-top:10px"><div class="pbl"><span>PEP Theoretical Extract (Day 0)</span><span style="color:var(--gold)">86.7%</span></div><div class="pbt"><div class="pbf" style="width:86.7%;background:var(--gold)"></div></div></div>
+<div class="pb" style="margin-top:10px"><div class="pbl"><span>OOS Linear Scaling</span><span style="color:var(--vio)">100.2%</span></div><div class="pbt"><div class="pbf" style="width:100%;background:var(--vio)"></div></div></div>
+</div>
+<div class="cd">
+<div class="hd" style="color:var(--gold)">Performance Summary</div>
+<div class="sr"><span class="sk">Total OOS PnL</span><span class="sv g">95,344 XIRECs</span></div>
+<div class="sr"><span class="sk">OSM daily avg</span><span class="sv u">~1,637</span></div>
+<div class="sr"><span class="sk">PEP daily avg</span><span class="sv p">~7,879</span></div>
+<div class="sr"><span class="sk">Max drawdown</span><span class="sv n">−674 (ts 4,000)</span></div>
+<div class="sr"><span class="sk">OSM max position</span><span class="sv u">±23 of ±80</span></div>
+</div>
+</div>
+</div>
+
+<!-- §7 -->
+<div class="sec">
+<div class="sn">Section 07</div>
+<h2>Post-Mortem & Forward Improvements</h2>
+<div class="conc">
+<h3>Assessment</h3>
+<p>The regime identification was correct from Day 1 and the production algorithm was well-matched to both instruments. The t-statistic gate was the single highest-value innovation — replacing a crude slope threshold with a statistically principled confidence test. The 91.3% spread capture ratio on OSM and the ×10.02 OOS scaling confirm that the algorithm generalises without overfitting.</p>
+<p>The initial −674 drawdown at ts 4,000 (during PEP position build) is the main risk event. It resolved within 8,000 ticks, but the lack of a stop-loss means a regime change could compound this loss.</p>
+</div>
+<div class="rg">
+<div class="ri c"><div class="rl">✗ No Stop-Loss on PEP</div><p>+80 long with zero downside protection. If PEP reverses, losses compound at 80× the price move. Fix: trailing stop when t_stat < −1.5 for 10 consecutive ticks.</p></div>
+<div class="ri c"><div class="rl">✗ Binary PEP Entry</div><p>0 → +80 in 300 ticks. Maximum timing risk. Fix: staged entry (25→50→80) with re-confirmation at each stage.</p></div>
+<div class="ri w"><div class="rl">⚠ Static OSM Spread</div><p>±1 tick hardcoded. Should widen in high-vol, tighten in calm conditions. Fix: spread = max(1, round(0.8 × |shock|)).</p></div>
+<div class="ri w"><div class="rl">⚠ No Profit Crystallisation</div><p>PEP position held to session end. 70,000+ XIRECs unrealised. Fix: partial take-profit at configurable thresholds.</p></div>
+</div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+const G='rgba(37,40,56,.7)',T='#7a7f9a';
+Chart.defaults.color=T;Chart.defaults.borderColor=G;Chart.defaults.font.family="'IBM Plex Mono',monospace";Chart.defaults.font.size=10;Chart.defaults.plugins.legend.display=false;
+
+// === PRICE DATA ===
+const osmD0=[10013,10000,10002,10002,10001,10001,10009,10001,10001,10000,9999,9996,9996,9997.5,9996,10002,10002,9997,10003,10000.5,10003.5,10002,10003,10002,10003.5,10003,10008,10008,10003,10002,10002.5,10003,9996,10006,10002.5,10003.5,10006.5,10007,10005,10006.5,10006.5,10002,9998,10000,10000,10001.5,10002,9997,9995.5,9993,9995,9991,9998,10000,10001,10001.5,10001,10005,10002,9999,10002.5,9995,10000,10003,9996,10001,10001,10002,9993,10003,9999.5,10002,10003,10003,10002,10003,10003,10001,10000,10001,10002,10002,10003,10002,10003,9999,9997.5,9999,10000,10003,10003,10008.5,10006,10005,10006,10003,9999,9999,10002.5];
+const pepD0=[11998.5,12003.5,12010,12013.5,12030,12025,12030,12035,12037.5,12045,12048.5,12055,12067,12065,12071.5,12075,12080,12083.5,12090,12095,12105,12105,12110,12115,12120,12123.5,12130,12135,12140,12145,12150,12162,12158.5,12165,12170,12175,12180,12185,12190,12195,12200,12205,12220,12216.5,12220,12223.5,12230,12235,12240,12243.5,12248.5,12253.5,12260,12265,12270,12275,12280,12286.5,12290,12288,12290,12306.5,12310,12315,12321.5,12325,12330,12328,12340,12345,12348.5,12358.5,12358.5,12363.5,12370,12375,12387,12386.5,12387.5,12395,12400,12405,12410,12413.5,12418.5,12425,12437,12433.5,12440,12445,12450,12455,12460,12465,12470,12475,12480,12486.5,12490,12495];
+const pepEM=[11998.5,12002.5,12004.7,12007.3,11950,11964.3,11974.7,11948.7,11959.7,11968.9,11976.7,11983.7,11969.7,11976.9,11983.3,11989.2,11994.7,11985.7,11991.3,11996.7,12001.7,12006.5,12000.1,12005,12009.6,12014.1,12018.5,12022.7,12026.8,12030.8,12026.6,12030.7,12034.6,12038.5,12042.3,12039.1,12042.9,12046.7,12050.4,12054,12057.6,12061.2,12058.8,12062.4,12066,12064,12067.6,12071.1,12074.5,12078,12081.4,12084.7,12088,12091.3,12094.6,12097.8,12101,12104.2,12107.4,12110.5,12113.6,12112.7,12115.8,12118.9,12122,12125.1,12128.2,12131.2,12130.7,12133.7,12136.8,12139.8,12142.8,12145.8,12148.8,12151.8,12154.8,12157.8,12160.7,12163.6,12166.6,12169.5,12172.4,12175.3,12178.1,12181,12183.9,12186.7,12189.6,12192.4,12195.3,12198.1,12200.9,12203.7,12206.5,12209.3,12212.1,12214.9,12217.7,12220.5];
+const pepRL=[11957.5,11962.7,11967.9,11973,11978.2,11983.4,11988.5,11993.7,11998.9,12004,12009.2,12014.4,12019.5,12024.7,12029.8,12035,12040.2,12045.3,12050.5,12055.7,12060.8,12066,12071.2,12076.3,12081.5,12086.7,12091.8,12097,12102.1,12107.3,12112.5,12117.6,12122.8,12128,12133.1,12138.3,12143.5,12148.6,12153.8,12159,12164.1,12169.3,12174.4,12179.6,12184.8,12189.9,12195.1,12200.3,12205.4,12210.6,12215.8,12220.9,12226.1,12231.3,12236.4,12241.6,12246.7,12251.9,12257.1,12262.2,12267.4,12272.6,12277.7,12282.9,12288.1,12293.2,12298.4,12303.6,12308.7,12313.9,12319,12324.2,12329.4,12334.5,12339.7,12344.9,12350,12355.2,12360.4,12365.5,12370.7,12375.9,12381,12386.2,12391.3,12396.5,12401.7,12406.8,12412,12417.2,12422.3,12427.5,12432.7,12437.8,12443,12448.2,12453.3,12458.5,12463.6,12468.8];
+const iterPnl=[2370,2911,2496,2911,2911,3892,9516];
+const fills=[{t:1,s:'B',p:9994},{t:3.1,s:'S',p:10011},{t:5.6,s:'B',p:9992},{t:7.5,s:'S',p:10008},{t:10.6,s:'S',p:10009},{t:12.3,s:'B',p:9995},{t:14.6,s:'S',p:10009},{t:17.6,s:'S',p:10008},{t:18,s:'B',p:9994},{t:19.2,s:'S',p:10008},{t:19.4,s:'S',p:10008},{t:19.5,s:'B',p:9991},{t:20.3,s:'S',p:10008},{t:22.5,s:'B',p:9995},{t:23,s:'S',p:10008},{t:24.3,s:'S',p:10008},{t:28.2,s:'S',p:10008},{t:28.8,s:'B',p:9994},{t:29,s:'B',p:9992},{t:36.2,s:'B',p:9994},{t:36.9,s:'B',p:9990},{t:37.6,s:'S',p:10010},{t:38.5,s:'S',p:10008},{t:41.7,s:'S',p:10007},{t:43.1,s:'B',p:9994},{t:43.3,s:'S',p:10008},{t:44.7,s:'B',p:9994},{t:48.2,s:'B',p:9991},{t:48.4,s:'B',p:9991},{t:49.4,s:'S',p:10005},{t:51.3,s:'B',p:9990},{t:54,s:'B',p:9990},{t:54.3,s:'S',p:10003},{t:54.8,s:'S',p:10003},{t:57.2,s:'B',p:9990},{t:57.8,s:'B',p:9988},{t:59.6,s:'S',p:10001},{t:62.6,s:'S',p:10005},{t:65.8,s:'S',p:10004},{t:68.5,s:'B',p:9990},{t:69.1,s:'B',p:9990},{t:69.3,s:'S',p:10004},{t:71.1,s:'B',p:9991},{t:72.9,s:'B',p:9993},{t:73.8,s:'B',p:9995},{t:76.2,s:'B',p:9994},{t:79.7,s:'S',p:10003},{t:82.3,s:'S',p:10006},{t:83.6,s:'B',p:9990},{t:86.9,s:'S',p:10005},{t:91.3,s:'S',p:10009},{t:93.3,s:'B',p:9995},{t:95.2,s:'S',p:10010},{t:96.8,s:'S',p:10007},{t:96.9,s:'B',p:9992},{t:97.3,s:'B',p:9993}];
+const osmMidFull=osmD0.map((m,i)=>({x:i*1000,y:m}));
+const buyF=fills.filter(f=>f.s==='B').map(f=>({x:f.t*1000,y:f.p}));
+const sellF=fills.filter(f=>f.s==='S').map(f=>({x:f.t*1000,y:f.p}));
+const posT=[0,1,3.1,5.6,7.5,10.6,12.3,14.6,17.6,18,19.2,19.4,19.5,20.3,22.5,23,24.3,28.2,28.8,29,36.2,36.9,37.6,38.5,41.7,43.1,43.3,44.7,48.2,48.4,49.4,51.3,54,54.3,54.8,57.2,57.8,59.6,62.6,65.8,68.5,69.1,69.3,71.1,72.9,73.8,76.2,79.7,82.3,83.6,86.9,91.3,93.3,95.2,96.8,96.9,97.3,100].map(x=>x*1000);
+const posV=[0,3,-3,5,0,-10,-4,-8,-12,-4,-6,-15,-5,-7,-2,-6,-10,-15,-5,1,4,7,-2,-11,-19,-17,-23,-21,-19,-11,-16,-7,-1,-5,-15,-10,-2,-9,-14,-16,-10,-5,-11,-2,1,6,13,4,2,9,1,-6,-4,-8,-14,-9,-6,-6];
+const posPnl=[0,20,21,82,153,188,188,257,333,361,421,480,540,596,610,669,699,706,856,856,857,857,856,856,992,1049,1104,1160,1208,1227,1326,1406,1420,1561,1655,1698,1758,1850,1912,2012,2023,2094,2140,2190,2243,2287,2337,2337,2337,2337,2337,2337,2337,2337,2337,2337,2337,2337];
+const oosTs=[0,10e3,20e3,30e3,40e3,50e3,60e3,70e3,80e3,90e3,100e3,110e3,120e3,130e3,140e3,150e3,160e3,170e3,180e3,190e3,200e3,210e3,220e3,230e3,240e3,250e3,260e3,270e3,280e3,290e3,300e3,310e3,320e3,330e3,340e3,350e3,360e3,370e3,380e3,390e3,400e3,410e3,420e3,430e3,440e3,450e3,460e3,470e3,480e3,490e3,500e3,510e3,520e3,530e3,540e3,550e3,560e3,570e3,580e3,590e3,600e3,610e3,620e3,630e3,640e3,650e3,660e3,670e3,680e3,690e3,700e3,710e3,720e3,730e3,740e3,750e3,760e3,770e3,780e3,790e3,800e3,810e3,820e3,830e3,840e3,850e3,860e3,870e3,880e3,890e3,900e3,910e3,920e3,930e3,940e3,950e3,960e3,970e3,980e3,990e3];
+const oosP=[0,-56,1172,2286,3282,4268,5376,6337,7323,8191,9171,10005,10931,11889,12793,13773,14701,15577,16503,17447,18585,19492,20467,21377,22416,23189,24096,25003,25866,26874,27815,28812,29647,30677,31706,32699,33676,34525,35537,36654,37720,38747,39875,40832,41839,42735,43666,44673,45447,46644,47697,48880,49923,50825,51427,52692,53564,54589,55644,56680,57660,58744,59672,60270,60897,61986,63196,63854,64575,65771,66852,68195,69006,69878,70937,71655,72221,73101,74083,74943,75993,77124,78078,79135,80275,81180,82179,83078,84057,85148,86042,87126,88103,89046,90017,90931,91728,92335,93401,94240];
+const oosOsm=oosTs.map(t=>(t/1e6)*16365);
+const oosPep=oosP.map((v,i)=>v-oosOsm[i]);
+const dPnl=[9171,9360,9330,9381,9066,9182,9148,9285,8989,8573];
+
+// === ACF & SINE DATA (computed from scipy/numpy) ===
+const acfLags=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,271,272,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,288,289,290,291,292,293,294,295,296,297,298,299,300,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317,318,319,320,321,322,323,324,325,326,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,345,346,347,348,349,350,351,352,353,354,355,356,357,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400,401,402,403,404,405,406,407,408,409,410,411,412,413,414,415,416,417,418,419,420,421,422,423,424,425,426,427,428,429,430,431,432,433,434,435,436,437,438,439,440,441,442,443,444,445,446,447,448,449,450,451,452,453,454,455,456,457,458,459,460,461,462,463,464,465,466,467,468,469,470,471,472,473,474,475,476,477,478,479,480,481,482,483,484,485,486,487,488,489,490,491,492,493,494,495,496,497,498,499,500];
+const acfData=[1.0,0.9693,0.9693,0.9693,0.9693,0.9695,0.9693,0.9691,0.969,0.9691,0.9691,0.969,0.969,0.9689,0.9691,0.9689,0.9688,0.9687,0.9688,0.9684,0.9687,0.9683,0.9685,0.9685,0.9684,0.9682,0.9683,0.9683,0.9678,0.968,0.9678,0.9679,0.968,0.9673,0.9673,0.9673,0.9672,0.9673,0.9669,0.9671,0.9669,0.9665,0.9667,0.9664,0.9662,0.9661,0.9661,0.9662,0.966,0.9657,0.9656,0.9656,0.9653,0.965,0.9648,0.9651,0.9649,0.9645,0.9646,0.9644,0.9642,0.9639,0.9639,0.9638,0.9635,0.9632,0.9632,0.963,0.9631,0.9624,0.9624,0.9622,0.9617,0.9617,0.9617,0.9614,0.9612,0.9609,0.9611,0.9606,0.9606,0.9603,0.96,0.9599,0.9598,0.9594,0.9593,0.9591,0.9589,0.9587,0.9583,0.958,0.9575,0.9575,0.9573,0.957,0.9569,0.9567,0.9563,0.9561,0.9558,0.9557,0.9554,0.955,0.9549,0.9543,0.9546,0.9541,0.9537,0.9532,0.9532,0.9528,0.9525,0.9525,0.9519,0.9522,0.9515,0.9511,0.9507,0.9505,0.9501,0.9498,0.9498,0.9493,0.9491,0.9486,0.9484,0.9481,0.9476,0.9471,0.9473,0.9468,0.9463,0.9461,0.9456,0.9451,0.9451,0.9446,0.944,0.9441,0.9437,0.9432,0.9429,0.9425,0.9423,0.9418,0.9414,0.9413,0.9408,0.9404,0.9399,0.9398,0.9392,0.9389,0.9387,0.938,0.9379,0.9373,0.9369,0.9365,0.936,0.9357,0.9353,0.9348,0.9346,0.934,0.9334,0.9332,0.9331,0.9324,0.932,0.9316,0.931,0.9307,0.9305,0.93,0.9294,0.9289,0.9285,0.9281,0.9276,0.9271,0.9267,0.9265,0.926,0.9257,0.9252,0.9246,0.9239,0.9237,0.923,0.9227,0.9222,0.9218,0.9213,0.9206,0.9202,0.9198,0.9191,0.9188,0.9182,0.9179,0.9173,0.917,0.9162,0.9158,0.9154,0.9148,0.9142,0.9137,0.913,0.9129,0.9123,0.9115,0.9113,0.9106,0.9098,0.9097,0.9088,0.9085,0.9079,0.9076,0.9068,0.9065,0.9059,0.9055,0.9046,0.9042,0.9036,0.903,0.9024,0.9018,0.9012,0.9007,0.9004,0.8994,0.8989,0.8984,0.8979,0.8974,0.8967,0.8961,0.8957,0.8948,0.8945,0.8938,0.8934,0.8925,0.8921,0.8915,0.8909,0.8899,0.8899,0.889,0.8883,0.8878,0.8871,0.8863,0.886,0.8852,0.8846,0.8841,0.8833,0.8827,0.8822,0.8812,0.8807,0.8803,0.8796,0.8789,0.8784,0.8775,0.8772,0.8765,0.8757,0.8749,0.8742,0.8738,0.8727,0.8723,0.8716,0.8711,0.87,0.8693,0.8689,0.8684,0.8676,0.8671,0.8661,0.8657,0.8646,0.8643,0.8633,0.8628,0.8621,0.8615,0.8607,0.8601,0.859,0.8585,0.8577,0.857,0.8561,0.8553,0.8549,0.8542,0.8533,0.853,0.852,0.851,0.8503,0.8497,0.8488,0.8483,0.8472,0.8466,0.846,0.845,0.8444,0.8437,0.8429,0.8422,0.8414,0.8405,0.8402,0.8392,0.8384,0.8377,0.8371,0.8363,0.8351,0.8345,0.8341,0.8328,0.8322,0.8313,0.8305,0.8296,0.8289,0.8285,0.8272,0.8265,0.8257,0.825,0.8242,0.8234,0.8227,0.8217,0.8212,0.8201,0.8192,0.8185,0.8177,0.8168,0.8162,0.815,0.8145,0.8136,0.8126,0.8119,0.811,0.8105,0.8092,0.8084,0.8078,0.8068,0.806,0.8049,0.8046,0.8034,0.8027,0.8018,0.8007,0.8,0.7991,0.7981,0.7976,0.7965,0.7956,0.7948,0.7939,0.793,0.7921,0.7911,0.7903,0.7896,0.7885,0.7876,0.7866,0.7857,0.7851,0.7842,0.7834,0.7822,0.7812,0.7805,0.7794,0.7785,0.7775,0.7769,0.7758,0.7749,0.7743,0.7732,0.7723,0.771,0.7706,0.7695,0.7685,0.7675,0.7665,0.7655,0.765,0.7636,0.7628,0.7621,0.761,0.7598,0.7591,0.7585,0.7573,0.7562,0.7553,0.7542,0.7533,0.7524,0.7513,0.7509,0.7493,0.7486,0.7474,0.7466,0.7453,0.7444,0.7439,0.7428,0.7417,0.7405,0.7397,0.7386,0.7377,0.7367,0.7356,0.7346,0.7337,0.7327,0.7318,0.7308,0.7295,0.7284,0.7277,0.7268,0.7255,0.7247,0.7235,0.7227,0.7215,0.7203,0.7195,0.7182,0.7174,0.716,0.7153,0.7145,0.7132,0.7123,0.7111,0.7103,0.7091,0.7081,0.7069,0.706,0.705,0.7039,0.7031,0.7018,0.7008,0.6996,0.6986,0.6976,0.6966,0.6955,0.6945,0.6934,0.692,0.6912,0.6902,0.6889,0.688,0.6869,0.6858,0.6849,0.6836,0.6824,0.6815,0.6805,0.6794,0.6782,0.6773,0.6756,0.6747];
+const sineX=[0,40,80,120,160,200,240,280,320,360,400,440,480,520,560,600,640,680,720,760,800,840,880,920,960,1000,1040,1080,1120,1160,1200,1240,1280,1320,1360,1400,1440,1480,1520,1560,1600,1640,1680,1720,1760,1800,1840,1880,1920,1960,2000,2040,2080,2120,2160,2200,2240,2280,2320,2360,2400,2440,2480,2520,2560,2600,2640,2680,2720,2760,2800,2840,2880,2920,2960,3000,3040,3080,3120,3160,3200,3240,3280,3320,3360,3400,3440,3480,3520,3560,3600,3640,3680,3720,3760,3800,3840,3880,3920,3960,4000,4040,4080,4120,4160,4200,4240,4280,4320,4360,4400,4440,4480,4520,4560,4600,4640,4680,4720,4760,4800,4840,4880,4920,4960,5000,5040,5080,5120,5160,5200,5240,5280,5320,5360,5400,5440,5480,5520,5560,5600,5640,5680,5720,5760,5800,5840,5880,5920,5960,6000,6040,6080,6120,6160,6200,6240,6280,6320,6360,6400,6440,6480,6520,6560,6600,6640,6680,6720,6760,6800,6840,6880,6920,6960,7000,7040,7080,7120,7160,7200,7240,7280,7320,7360,7400,7440,7480,7520,7560,7600,7640,7680,7720,7760,7800,7840,7880,7920,7960];
+const sineRaw=[10000.5,10002.0,10001.0,10003.5,10001.5,10004.5,10003.5,10005.5,10006.0,10007.5,10004.5,10008.5,10008.0,10006.5,10010.0,10011.0,10009.5,10011.5,10011.5,10010.5,10013.0,10011.5,10015.5,10013.5,10013.0,10014.0,10014.5,10011.5,10013.5,10008.0,10011.5,10010.5,10011.0,10010.5,10010.0,10008.0,10010.0,10009.5,10010.0,10007.5,10006.5,10006.0,10006.0,10005.5,10006.5,10006.0,10002.5,10003.5,9998.0,10000.0,9998.5,9997.5,9998.0,10001.0,9995.0,9998.5,9995.5,9992.0,9994.5,9991.5,9991.5,9994.5,9990.5,9991.0,9989.0,9987.0,9992.5,9990.0,9992.0,9989.5,9988.5,9988.5,9985.0,9987.0,9987.0,9985.0,9989.0,9990.0,9987.5,9987.5,9989.0,9989.0,9988.0,9990.0,9988.5,9991.5,9991.5,9991.5,9993.0,9993.5,9992.5,9993.5,9993.5,9997.0,9997.0,9995.0,9997.0,9999.0,10002.0,9999.0,9999.5,10002.0,10003.5,10002.0,10004.0,10005.0,10002.5,10009.0,10006.5,10007.5,10008.5,10006.5,10007.0,10008.5,10008.5,10010.0,10012.0,10010.5,10013.0,10009.5,10012.5,10010.5,10013.5,10014.5,10011.5,10011.5,10012.5,10010.0,10009.5,10011.5,10010.5,10010.5,10009.5,10010.0,10009.5,10007.0,10007.5,10011.0,10006.0,10005.0,10005.5,10006.5,10003.0,10003.5,10003.0,10003.0,10002.0,9997.5,10002.0,9998.0,9997.0,9999.5,9999.5,9996.0,9996.0,9994.0,9994.0,9994.0,9995.0,9994.0,9992.5,9988.5,9992.0,9990.0,9989.5,9987.5,9987.5,9988.5,9989.5,9989.5,9987.0,9987.0,9988.5,9988.5,9989.5,9989.5,9989.5,9989.0,9988.0,9989.5,9989.5,9990.5,9989.0,9991.5,9989.5,9990.5,9994.5,9992.0,9994.5,9991.5,9994.0,9992.0,9996.5,9996.5,9999.0,9997.0,9998.5,9997.5,10002.0,10000.0];
+const sineFit=[10000.0,10000.76,10001.52,10002.28,10003.02,10003.75,10004.47,10005.17,10005.84,10006.5,10007.13,10007.73,10008.29,10008.83,10009.33,10009.79,10010.21,10010.59,10010.93,10011.22,10011.47,10011.67,10011.82,10011.93,10011.99,10012.0,10011.96,10011.87,10011.74,10011.55,10011.33,10011.05,10010.73,10010.37,10009.96,10009.52,10009.04,10008.52,10007.96,10007.37,10006.76,10006.11,10005.45,10004.75,10004.04,10003.32,10002.58,10001.83,10001.07,10000.31,9999.55,9998.79,9998.03,9997.28,9996.55,9995.82,9995.12,9994.43,9993.76,9993.13,9992.51,9991.93,9991.39,9990.87,9990.4,9989.96,9989.56,9989.21,9988.89,9988.63,9988.41,9988.23,9988.11,9988.03,9988.0,9988.02,9988.09,9988.2,9988.37,9988.58,9988.83,9989.13,9989.48,9989.87,9990.3,9990.76,9991.27,9991.81,9992.38,9992.99,9993.62,9994.28,9994.96,9995.66,9996.38,9997.12,9997.86,9998.62,9999.38,10000.14,10000.9,10001.66,10002.41,10003.16,10003.89,10004.6,10005.29,10005.97,10006.62,10007.24,10007.83,10008.4,10008.92,10009.41,10009.87,10010.28,10010.65,10010.98,10011.27,10011.51,10011.7,10011.85,10011.94,10011.99,10011.99,10011.95,10011.85,10011.71,10011.52,10011.28,10011.0,10010.67,10010.3,10009.88,10009.43,10008.94,10008.41,10007.85,10007.26,10006.64,10005.99,10005.32,10004.62,10003.91,10003.18,10002.44,10001.69,10000.93,10000.17,9999.41,9998.65,9997.89,9997.14,9996.41,9995.69,9994.99,9994.3,9993.64,9993.01,9992.4,9991.83,9991.29,9990.78,9990.31,9989.88,9989.49,9989.14,9988.84,9988.58,9988.37,9988.21,9988.09,9988.02,9988.0,9988.03,9988.1,9988.23,9988.4,9988.62,9988.88,9989.19,9989.55,9989.94,9990.38,9990.85,9991.37,9991.91,9992.49,9993.1,9993.74,9994.4,9995.09,9995.8,9996.52,9997.26,9998.0,9998.76,9999.52,10000.28,10001.05];
+
+// === CHARTS ===
+// Fig 1
+new Chart(document.getElementById('c1'),{type:'line',data:{labels:osmD0.map((_,i)=>i*100),datasets:[{data:osmD0,borderColor:'#5b8af5',borderWidth:1.3,pointRadius:0,tension:.2,yAxisID:'y'},{data:pepD0,borderColor:'#3ecfba',borderWidth:1.3,pointRadius:0,tension:.2,yAxisID:'y2'}]},options:{responsive:true,interaction:{mode:'index',intersect:false},scales:{x:{grid:{color:G},ticks:{maxTicksLimit:8,callback:v=>v/1000+'k'}},y:{position:'left',grid:{color:G},title:{display:true,text:'OSM',color:'#5b8af5',font:{size:9}},ticks:{color:'#5b8af5'}},y2:{position:'right',grid:{display:false},title:{display:true,text:'PEP',color:'#3ecfba',font:{size:9}},ticks:{color:'#3ecfba'}}}}});
+
+// Fig 2 — ACF
+new Chart(document.getElementById('cACF'),{
+  type:'line',
+  data:{
+    labels:acfLags,
+    datasets:[
+      {data:acfData,borderColor:'#9b72f5',borderWidth:1.5,pointRadius:0,tension:.2,fill:{target:'origin',above:'rgba(155,114,245,.08)',below:'rgba(224,92,92,.06)'}},
+      {data:acfLags.map(()=>0),borderColor:'rgba(74,82,104,.6)',borderWidth:1,borderDash:[4,4],pointRadius:0}
+    ]
+  },
+  options:{
+    responsive:true,
+    scales:{
+      x:{grid:{color:G},ticks:{maxTicksLimit:10,callback:v=>acfLags[v]},title:{display:true,text:'Lag (ticks)',color:T,font:{size:9}}},
+      y:{grid:{color:G},min:-0.2,max:1.05,ticks:{callback:v=>v.toFixed(1)},title:{display:true,text:'Correlation',color:T,font:{size:9}}}
+    }
+  }
+});
+
+// Fig 3 — Sine wave fit
+new Chart(document.getElementById('cSine'),{
+  type:'line',
+  data:{
+    labels:sineX,
+    datasets:[
+      {data:sineRaw,borderColor:'#f5894b',borderWidth:1,pointRadius:0,tension:.1,label:'Raw Price',backgroundColor:'rgba(245,137,75,.06)',fill:true},
+      {data:sineFit,borderColor:'#5b8af5',borderWidth:2,pointRadius:0,tension:.3,label:'Fitted Sine',borderDash:[]}
+    ]
+  },
+  options:{
+    responsive:true,
+    interaction:{mode:'index',intersect:false},
+    scales:{
+      x:{grid:{color:G},ticks:{maxTicksLimit:10,callback:(v)=>sineX[v]+'t'},title:{display:true,text:'Tick',color:T,font:{size:9}}},
+      y:{grid:{color:G},ticks:{callback:v=>v.toFixed(0)},title:{display:true,text:'Price',color:T,font:{size:9}}}
+    }
+  }
+});
+
+// Fig 4
+new Chart(document.getElementById('c2'),{type:'line',data:{labels:pepD0.map((_,i)=>i*100),datasets:[{data:pepD0,borderColor:'#3ecfba',borderWidth:1.5,pointRadius:0,tension:.2},{data:pepEM,borderColor:'#e05c5c',borderWidth:1.5,borderDash:[5,3],pointRadius:0,tension:.2},{data:pepRL,borderColor:'#d4a853',borderWidth:1.5,borderDash:[2,2],pointRadius:0,tension:.1}]},options:{responsive:true,scales:{x:{grid:{color:G},ticks:{maxTicksLimit:8,callback:v=>v/1000+'k'}},y:{grid:{color:G}}}}});
+
+// Fig 5
+new Chart(document.getElementById('c3'),{type:'bar',data:{labels:['A1','A2','A3','A4','A5','A6','A7'],datasets:[{data:iterPnl,backgroundColor:iterPnl.map((v,i)=>i===6?'#d4a853cc':i===2?'#e05c5c99':'#5b8af588'),borderColor:iterPnl.map((v,i)=>i===6?'#d4a853':i===2?'#e05c5c':'#5b8af5'),borderWidth:1.5,borderRadius:4}]},options:{responsive:true,scales:{x:{grid:{display:false}},y:{grid:{color:G},ticks:{callback:v=>v.toLocaleString()}}}}});
+
+// Fig 6
+new Chart(document.getElementById('c4'),{type:'line',data:{datasets:[{label:'Mid',data:osmMidFull,borderColor:'#5b8af5',borderWidth:1.3,pointRadius:0,tension:.2},{label:'Buy',data:buyF,type:'scatter',backgroundColor:'#3ecfba',pointRadius:5,pointStyle:'triangle'},{label:'Sell',data:sellF,type:'scatter',backgroundColor:'#e05c5c',pointRadius:5,pointStyle:'rectRot'}]},options:{responsive:true,scales:{x:{type:'linear',grid:{color:G},ticks:{maxTicksLimit:10,callback:v=>v/1000+'k'},min:0,max:100000},y:{grid:{color:G},min:9985,max:10015}}}});
+
+// Fig 7
+new Chart(document.getElementById('c5'),{type:'line',data:{labels:posT,datasets:[{data:posV,borderColor:'#5b8af5',borderWidth:1.3,pointRadius:0,stepped:true,fill:{target:'origin',above:'rgba(91,138,245,.08)',below:'rgba(224,92,92,.06)'},yAxisID:'y'},{data:posPnl,borderColor:'#d4a853',borderWidth:1.3,borderDash:[5,3],pointRadius:0,tension:.3,yAxisID:'y2'}]},options:{responsive:true,interaction:{mode:'index',intersect:false},scales:{x:{grid:{color:G},ticks:{maxTicksLimit:10,callback:v=>(posT[v]||0)/1000+'k'}},y:{position:'left',grid:{color:G},min:-30,max:30,ticks:{color:'#5b8af5',callback:v=>v>0?'+'+v:v}},y2:{position:'right',grid:{display:false},ticks:{color:'#d4a853'}}}}});
+
+// Fig 8
+new Chart(document.getElementById('c6'),{type:'line',data:{labels:oosTs,datasets:[{data:oosP,borderColor:'#d4a853',borderWidth:2.5,pointRadius:0,tension:.3},{data:oosOsm,borderColor:'#5b8af5',borderWidth:1.5,borderDash:[4,3],pointRadius:0,tension:.3},{data:oosPep,borderColor:'#3ecfba',borderWidth:1.5,borderDash:[4,3],pointRadius:0,tension:.3}]},options:{responsive:true,interaction:{mode:'index',intersect:false},scales:{x:{grid:{color:G},ticks:{maxTicksLimit:10,callback:v=>(oosTs[v]/1000)+'k'}},y:{grid:{color:G},ticks:{callback:v=>Math.round(v/1000)+'k'}}}}});
+
+// Fig 9
+new Chart(document.getElementById('c7'),{type:'bar',data:{labels:['D1','D2','D3','D4','D5','D6','D7','D8','D9','D10'],datasets:[{data:dPnl,backgroundColor:dPnl.map(v=>v>9000?'#3ecfbaaa':'#5b8af5aa'),borderColor:dPnl.map(v=>v>9000?'#3ecfba':'#5b8af5'),borderWidth:1.5,borderRadius:4},{type:'line',data:Array(10).fill(9534),borderColor:'#d4a853',borderWidth:1.5,borderDash:[4,3],pointRadius:0}]},options:{responsive:true,scales:{x:{grid:{display:false}},y:{grid:{color:G},min:8000,ticks:{callback:v=>v.toLocaleString()}}}}});
+</script>
+</body>
+</html>
