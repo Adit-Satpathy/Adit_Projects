@@ -84,11 +84,23 @@ table.it tr.fin td{background:var(--gf);color:#c8a862}
 .qt blockquote{font-style:italic;font-size:14.5px;color:#7aacf8;line-height:1.6}
 .qt .qs{font-family:var(--mn);font-size:9px;letter-spacing:2px;color:var(--td);text-transform:uppercase;margin-top:4px}
 @media(max-width:700px){.mg{grid-template-columns:repeat(2,1fr)}.r2,.rg{grid-template-columns:1fr}.cover h1{font-size:36px}}
+/* MAIN NAV */
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:40px;padding:16px 0;border-bottom:1px solid var(--bd)}
+.nav a{font-family:var(--mn);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tm);text-decoration:none;padding:4px 10px;border:1px solid var(--bd);border-radius:4px;transition:all 0.2s}
+.nav a:hover, .nav a.active{color:var(--gold);border-color:rgba(212,168,83,.4);background:var(--gf)}
 </style>
 </head>
 <body>
 <div class="w">
+<!-- MAIN SITE NAV -->
+<nav class="nav">
+  <a href="round1.html" class="active">Round 1 Strategy</a>
+  <a href="round3.html">Round 3 Strategy</a>
+  <a href="nba.html">NBA Prediction</a>
+</nav>
 
+<!-- COVER -->
+<div class="cover">
 <!-- COVER -->
 <div class="cover">
 <div class="tag">IMC Prosperity 4 · Round 1 · Quantitative Research Report</div>
