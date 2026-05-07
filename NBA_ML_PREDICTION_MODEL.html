@@ -39,6 +39,11 @@ p { color:#c0c4d8; margin-bottom:14px; max-width:840px; }
 .sn { font-family:var(--mn); font-size:11px; letter-spacing:2px; color:var(--gold); text-transform:uppercase; margin-bottom:4px; }
 code { font-family:var(--mn); font-size:12px; color:var(--teal); background:rgba(62,207,186,.06); padding:2px 5px; border-radius:3px; }
 
+/* NAVIGATION */
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:40px;padding:16px 0;border-bottom:1px solid var(--bd)}
+.nav a{font-family:var(--mn);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tm);text-decoration:none;padding:4px 10px;border:1px solid var(--bd);border-radius:4px;transition:all 0.2s}
+.nav a:hover, .nav a.active{color:var(--gold);border-color:rgba(212,168,83,.4);background:var(--gf)}
+  
 /* CONTAINERS */
 .ch { background:var(--s1); border:1px solid var(--bd); border-radius:10px; padding:24px; margin:22px 0; position:relative; }
 .ct { font-family:var(--mn); font-size:10px; letter-spacing:1px; color:var(--tm); text-transform:uppercase; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; }
@@ -117,7 +122,7 @@ canvas { width:100%!important; display:block; }
 <body>
 <div class="w">
 <!-- MAIN SITE NAV -->
-<nav class="nav">
+<nav class="nav" style="border-bottom: none; margin-bottom: 0; padding-top: 32px;">
   <a href="index.html">Home</a>
   <a href="round1_final_report.html">Round 1 Strategy</a>
   <a href="round3_strategy_report.html">Round 3 Strategy</a>
