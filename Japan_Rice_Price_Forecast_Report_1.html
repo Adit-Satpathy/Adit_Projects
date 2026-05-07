@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Japan Rice Price Forecast — Quantitative Research</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:#0a0b0f; --s1:#111218; --s2:#1a1c26; --s3:#22263a;
+  --bd:#252838; --bd2:#2e3250;
+  --tx:#e2e5f0; --tm:#7a7f9a; --td:#4a5268;
+  --gold:#d4a853; --gf:rgba(212,168,83,.12);
+  --blue:#5b8af5; --bf:rgba(91,138,245,.1);
+  --teal:#3ecfba; --tf:rgba(62,207,186,.1);
+  --red:#e05c5c; --rf:rgba(224,92,92,.1);
+  --vio:#9b72f5; --vf:rgba(155,114,245,.1);
+  --or:#f5894b; --grn:#4caf7d;
+  --hd:'Playfair Display',Georgia,serif;
+  --mn:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;font-size:14.5px;line-height:1.65;}
+.w{max-width:1040px;margin:0 auto;padding:0 32px 100px;}
+
+/* TYPOGRAPHY */
+h1{font-family:var(--hd);font-size:46px;font-weight:900;line-height:1.1;margin-bottom:12px;color:#fff;}
+h1 em{font-style:italic;color:var(--gold);}
+h2{font-family:var(--hd);font-size:28px;font-weight:700;color:#fff;margin-bottom:16px;border-bottom:1px solid var(--bd);padding-bottom:8px;}
+h3{font-family:var(--hd);font-size:18px;font-weight:700;color:var(--tx);margin:28px 0 10px;}
+h4{font-family:var(--mn);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tm);margin:20px 0 8px;}
+p{color:#c0c4d8;margin-bottom:14px;max-width:840px;}
+.sub{font-size:16px;color:var(--tm);font-weight:300;margin-bottom:32px;max-width:800px;}
+.sec{margin-bottom:40px;padding-top:14px;}
+.sn{font-family:var(--mn);font-size:11px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:4px;}
+code{font-family:var(--mn);font-size:12px;color:var(--teal);background:rgba(62,207,186,.06);padding:2px 5px;border-radius:3px;}
+
+/* NAVIGATION */
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:40px;padding:16px 0;border-bottom:1px solid var(--bd);}
+.nav a{font-family:var(--mn);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tm);text-decoration:none;padding:4px 10px;border:1px solid var(--bd);border-radius:4px;transition:all 0.2s;}
+.nav a:hover,.nav a.active{color:var(--gold);border-color:rgba(212,168,83,.4);background:var(--gf);}
+
+/* VERDICT BANNER */
+.verdict{background:linear-gradient(135deg,rgba(212,168,83,.08),rgba(212,168,83,.02));border:1px solid var(--gold);border-radius:12px;padding:28px 32px;margin:32px 0;position:relative;overflow:hidden;}
+.verdict::before{content:'';position:absolute;top:0;right:0;width:200px;height:200px;background:radial-gradient(circle,rgba(212,168,83,.06) 0%,transparent 70%);pointer-events:none;}
+.verdict-label{font-family:var(--mn);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.verdict-q{font-family:var(--hd);font-size:22px;font-weight:700;color:#fff;margin-bottom:16px;font-style:italic;}
+.verdict-ans{display:flex;align-items:center;gap:16px;}
+.verdict-score{font-family:var(--mn);font-size:52px;font-weight:600;color:var(--gold);line-height:1;}
+.verdict-detail{color:#c0c4d8;font-size:14px;max-width:600px;}
+.prob-meter{margin-top:16px;background:var(--s2);border-radius:4px;height:8px;overflow:hidden;}
+.prob-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold),#f0c060);transition:width 1.5s ease;}
+
+/* CONTAINERS */
+.ch{background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:14px 16px;margin:14px 0;position:relative;}
+.ct{font-family:var(--mn);font-size:10px;letter-spacing:1px;color:var(--tm);text-transform:uppercase;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+canvas{width:100%!important;display:block;}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0;}
+.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:18px 0;}
+.r4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;margin:18px 0;}
+.cd{background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:16px;}
+.cd .hd{font-family:var(--mn);font-size:10px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--bd);}
+.sr{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(37,40,56,.8);font-size:13px;}
+.sr:last-child{border-bottom:none;}
+.sr .sk{color:var(--tm);}.sr .sv{font-family:var(--mn);font-weight:500;color:#fff;}
+.sv.up{color:var(--red)!important;}.sv.dn{color:var(--grn)!important;}
+
+/* MATH & FORMULA BLOCKS */
+.fm{background:var(--s2);border:1px solid var(--bd2);border-radius:8px;padding:16px 20px;margin:16px 0;font-family:var(--mn);font-size:12.5px;line-height:2.1;color:#c8cee8;}
+.fm .fl{color:var(--tm);font-size:10px;letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:8px;}
+.fm .hi{color:var(--gold);font-weight:600;}.fm .hi2{color:var(--teal);font-weight:500;}.fm .hi3{color:var(--red);font-weight:500;}
+
+/* ANNOTATIONS */
+.an{border-left:3px solid;border-radius:0 6px 6px 0;padding:13px 17px;margin:16px 0;font-size:13.5px;line-height:1.65;}
+.an.g{border-color:var(--gold);background:var(--gf);color:#d4c49a;}
+.an.b{border-color:var(--blue);background:var(--bf);color:#95b8f5;}
+.an.r{border-color:var(--red);background:var(--rf);color:#e08080;}
+.an.t{border-color:var(--teal);background:var(--tf);color:#7dddcc;}
+.an.v{border-color:var(--vio);background:var(--vf);color:#c4aaf5;}
+.an strong{color:#fff;}
+
+/* TABLES */
+.tbl{width:100%;border-collapse:collapse;margin:18px 0;font-size:13px;font-family:var(--mn);border:1px solid var(--bd);border-radius:8px;overflow:hidden;}
+.tbl th{padding:10px 14px;font-size:10px;letter-spacing:1px;color:var(--tm);text-transform:uppercase;text-align:left;font-weight:400;background:var(--s2);border-bottom:1px solid var(--bd2);}
+.tbl td{padding:9px 14px;border-bottom:1px solid var(--bd);color:#8b95b5;vertical-align:middle;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:rgba(255,255,255,.02);}
+.tg{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:600;font-family:var(--mn);text-transform:uppercase;}
+.tg.p{background:var(--tf);color:var(--teal);}.tg.n{background:var(--rf);color:var(--red);}.tg.g{background:var(--gf);color:var(--gold);}.tg.x{background:var(--s3);color:var(--tm);}
+.tg.v{background:var(--vf);color:var(--vio);}
+
+/* BUTTONS */
+.sim-btn{background:var(--s2);border:1px solid var(--gold);color:var(--gold);padding:6px 14px;border-radius:4px;font-family:var(--mn);font-size:9px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;}
+.sim-btn:hover{background:var(--gold);color:#000;}
+.sim-btn.active{background:var(--gold);color:#000;}
+.t-btn{background:var(--s2);border:1px solid var(--bd);color:var(--tm);padding:6px 16px;font-family:var(--mn);font-size:10px;text-transform:uppercase;border-radius:4px;cursor:pointer;transition:0.2s;}
+.t-btn.active{background:var(--bf);border-color:var(--blue);color:var(--blue);}
+.t-content{display:none;}.t-content.active{display:block;animation:fadeIn 0.3s;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+/* TIMELINE */
+.timeline{position:relative;padding-left:32px;margin:24px 0;}
+.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--gold),var(--blue),var(--red));}
+.tl-item{position:relative;margin-bottom:24px;padding:14px 16px;background:var(--s1);border:1px solid var(--bd);border-radius:8px;}
+.tl-item::before{content:'';position:absolute;left:-28px;top:18px;width:10px;height:10px;border-radius:50%;border:2px solid;}
+.tl-item.gold::before{border-color:var(--gold);background:rgba(212,168,83,.3);}
+.tl-item.blue::before{border-color:var(--blue);background:rgba(91,138,245,.3);}
+.tl-item.red::before{border-color:var(--red);background:rgba(224,92,92,.3);}
+.tl-item.teal::before{border-color:var(--teal);background:rgba(62,207,186,.3);}
+.tl-date{font-family:var(--mn);font-size:10px;color:var(--gold);letter-spacing:1px;margin-bottom:4px;}
+.tl-title{font-weight:600;color:#fff;margin-bottom:4px;}
+.tl-body{font-size:13px;color:var(--tm);}
+
+/* SCENARIO SLIDER */
+.slider-wrap{margin:16px 0;}.slider-label{display:flex;justify-content:space-between;font-family:var(--mn);font-size:11px;color:var(--tm);margin-bottom:6px;}
+input[type=range]{width:100%;accent-color:var(--gold);cursor:pointer;}
+
+/* EQUITY CARDS */
+.eq-card{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:20px;position:relative;overflow:hidden;}
+.eq-card.long{border-top:3px solid var(--grn);}
+.eq-card.short{border-top:3px solid var(--red);}
+.eq-ticker{font-family:var(--mn);font-size:22px;font-weight:600;color:#fff;}
+.eq-name{font-size:12px;color:var(--tm);margin-bottom:12px;}
+.eq-dir{position:absolute;top:16px;right:16px;font-family:var(--mn);font-size:10px;letter-spacing:1px;padding:3px 8px;border-radius:3px;}
+.eq-dir.long{background:rgba(76,175,125,.15);color:var(--grn);}
+.eq-dir.short{background:var(--rf);color:var(--red);}
+
+/* KPI MONITOR */
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0;}
+.kpi-item{background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:14px;}
+.kpi-name{font-family:var(--mn);font-size:10px;letter-spacing:1px;color:var(--tm);text-transform:uppercase;margin-bottom:6px;}
+.kpi-val{font-family:var(--mn);font-size:24px;font-weight:600;}
+.kpi-sub{font-size:11px;color:var(--td);margin-top:4px;}
+.kpi-bar{margin-top:10px;height:4px;background:var(--s3);border-radius:2px;overflow:hidden;}
+.kpi-bfill{height:100%;border-radius:2px;}
+
+/* BAR DOM CHARTS */
+.bar-chart-dom .bc-row{display:flex;align-items:center;margin-bottom:10px;}
+.bc-label{width:180px;font-family:var(--mn);font-size:11px;color:var(--tx);}
+.bc-track{flex:1;background:var(--s2);height:20px;border-radius:3px;position:relative;}
+.bc-fill{height:100%;border-radius:3px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-family:var(--mn);font-size:10px;color:#fff;transition:width 1.2s ease;}
+
+/* INDICATOR TRACKER */
+.ind-table .ind-row{display:grid;grid-template-columns:2fr 1.2fr 1.5fr 1fr;gap:8px;padding:10px 14px;border-bottom:1px solid var(--bd);font-size:13px;align-items:center;}
+.ind-table .ind-hdr{grid-template-columns:2fr 1.2fr 1.5fr 1fr;background:var(--s2);font-family:var(--mn);font-size:10px;letter-spacing:1px;color:var(--tm);text-transform:uppercase;border-radius:8px 8px 0 0;}
+.ind-importance{display:flex;gap:3px;}
+.imp-dot{width:8px;height:8px;border-radius:50%;}
+
+/* CONC BLOCK */
+.conc{background:linear-gradient(135deg,#141622,#0f111a);border:1px solid var(--gold);border-radius:12px;padding:28px 32px;margin:28px 0;position:relative;overflow:hidden;}
+.conc h3{color:var(--gold);margin-top:0;font-style:italic;}
+.conc::after{content:'';position:absolute;bottom:-20px;right:-20px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(212,168,83,.05),transparent);pointer-events:none;}
+
+/* WATERFALL CHART */
+.wf-bar{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.wf-label{width:200px;font-family:var(--mn);font-size:11px;color:var(--tx);}
+.wf-track{flex:1;height:24px;position:relative;background:var(--s2);border-radius:3px;}
+.wf-segment{position:absolute;height:100%;border-radius:3px;display:flex;align-items:center;justify-content:flex-end;padding:0 8px;font-family:var(--mn);font-size:10px;font-weight:600;color:#fff;}
+
+/* SCENARIO PANEL */
+.scenario-out{background:var(--s2);border:1px solid var(--bd2);border-radius:8px;padding:16px;margin-top:16px;font-family:var(--mn);font-size:12px;}
+.scenario-out .s-line{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--bd);}
+.scenario-out .s-line:last-child{border-bottom:none;}
+.scenario-out .s-k{color:var(--tm);}.scenario-out .s-v{color:#fff;font-weight:500;}
+
+@media(max-width:720px){
+  h1{font-size:32px;}.r2,.r3,.r4{grid-template-columns:1fr;}.bc-label{width:120px;}
+  .kpi-grid{grid-template-columns:1fr;}.ind-table .ind-row{grid-template-columns:1fr 1fr;}
+  .verdict-ans{flex-direction:column;gap:8px;}
+}
+</style>
+</head>
+<body>
+<div class="w">
+
+<!-- NAV -->
+<nav class="nav" style="border-bottom:none;margin-bottom:0;padding-top:32px;">
+  <a href="#">Home</a>
+  <a href="NBA_ML_PREDICTION_MODEL.html">NBA Prediction Model</a>
+  <a href="#" class="active">Japan Rice Forecast</a>
+</nav>
+
+<!-- COVER -->
+<div class="sec" style="padding-top:48px;">
+  <div class="sn">Quantitative Research · Agricultural Macro · December 2025</div>
+  <h1>Japan Rice Price<br><em>Mean Reversion Report</em></h1>
+  <div class="sub">A systematic investigation into the structural, macroeconomic, and supply-chain factors governing the 2024–2025 Reiwa Rice Crisis, and the quantitative probability that national retail prices will breach ¥4,200/5kg before March 9, 2026.</div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px;">
+    <span class="tg g">Report Date: 12 Dec 2025</span>
+    <span class="tg x">Universe: JPX · MAFF POS Data · USDA/FAS</span>
+    <span class="tg p">Research Status: Active</span>
+  </div>
+</div>
+
+<!-- VERDICT -->
+<div class="verdict">
+  <div class="verdict-label">Core Research Question</div>
+  <div class="verdict-q">"Will the retail price of rice in Japan fall below ¥4,200/5kg before March 9, 2026?"</div>
+  <div class="verdict-ans">
+    <div class="verdict-score">YES</div>
+    <div class="verdict-detail">
+      <strong style="color:#fff;">High-Conviction Thesis: ~72% Probability</strong><br>
+      The convergence of a record 2025 domestic harvest (+10% YoY to 6.8M MT), strategic reserve injections (210,000 MT directly to retail), historic WTO out-of-quota imports (+9,500% YoY), and fiscal-year-end forced discounting creates a mathematically-determined supply glut. The ¥4,335 December 2025 print represents an unsustainable friction anomaly. A breach of ¥4,200 is the base case, conditional on continued supermarket inventory pressure through Q1 2026.
+    </div>
+  </div>
+  <div class="prob-meter"><div class="prob-fill" id="probFill" style="width:0%"></div></div>
+  <div style="display:flex;justify-content:space-between;font-family:var(--mn);font-size:9px;color:var(--td);margin-top:4px;">
+    <span>0% — No breach</span><span>72% — Base Case</span><span>100% — Certain</span>
+  </div>
+</div>
+
+<!-- NAVIGATION ANCHORS -->
+<nav class="nav">
+  <a href="#s1">§1 Macro Origins</a>
+  <a href="#s2">§2 Current State</a>
+  <a href="#s3">§3 Supply Resolution</a>
+  <a href="#s4">§4 Demand Destruction</a>
+  <a href="#s5">§5 FX & Macro</a>
+  <a href="#s6">§6 Price Model</a>
+  <a href="#s7">§7 Equity Portfolio</a>
+  <a href="#s8">§8 Monitoring Matrix</a>
+  <a href="#s9">§9 Assessment</a>
+</nav>
+
+
+<!-- SECTION 1: MACRO ORIGINS -->
+<div class="sec" id="s1">
+  <div class="sn">Section 01</div>
+  <h2>Macroeconomic Origins of the Price Crisis</h2>
+  <p>The ¥4,335/5kg retail price recorded in December 2025 did not emerge from a single shock. It is the accumulated output of four distinct, sequential stress events that each compounded the last. I will treat each as a node in a causal chain, because the thesis for mean reversion depends critically on understanding which of these nodes are permanent structural shifts versus temporary anomalies that have since resolved.</p>
+
+  <!-- TIMELINE -->
+  <h3>Causal Chain: From Agricultural Stability to Crisis</h3>
+  <div class="timeline">
+    <div class="tl-item gold">
+      <div class="tl-date">2023 — Growing Season</div>
+      <div class="tl-title">Node 1: Climatological Supply Destruction</div>
+      <div class="tl-body">Record-breaking heatwaves and extended droughts hit Niigata and Kyushu — Japan's premier producing regions. Elevated temperatures caused widespread thermal damage, producing chalky kernels and stunted grain. The volume of first-grade Japonica rice collapsed. This triggered an immediate tightening of the supply-demand balance that had previously been managed with hyper-efficient just-in-time inventory systems. <strong style="color:#fff;">Verdict: Temporary — 2025 harvest fully recovered.</strong></div>
+    </div>
+    <div class="tl-item blue">
+      <div class="tl-date">2024 — Demand Shock</div>
+      <div class="tl-title">Node 2: Inbound Tourism Multiplier</div>
+      <div class="tl-body">Japan welcomed a record <strong style="color:#fff;">36.87 million international visitors</strong> in 2024 (+47% YoY), with spending reaching ¥8.1 trillion. Tourists consumed rice-intensive cuisine for virtually all meals, draining commercial reserves. Desperate restaurant operators began bulk purchasing directly from retail supermarkets — placing commercial and household buyers in direct competition for the same depleted supply. <strong style="color:#fff;">Verdict: Partially persistent — 2025 arrivals projected at 42.7M.</strong></div>
+    </div>
+    <div class="tl-item red">
+      <div class="tl-date">August 2024</div>
+      <div class="tl-title">Node 3: Megaquake Advisory — Panic Hoarding Contagion</div>
+      <div class="tl-body">A magnitude 7.1 tremor triggered an unprecedented "Nankai Trough Megaquake Advisory" from the Japan Meteorological Agency. Within hours, supermarket shelves were stripped of rice, preserved foods, and bottled water. E-commerce platforms were overwhelmed. Strict rationing was imposed. Agricultural cooperatives responded by radically elevating spot prices for the incoming 2024 harvest. By February 2025, the wholesale transaction price reached an unprecedented <strong style="color:#fff;">¥26,485/60kg — a 73% year-over-year increase</strong>, institutionalizing the ¥4,000+ retail price floor. <strong style="color:#fff;">Verdict: Temporary — the panic bid has now fully dissipated.</strong></div>
+    </div>
+    <div class="tl-item teal">
+      <div class="tl-date">2024–2025 — Structural Background</div>
+      <div class="tl-title">Node 4: Demographic Attrition &amp; Structural Agricultural Decline</div>
+      <div class="tl-body">Japan's food self-sufficiency rate: <strong style="color:#fff;">38%</strong>. Full-time farmers declined by ~one-third over 20 years. Average farmer age: 67+. Private sector rice inventories hit their lowest level since 1999 at 1.56 million MT by June 2024. Zero inventory buffer existed to absorb any of the above shocks. <strong style="color:#fff;">Verdict: Permanent — but price-neutral for the mean reversion thesis; this structural weakness was always present and already priced into the long-run equilibrium below ¥2,500.</strong></div>
+    </div>
+  </div>
+
+  <!-- PRICE HISTORY CHART -->
+  <div class="ch">
+    <div class="ct">
+      <span>Fig. 1 — National Average Retail Rice Price (¥/5kg) · Jan 2024 – Dec 2025</span>
+      <span class="tg r">Source: MAFF POS (1,000 Supermarkets)</span>
+    </div>
+    <canvas id="cPriceHistory" height="130"></canvas>
+    <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:6px;font-family:var(--mn);font-size:10px;color:var(--tm);"><div style="width:12px;height:3px;background:var(--gold);border-radius:2px;"></div> National Average</div>
+      <div style="display:flex;align-items:center;gap:6px;font-family:var(--mn);font-size:10px;color:var(--tm);"><div style="width:12px;height:3px;background:var(--blue);border-radius:2px;"></div> Brand Rice</div>
+      <div style="display:flex;align-items:center;gap:6px;font-family:var(--mn);font-size:10px;color:var(--tm);"><div style="width:12px;height:3px;background:var(--teal);border-radius:2px;"></div> Blended Rice</div>
+      <div style="display:flex;align-items:center;gap:6px;font-family:var(--mn);font-size:10px;color:var(--tm);"><div style="width:12px;height:2px;background:var(--red);border-radius:2px;border-top:2px dashed var(--red);background:none;"></div> ¥4,200 Target</div>
+    </div>
+  </div>
+
+  <div class="an g">
+    <strong>Key Observation:</strong> The price series exhibits a classic "panic bid" profile — a sharp, spike-driven ascent that dramatically overshot the new supply-demand equilibrium. The separation between brand rice (¥4,551) and blended rice (¥3,870) as of December 2025 is the single most important leading indicator: it demonstrates that price-sensitive consumers already have access to sub-¥4,200 product. The question is whether the volume-weighted average follows.
+  </div>
+
+  <h3>Pre-Crisis Baseline: The Historical Pricing Regime</h3>
+  <p>Understanding the magnitude of the current dislocation requires anchoring to the pre-crisis norm. The January 2024 baseline was approximately <strong>¥2,168/5kg</strong>. The December 2025 national average of ¥4,335 represents a <strong>+99.9% increase</strong> in 23 months — a near-doubling of the cost of Japan's most fundamental dietary staple.</p>
+
+  <div class="r3">
+    <div class="cd" style="border-color:rgba(212,168,83,.4)">
+      <div class="hd" style="color:var(--gold)">Jan 2024 Baseline</div>
+      <div class="sr"><span class="sk">Avg Price</span><span class="sv">¥2,168/5kg</span></div>
+      <div class="sr"><span class="sk">WS Price</span><span class="sv">~¥15,300/60kg</span></div>
+      <div class="sr"><span class="sk">Regime</span><span class="sv">Normal</span></div>
+    </div>
+    <div class="cd" style="border-color:rgba(224,92,92,.4)">
+      <div class="hd" style="color:var(--red)">Peak Crisis (Dec 2025)</div>
+      <div class="sr"><span class="sk">Avg Price</span><span class="sv" style="color:var(--red)">¥4,335/5kg</span></div>
+      <div class="sr"><span class="sk">WS Price</span><span class="sv" style="color:var(--red)">¥26,485/60kg</span></div>
+      <div class="sr"><span class="sk">YoY Change</span><span class="sv up">+99.9%</span></div>
+    </div>
+    <div class="cd" style="border-color:rgba(62,207,186,.4)">
+      <div class="hd" style="color:var(--teal)">Target Threshold</div>
+      <div class="sr"><span class="sk">Target</span><span class="sv">¥4,200/5kg</span></div>
+      <div class="sr"><span class="sk">Gap (Dec '25)</span><span class="sv">-¥135 (-3.1%)</span></div>
+      <div class="sr"><span class="sk">Deadline</span><span class="sv">9 Mar 2026</span></div>
+    </div>
+  </div>
+
+  <div class="fm">
+    <span class="fl">Dislocation Magnitude — How Far Above Equilibrium Are We?</span>
+    Observed Price (Dec 2025): <span class="hi">¥4,335/5kg</span><br>
+    Pre-Crisis Baseline (Jan 2024): <span class="hi2">¥2,168/5kg</span><br>
+    Dislocation Premium = (<span class="hi">4,335</span> − <span class="hi2">2,168</span>) / <span class="hi2">2,168</span> = <span class="hi">+99.95%</span><br>
+    Required correction to breach ¥4,200: <span class="hi3">−3.12%</span> (¥135 reduction from current price)<br>
+    Mean reversion to long-run equilibrium: <span class="hi3">−51.5%</span> (eventual ¥2,100–¥2,500 range)
+  </div>
+
+  <div class="an r">
+    <strong>Critical framing:</strong> The research thesis does NOT require a full mean reversion to ¥2,168. It only requires a <strong>3.12% decline</strong> from the December 2025 print — from ¥4,335 to below ¥4,200. This is a low-bar condition, which is why the probability assessment is high despite the documented "price stickiness" of Japanese retail markets.
+  </div>
+</div>
+
+
+<!-- SECTION 2: CURRENT MARKET STATE -->
+<div class="sec" id="s2">
+  <div class="sn">Section 02</div>
+  <h2>Current Market State — December 2025</h2>
+  <p>As of the report date, the market is bifurcating. The headline MAFF weekly average (~¥4,335) obscures an important structural shift that is the central leading indicator for the thesis. High-frequency POS data reveals two distinct price segments with diverging trajectories.</p>
+
+  <div class="r2">
+    <div class="ch" style="margin:0;">
+      <div class="ct"><span>Fig. 2 — Price Segment Split (Dec 2025)</span></div>
+      <canvas id="cSegmentSplit" height="120"></canvas>
+    </div>
+    <div class="ch" style="margin:0;">
+      <div class="ct"><span>Fig. 3 — Blended Rice Market Share Expansion</span></div>
+      <canvas id="cMarketShare" height="120"></canvas>
+    </div>
+  </div>
+
+  <div class="an t">
+    <strong>The Blended Rice Signal:</strong> Blended rice (cheaper varietals mixed with 2025 harvest / foreign imports) has already fallen to <strong>¥3,870/5kg</strong> — firmly below the ¥4,200 threshold. Its market share has expanded from near-zero pre-crisis to <strong>28% of retail volume</strong> as of December 2025 (it peaked at 58% during summer reserve releases). As this segment's share grows, the volume-weighted national average must arithmetically decline. This is not a prediction — it is a mathematical identity.
+  </div>
+
+  <h4>Market Bifurcation Math</h4>
+  <div class="fm">
+    <span class="fl">Volume-Weighted Average Price Decomposition</span>
+    P<sub>avg</sub> = (w<sub>brand</sub> × P<sub>brand</sub>) + (w<sub>blend</sub> × P<sub>blend</sub>)<br>
+    Current: (<span class="hi2">0.72</span> × <span class="hi">¥4,551</span>) + (<span class="hi2">0.28</span> × <span class="hi2">¥3,870</span>) = <span class="hi">¥4,276</span> ≈ ¥4,335 observed<br><br>
+    For breach: P<sub>avg</sub> &lt; ¥4,200<br>
+    Solve for w<sub>blend</sub>: ¥4,200 = (1−w<sub>blend</sub>) × ¥4,551 + w<sub>blend</sub> × ¥3,870<br>
+    → w<sub>blend</sub> &gt; <span class="hi3">51.5%</span> (if prices hold constant)<br><br>
+    OR: any combination of <span class="hi">discount stickers</span> reducing P<sub>brand</sub> toward ¥4,200 + market share shift &lt; 51.5%.
+  </div>
+
+  <p>This decomposition clarifies the two distinct pathways to threshold breach: (1) pure volume-share shift as blended rice expands above ~52% of sales, or (2) a faster path via point-of-sale discounting on brand rice, where 10-20% discount stickers applied to the ¥4,551 product bring it directly to ¥3,641–¥4,096 — below target immediately.</p>
+
+  <h3>Wholesale Price Dynamics</h3>
+  <div class="r4">
+    <div class="cd" style="border-color:rgba(212,168,83,.3)">
+      <div class="hd" style="color:var(--gold)">2024 Harvest WS</div>
+      <div style="font-family:var(--mn);font-size:26px;font-weight:600;color:var(--gold);">¥26,485</div>
+      <div style="font-size:11px;color:var(--td);">per 60kg · Feb 2025 peak</div>
+    </div>
+    <div class="cd" style="border-color:rgba(224,92,92,.3)">
+      <div class="hd" style="color:var(--red)">Inventory Risk</div>
+      <div style="font-family:var(--mn);font-size:26px;font-weight:600;color:var(--red);">+73%</div>
+      <div style="font-size:11px;color:var(--td);">vs prior year WS price</div>
+    </div>
+    <div class="cd" style="border-color:rgba(62,207,186,.3)">
+      <div class="hd" style="color:var(--teal)">2025 Harvest WS</div>
+      <div style="font-family:var(--mn);font-size:26px;font-weight:600;color:var(--teal);">~¥19k–22k</div>
+      <div style="font-size:11px;color:var(--td);">per 60kg · est. H2 2025</div>
+    </div>
+    <div class="cd" style="border-color:rgba(91,138,245,.3)">
+      <div class="hd" style="color:var(--blue)">Reserve Release Price</div>
+      <div style="font-family:var(--mn);font-size:26px;font-weight:600;color:var(--blue);">Below</div>
+      <div style="font-size:11px;color:var(--td);">market price · MAFF discretionary</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- SECTION 3: SUPPLY RESOLUTION -->
+<div class="sec" id="s3">
+  <div class="sn">Section 03</div>
+  <h2>Supply-Side Resolution — The Capitulation Thesis</h2>
+  <p>The bear thesis on rice prices rests entirely on supply-side resolution. I identify four distinct, simultaneous supply injections, each with independently verifiable data from MAFF and USDA/FAS sources. The combined volume impact is unprecedented in the post-1999 data series.</p>
+
+  <div class="ch">
+    <div class="ct">
+      <span>Fig. 4 — Supply Injection Volume by Source (2025 Data, Thousand MT)</span>
+      <span class="tg g">Cumulative ≈ +7.3M MT vs 2024</span>
+    </div>
+    <canvas id="cSupplyInjection" height="130"></canvas>
+  </div>
+
+  <h3>3.1 — The 2025 Domestic Harvest Rebound</h3>
+  <p>The 2023 harvest devastation inadvertently created a powerful price signal that incentivized rapid supply recovery. With table rice trading at historically inflated prices, the remaining agrarian workforce executed a rational reallocation: abandoning less profitable feed crops in favor of table rice.</p>
+
+  <div class="r2">
+    <div>
+      <div class="an t">
+        <strong>MAFF Projection (2025 Table Rice):</strong> 6.8 million metric tons — a <strong>+10% year-over-year increase</strong>. This is the largest single-year domestic production rebound in over a decade.
+      </div>
+      <div class="an r">
+        <strong>Feed Rice Collapse:</strong> Subsidized feed rice production is projected to decline by <strong>−50% to 240,000 MT</strong>, as livestock operators pivot to cheaper imported corn (USDA/FAS projects Japan corn imports rising +2.2% to 15.8M MT). This frees arable land for table rice.
+      </div>
+    </div>
+    <div class="cd" style="border-color:rgba(62,207,186,.4);align-self:start;">
+      <div class="hd" style="color:var(--teal)">Harvest Comparison (MT)</div>
+      <div class="sr"><span class="sk">2023 Table Rice</span><span class="sv">~6.2M MT (damaged)</span></div>
+      <div class="sr"><span class="sk">2024 Table Rice</span><span class="sv">~6.18M MT</span></div>
+      <div class="sr"><span class="sk">2025 Table Rice</span><span class="sv" style="color:var(--teal)">6.8M MT (+10%)</span></div>
+      <div class="sr"><span class="sk">2024 Feed Rice</span><span class="sv">480,000 MT</span></div>
+      <div class="sr"><span class="sk">2025 Feed Rice</span><span class="sv" style="color:var(--grn)">240,000 MT (−50%)</span></div>
+    </div>
+  </div>
+
+  <h3>3.2 — The Strategic Stockpile Release: Policy Mechanics</h3>
+  <p>The Japanese government's strategic reserve intervention is notable not merely for its size but for its evolving delivery mechanism, which fundamentally altered its deflationary efficacy.</p>
+
+  <div class="timeline" style="margin-left:0;padding-left:32px;">
+    <div class="tl-item blue">
+      <div class="tl-date">Early 2025 — Phase 1 (Failed)</div>
+      <div class="tl-title">Traditional Bidding System</div>
+      <div class="tl-body">MAFF authorized 210,000 MT of strategic reserves (≈20% of the 910,000–1,000,000 MT total stockpile). Initial release via agricultural cooperative bidding. <strong style="color:var(--red);">Result: Complete failure</strong> — wholesalers absorbed the stock to rebuild their own depleted inventories. Cheap rice never reached consumers. Retail prices did not respond.</div>
+    </div>
+    <div class="tl-item gold">
+      <div class="tl-date">May 2025 — Phase 2 (Effective)</div>
+      <div class="tl-title">Discretionary Direct Retail Contracts</div>
+      <div class="tl-body">MAFF pivoted to discretionary contracts, selling directly to major retail chains at significantly depressed prices — bypassing the wholesale bottleneck entirely. <strong style="color:#fff;">This is the mechanism that matters</strong>: hundreds of thousands of tons of below-market rice is now on supermarket shelves, competing directly with the expensive 2024 harvest inventory.</div>
+    </div>
+  </div>
+
+  <div class="fm">
+    <span class="fl">Strategic Reserve Impact Assessment</span>
+    Total Reserve (MAFF): <span class="hi">~910,000 – 1,000,000 MT</span> (established 1995 post-Heisei Rice Riots)<br>
+    Volume Released (2025): <span class="hi2">210,000 MT</span> (≈21% of total strategic reserve)<br>
+    Delivered to Retail (Phase 2): Direct contracts at sub-market pricing → <span class="hi">deflationary at POS</span><br>
+    Precedent: First non-emergency release since reserve establishment — <span class="hi3">unprecedented policy signal</span>
+  </div>
+
+  <h3>3.3 — The WTO Import Surge: Breaking the Tariff Wall</h3>
+  <p>The most quantitatively compelling evidence of supply-side resolution is Japan's radical shift in rice import behavior. This is a structural break in a data series that had remained functionally dormant for decades.</p>
+
+  <div class="ch">
+    <div class="ct">
+      <span>Fig. 5 — Japan Private Out-of-Quota Rice Imports (MT) · Historical vs 2025</span>
+      <span class="tg r">+9,500% YoY · Source: USDA/FAS</span>
+    </div>
+    <canvas id="cImports" height="120"></canvas>
+  </div>
+
+  <div class="fm">
+    <span class="fl">The International Arbitrage Calculation</span>
+    WTO Out-of-Quota Tariff: <span class="hi3">¥341/kg</span> (historically prohibitive)<br>
+    Pre-crisis domestic wholesale: ~¥255/kg → import unviable (tariff alone exceeds price)<br>
+    Crisis domestic wholesale: ~¥441/kg → import viable even after ¥341/kg tariff<br><br>
+    Arbitrage window opened when: P<sub>domestic_WS</sub> &gt; P<sub>international</sub> + <span class="hi3">¥341/kg</span><br>
+    Result (2025): <span class="hi">96,834 MT</span> private imports vs ~1,000 MT historically<br>
+    US share: <span class="hi2">75,638 MT</span> (78%) — primarily California Japonica varietals<br>
+    Monthly peak: <span class="hi">26,397 MT</span> in July 2025 alone
+  </div>
+
+  <div class="an g">
+    <strong>Critical Price-Ceiling Mechanism:</strong> The existence of viable imports — even at the punitive ¥341/kg tariff rate — establishes a hard mathematical ceiling on domestic wholesale prices. Domestic wholesalers simply cannot price above the import-equivalent price. As long as global Californian Japonica remains cheaper than domestic alternatives plus the tariff, this ceiling is self-enforcing. The tariff wall has been breached — this represents a structural regime change in Japanese rice market dynamics.
+  </div>
+
+  <h4>Aggregate Supply Injection Summary (2025)</h4>
+  <table class="tbl">
+    <thead><tr><th>Mechanism</th><th>Volume (MT)</th><th>YoY Change</th><th>Market Impact</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Domestic Table Rice Production</td><td style="color:#fff;">6,800,000</td><td><span class="tg p">+10%</span></td><td>Saturates wholesale silos; ends physical scarcity</td><td><span class="tg p">Delivered</span></td></tr>
+      <tr><td>Feed Rice Reduction (Table-Equivalent)</td><td style="color:#fff;">240,000 freed</td><td><span class="tg p">−50% feed</span></td><td>Additional land allocation; corn substitution</td><td><span class="tg p">Confirmed</span></td></tr>
+      <tr><td>MAFF Strategic Reserve Release</td><td style="color:#fff;">210,000</td><td><span class="tg g">Unprecedented</span></td><td>Direct retail injection at below-market pricing</td><td><span class="tg p">Active</span></td></tr>
+      <tr><td>SBS Minimum Access Quota (Table)</td><td style="color:#fff;">100,000</td><td><span class="tg x">Quota Limit</span></td><td>Fully exhausted; adds to consumer supply</td><td><span class="tg p">Deployed</span></td></tr>
+      <tr><td>Private Out-of-Quota Imports</td><td style="color:#fff;">96,834</td><td><span class="tg r">+9,500%</span></td><td>Breaks domestic pricing monopoly; establishes ceiling</td><td><span class="tg p">Active</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- SECTION 4: DEMAND DESTRUCTION -->
+<div class="sec" id="s4">
+  <div class="sn">Section 04</div>
+  <h2>Demand Destruction &amp; Carbohydrate Substitution</h2>
+  <p>The supply-side analysis alone would support the thesis. But simultaneous demand-side collapse makes the mean reversion near-certain. The foundational error in bullish rice pricing models is treating consumer demand as inelastic. It is not — it is elastically bounded by the price of substitute carbohydrates.</p>
+
+  <h3>4.1 — Secular Rice Consumption Decline</h3>
+  <p>The demand destruction observed in 2025 is not a crisis-induced aberration. It is an acceleration of a six-decade secular trend that has already reduced per capita rice consumption by more than half.</p>
+
+  <div class="ch">
+    <div class="ct">
+      <span>Fig. 6 — Japan Per Capita Rice Consumption (kg/year) · 1962–2025</span>
+      <span class="tg x">Source: MAFF Annual Data</span>
+    </div>
+    <canvas id="cRiceConsumption" height="120"></canvas>
+  </div>
+
+  <div class="r2">
+    <div class="an b">
+      <strong>2011 Structural Crossover:</strong> For the first time in Japan's history, the average household began spending more annually on <strong>bread than on rice</strong>. This is not a temporary trend — it reflects irreversible dietary shifts driven by urbanization, convenience culture, and demographic change.
+    </div>
+    <div class="an r">
+      <strong>2024/25 Marketing Year:</strong> Overall rice consumption declined <strong>−1.8% to 8.1 million tons</strong>, even before the full price shock was absorbed. The financial breaking point for consumer loyalty to rice has been definitively crossed at ¥4,300+/5kg.
+    </div>
+  </div>
+
+  <h3>4.2 — The Carbohydrate Substitution Price Model</h3>
+  <p>The quantitative mechanism is straightforward: rice and wheat-based products (bread, udon, soba, pasta) are highly substitutable staple carbohydrates in the modern Japanese diet. When rice prices doubled but bread prices rose only ~4% YoY, households accelerated their preexisting wheat adoption.</p>
+
+  <div class="ch">
+    <div class="ct">
+      <span>Fig. 7 — Food Inflation Spread: Rice vs Bread/Noodles · 2024–2025</span>
+      <span class="tg x">Source: Japan CPI · MAFF</span>
+    </div>
+    <canvas id="cInflationSpread" height="120"></canvas>
+  </div>
+
+  <div class="fm">
+    <span class="fl">Carbohydrate Price Ceiling Formula (P_substitute → P_rice ceiling)</span>
+    P<sub>substitute</sub> = f(W<sub>global</sub> × FX<sub>JPY/USD</sub>) + processing margin<br><br>
+    Where: W<sub>global</sub> = global wheat spot price (Dec 2025: declining; WASDE: 1,097.8M ton supply)<br>
+    FX<sub>JPY/USD</sub> = strengthening Yen (BOJ normalization → narrowing US-JP yield differential)<br><br>
+    As W<sub>global</sub> ↓ and JPY strengthens → P<sub>substitute</sub> ↓ → P<sub>rice_ceiling</sub> ↓<br>
+    <span class="hi3">Domestic rice wholesalers cannot maintain ¥4,300+ when equivalent calories from wheat are cheapening rapidly</span>
+  </div>
+
+  <div class="r3">
+    <div class="cd">
+      <div class="hd" style="color:var(--gold)">Rice (5kg, Dec '25)</div>
+      <div style="font-family:var(--mn);font-size:28px;font-weight:600;color:var(--red)">¥4,335</div>
+      <div style="font-size:11px;color:var(--td);margin-top:4px;">+99.9% vs Jan 2024</div>
+    </div>
+    <div class="cd">
+      <div class="hd" style="color:var(--blue)">Bread (Shokupan, per loaf)</div>
+      <div style="font-family:var(--mn);font-size:28px;font-weight:600;color:var(--blue)">+4%</div>
+      <div style="font-size:11px;color:var(--td);margin-top:4px;">YoY increase 2025</div>
+    </div>
+    <div class="cd">
+      <div class="hd" style="color:var(--teal)">Udon/Soba Noodles</div>
+      <div style="font-family:var(--mn);font-size:28px;font-weight:600;color:var(--teal)">Stable</div>
+      <div style="font-size:11px;color:var(--td);margin-top:4px;">Price remained flat 2025</div>
+    </div>
+  </div>
+
+  <h3>4.3 — The Fiscal Year-End Catalytic Event</h3>
+  <p>The timing mechanism that converts latent supply pressure into realized retail price declines is the Japanese corporate fiscal calendar. This is not a soft catalyst — it is a contractual obligation with direct financial consequences for non-compliance.</p>
+
+  <div class="ch">
+    <div class="ct"><span>Fig. 8 — Supermarket Inventory Clearance Pressure Timeline</span></div>
+    <canvas id="cFiscalCalendar" height="100"></canvas>
+  </div>
+
+  <div class="an g">
+    <strong>The Fiscal Year-End Mechanism:</strong> Virtually all major Japanese retailers (Aeon, Ito-Yokado, Life Corporation) operate February/March fiscal year-ends. Holding expensive, stagnant rice inventory into year-end (1) inflates COGS, (2) destroys working capital metrics, (3) impairs ROIC, and (4) triggers negative management reviews. The corporate mandate to clear inventory before books close is non-negotiable. This creates a guaranteed, calendar-driven discounting event in January–February 2026. Aeon's 113% surge in Topvalu "BESTPRICE" private-label sales already confirms consumer preference pressure is operating — managers know they need to discount.
+  </div>
+</div>
+
+
+<!-- SECTION 5: FX & MACRO -->
+<div class="sec" id="s5">
+  <div class="sn">Section 05</div>
+  <h2>FX &amp; Macroeconomic Transmission Mechanisms</h2>
+  <p>Beyond the domestic agricultural dynamics, two external variables act as powerful amplifiers of the deflationary thesis: BOJ monetary normalization and global wheat market conditions. Both are acting in the same direction — downward pressure on Japanese food prices.</p>
+
+  <h3>5.1 — Bank of Japan Rate Normalization</h3>
+  <div class="r2">
+    <div class="ch" style="margin:0;">
+      <div class="ct"><span>Fig. 9 — BOJ Policy Rate vs USD/JPY (2023–2025)</span></div>
+      <canvas id="cBOJRates" height="130"></canvas>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="cd" style="border-color:rgba(212,168,83,.4);">
+        <div class="hd" style="color:var(--gold)">BOJ Policy Rate (Late 2025)</div>
+        <div style="font-family:var(--mn);font-size:24px;font-weight:600;color:var(--gold)">0.5%</div>
+        <div style="font-size:12px;color:var(--td);margin-top:4px;">Highest level in ~17 years. Governor Ueda: data-driven hawkish trajectory continues.</div>
+      </div>
+      <div class="cd" style="border-color:rgba(91,138,245,.4);">
+        <div class="hd" style="color:var(--blue)">USD/JPY (Dec 2025)</div>
+        <div style="font-family:var(--mn);font-size:24px;font-weight:600;color:var(--blue)">~148–152</div>
+        <div style="font-size:12px;color:var(--td);margin-top:4px;">Strengthening trend as US-JP yield differential narrows.</div>
+      </div>
+      <div class="cd" style="border-color:rgba(62,207,186,.4);">
+        <div class="hd" style="color:var(--teal)">Wheat Import Cost Effect</div>
+        <div style="font-family:var(--mn);font-size:24px;font-weight:600;color:var(--teal)">↓ Falling</div>
+        <div style="font-size:12px;color:var(--td);margin-top:4px;">MAFF wheat price cut confirmed Oct 2025 → Mar 2026. Bread remains cheap.</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>5.2 — Global Wheat Glut as the Price Ceiling Anchor</h3>
+  <div class="ch">
+    <div class="ct">
+      <span>Fig. 10 — Global Wheat Supply vs Japan Rice Price: Inverse Relationship</span>
+      <span class="tg g">WASDE Dec 2025: 1,097.8M ton global wheat supply</span>
+    </div>
+    <canvas id="cWheatRice" height="110"></canvas>
+  </div>
+
+  <div class="an v">
+    <strong>WASDE December 2025 data:</strong> Global wheat supplies projected at 1,097.8 million tons — record highs driven by bumper harvests in Argentina, Australia, and Canada. Global wheat trade and ending stocks revised upward. This is the most important macroeconomic backstop for the substitution thesis: it is structurally impossible for Japanese rice to sustain ¥4,300+ pricing when the global wheat market is in a sustained supply glut.
+  </div>
+
+  <div class="an b">
+    <strong>MAFF Wheat Policy Action (September 2025):</strong> MAFF announced a further decrease in the government selling price of imported wheat, effective October 2025 through March 2026. This is a direct policy intervention that caps the retail price of bread — and therefore caps the price that consumers will accept for rice. This is mechanistically deflationary for rice prices.
+  </div>
+</div>
+
+
+<!-- SECTION 6: PRICE MODEL -->
+<div class="sec" id="s6">
+  <div class="sn">Section 06</div>
+  <h2>Quantitative Price Forecast Model</h2>
+  <p>The model synthesizes the supply, demand, and macro factors into a probabilistic price path framework. Given the absence of a Japanese rice futures market (suspended by the government in 2021 due to agricultural cooperative lobbying), I construct a scenario-based mean reversion model using historical price stickiness parameters and the known inventory-clearing timeline.</p>
+
+  <h3>6.1 — Model Architecture</h3>
+  <div class="fm">
+    <span class="fl">Price Path Model — Structural Components</span>
+    P(t) = P<sub>sticky</sub>(t) + ΔP<sub>supply_glut</sub>(t) + ΔP<sub>demand_destruction</sub>(t) + ΔP<sub>fiscal_clearing</sub>(t) + ε(t)<br><br>
+    Where:<br>
+    P<sub>sticky</sub>(t): Baseline "sticky" price — assumed to decline at ~1–2%/month absent forcing events<br>
+    ΔP<sub>supply_glut</sub>: Wholesale cost pass-through as 2025 harvest saturates silos → ~−¥50 to −¥80/month<br>
+    ΔP<sub>demand_destruction</sub>: Volume-weighted avg shift as blended rice share expands → ~−¥20 to −¥40/month<br>
+    ΔP<sub>fiscal_clearing</sub>: Concentrated discount event Jan–Feb 2026 → −¥100 to −¥200 one-time pulse<br>
+    ε(t): Residual stochastic noise (demand shocks, political intervention, weather)
+  </div>
+
+  <h3>6.2 — Interactive Scenario Simulator</h3>
+  <div class="ch">
+    <div class="ct"><span>Fig. 11 — Price Forecast Scenarios (Dec 2025 → Mar 2026)</span><span class="tg g">Interactive</span></div>
+    <canvas id="cForecast" height="140"></canvas>
+  </div>
+
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+    <button class="sim-btn active" onclick="setScenario('base')">Base Case (−3.2%/mo)</button>
+    <button class="sim-btn" onclick="setScenario('bull')">Bull Thesis (−5.1%/mo)</button>
+    <button class="sim-btn" onclick="setScenario('bear')">Bear Case (−1.4%/mo)</button>
+    <button class="sim-btn" onclick="setScenario('tail')">Tail Risk (+0.5%/mo)</button>
+  </div>
+
+  <div class="scenario-out" id="scenarioOut">
+    <div class="s-line"><span class="s-k">Scenario</span><span class="s-v" id="sName">Base Case</span></div>
+    <div class="s-line"><span class="s-k">Monthly Decline Rate</span><span class="s-v" id="sRate">−3.2% / month</span></div>
+    <div class="s-line"><span class="s-k">Jan 2026 Projected Price</span><span class="s-v" id="sJan">—</span></div>
+    <div class="s-line"><span class="s-k">Feb 2026 Projected Price</span><span class="s-v" id="sFeb">—</span></div>
+    <div class="s-line"><span class="s-k">Mar 2026 Projected Price</span><span class="s-v" id="sMar">—</span></div>
+    <div class="s-line"><span class="s-k">Breach ¥4,200 Before Mar 9?</span><span class="s-v" id="sBreach" style="color:var(--teal)">—</span></div>
+    <div class="s-line"><span class="s-k">Assumed Catalyst</span><span class="s-v" id="sCatalyst">Fiscal year-end clearing + blended rice share expansion</span></div>
+  </div>
+
+  <h3>6.3 — Scenario Probability Weights</h3>
+  <div class="ch">
+    <div class="ct"><span>Fig. 12 — Scenario Probability Distribution</span></div>
+    <canvas id="cProbDist" height="110"></canvas>
+  </div>
+
+  <div class="r2">
+    <div>
+      <table class="tbl">
+        <thead><tr><th>Scenario</th><th>P(Breach)</th><th>Weight</th><th>Dec '25→ Mar '26</th></tr></thead>
+        <tbody>
+          <tr><td>Bull Thesis</td><td><span class="tg p">YES</span></td><td><span style="color:var(--teal);font-family:var(--mn);">25%</span></td><td style="color:var(--teal);font-family:var(--mn);">¥3,820–3,990</td></tr>
+          <tr><td>Base Case</td><td><span class="tg p">YES</span></td><td><span style="color:var(--gold);font-family:var(--mn);">47%</span></td><td style="color:var(--gold);font-family:var(--mn);">¥4,050–4,180</td></tr>
+          <tr><td>Bear Case</td><td><span class="tg n">MARGINAL</span></td><td><span style="color:var(--or);font-family:var(--mn);">20%</span></td><td style="color:var(--or);font-family:var(--mn);">¥4,190–4,260</td></tr>
+          <tr><td>Tail Risk</td><td><span class="tg n">NO</span></td><td><span style="color:var(--red);font-family:var(--mn);">8%</span></td><td style="color:var(--red);font-family:var(--mn);">¥4,290–4,400</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cd" style="border-color:rgba(212,168,83,.4);">
+      <div class="hd" style="color:var(--gold)">Probability Summary</div>
+      <div class="sr"><span class="sk">P(Breach before Mar 9)</span><span class="sv" style="color:var(--gold)">~72%</span></div>
+      <div class="sr"><span class="sk">Bull + Base scenarios</span><span class="sv">72% combined</span></div>
+      <div class="sr"><span class="sk">Bear (marginal)</span><span class="sv" style="color:var(--or)">some overlap</span></div>
+      <div class="sr"><span class="sk">Metaculus consensus</span><span class="sv">Aligns — high probability</span></div>
+      <div class="sr"><span class="sk">Confidence level</span><span class="sv" style="color:var(--gold)">HIGH CONVICTION</span></div>
+    </div>
+  </div>
+
+  <h3>6.4 — Price Stickiness: The Primary Risk</h3>
+  <p>The most significant model risk is downward price stickiness in Japanese retail. Supermarkets have historically been reluctant to pass wholesale cost reductions to consumers — they prefer to rebuild margin after a squeeze. The fiscal year-end mechanism is the specific catalyst that overrides this behavioral tendency, but its strength depends on the magnitude of inventory overhang.</p>
+
+  <div class="ch">
+    <div class="ct"><span>Fig. 13 — Interactive: Supply Glut vs Price Stickiness Sensitivity</span><span class="tg g">Adjust parameters</span></div>
+    <div class="slider-wrap">
+      <div class="slider-label"><span>Supply Overhang Pressure</span><span id="supplyVal">Medium (Base)</span></div>
+      <input type="range" id="supplySlider" min="1" max="5" value="3" oninput="updateSensitivity()">
+    </div>
+    <div class="slider-wrap">
+      <div class="slider-label"><span>Retail Price Stickiness</span><span id="stickyVal">Medium</span></div>
+      <input type="range" id="stickySlider" min="1" max="5" value="3" oninput="updateSensitivity()">
+    </div>
+    <div class="slider-wrap">
+      <div class="slider-label"><span>Fiscal Year-End Discount Intensity</span><span id="fiscalVal">Medium</span></div>
+      <input type="range" id="fiscalSlider" min="1" max="5" value="3" oninput="updateSensitivity()">
+    </div>
+    <canvas id="cSensitivity" height="110"></canvas>
+    <div class="scenario-out" style="margin-top:12px;">
+      <div class="s-line"><span class="s-k">Model Output Price (Feb 2026)</span><span class="s-v" id="sensPrice">—</span></div>
+      <div class="s-line"><span class="s-k">Breach Probability (adjusted)</span><span class="s-v" id="sensProb">—</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- SECTION 7: EQUITY PORTFOLIO -->
+<div class="sec" id="s7">
+  <div class="sn">Section 07</div>
+  <h2>Proxy Equity Portfolio: Capturing the Alpha</h2>
+  <p>The 2021 suspension of Japanese rice futures trading by the government (under agricultural cooperative lobbying) eliminates the direct commodity play. The thesis must be expressed through a long/short proxy equity portfolio targeting two exposure types: (1) entities facing catastrophic inventory write-downs, and (2) entities positioned for massive COGS deflation.</p>
+
+  <div class="an r">
+    <strong>Why No Direct Short?</strong> Japan historically pioneered the world's first formal futures exchange — the Dojima Rice Exchange in Osaka (established 1700s). This exchange was effectively rendered inoperable for rice futures in 2021 due to political lobbying from Japan Agricultural Cooperatives (JA-Zenchu), who argued futures enabled "dangerous speculation." The irony: the lack of a futures market contributed directly to the price spike by preventing price discovery and efficient risk transfer.
+  </div>
+
+  <div class="r2">
+    <div class="eq-card short">
+      <div class="eq-dir short">SHORT</div>
+      <div class="eq-ticker">2700.T</div>
+      <div class="eq-name">Kitoku Shinryo Co., Ltd.</div>
+      <div class="sr"><span class="sk">Market Cap</span><span class="sv">~¥15.9B</span></div>
+      <div class="sr"><span class="sk">P/E Ratio</span><span class="sv" style="color:var(--red)">2.76x (value trap)</span></div>
+      <div class="sr"><span class="sk">Trailing EPS</span><span class="sv">¥675.49</span></div>
+      <div class="sr"><span class="sk">WS Purchase Price</span><span class="sv" style="color:var(--red)">¥26,485/60kg</span></div>
+      <div style="margin-top:12px;font-size:12px;color:var(--tm);">Pure-play exposure to inventory write-downs. Bought 2024 harvest at peak crisis prices. If wholesale prices collapse with the 2025 supply glut, Kitoku faces balance-sheet-destroying mark-to-market losses. The 2.76x P/E is NOT deep value — it is peak-cycle earnings that will violently compress. Classic short setup: low multiple, maximum inventory risk.</div>
+    </div>
+    <div class="eq-card short">
+      <div class="eq-dir short">SHORT</div>
+      <div class="eq-ticker">8267.T</div>
+      <div class="eq-name">Aeon Co., Ltd.</div>
+      <div class="sr"><span class="sk">Revenue FY2025</span><span class="sv">¥10.7T</span></div>
+      <div class="sr"><span class="sk">SM Operating Profit</span><span class="sv" style="color:var(--red)">¥29.8B (↓ from ¥32.5B)</span></div>
+      <div class="sr"><span class="sk">Fiscal Year End</span><span class="sv" style="color:var(--red)">February 2026</span></div>
+      <div class="sr"><span class="sk">BESTPRICE Sales</span><span class="sv">+113% YoY</span></div>
+      <div style="margin-top:12px;font-size:12px;color:var(--tm);">Japan's apex grocery retailer is the primary entity forced to execute the fiscal year-end inventory clearance. Their supermarket division already posted declining operating profits. The 113% surge in BESTPRICE discount brand sales confirms consumers are rejecting premium-priced rice. Margin compression is the thesis — aggressive rice discounting in Jan-Feb will hit Q4 gross margins directly.</div>
+    </div>
+  </div>
+
+  <div class="r3" style="margin-top:14px;">
+    <div class="eq-card long">
+      <div class="eq-dir long">LONG</div>
+      <div class="eq-ticker">3563.T</div>
+      <div class="eq-name">Food &amp; Life Companies (Sushiro)</div>
+      <div class="sr"><span class="sk">Revenue FY2025</span><span class="sv">¥429.57B (record)</span></div>
+      <div class="sr"><span class="sk">Op Margin</span><span class="sv" style="color:var(--grn)">8.4% (↑ from 6.5%)</span></div>
+      <div class="sr"><span class="sk">P/E</span><span class="sv">41x–45x</span></div>
+      <div class="sr"><span class="sk">Overseas Rev 2026E</span><span class="sv">35% of total</span></div>
+      <div style="margin-top:10px;font-size:12px;color:var(--tm);">Japan's largest kaitenzushi chain. Rice = vast majority of physical food volume. Overseas expansion buffers downside; domestic COGS collapse will be explosive margin expansion that consensus has not priced in.</div>
+    </div>
+    <div class="eq-card long">
+      <div class="eq-dir long">LONG</div>
+      <div class="eq-ticker">7550.T</div>
+      <div class="eq-name">Zensho Holdings (Sukiya/Hamasushi)</div>
+      <div class="sr"><span class="sk">Net Sales Growth</span><span class="sv" style="color:var(--grn)">+59.1% YoY</span></div>
+      <div class="sr"><span class="sk">Global Op Margin</span><span class="sv" style="color:var(--grn)">6.6% (↑ from 5.6%)</span></div>
+      <div class="sr"><span class="sk">P/E</span><span class="sv">~34.8x</span></div>
+      <div style="margin-top:10px;font-size:12px;color:var(--tm);">One of Japan's largest single rice consumers. Massive scale means even small per-kg wholesale improvements flow directly to bottom line. Menu price stickiness ensures windfall if wholesale falls. EPS consensus upside at P/E 34.8x.</div>
+    </div>
+    <div class="eq-card long">
+      <div class="eq-dir long">LONG</div>
+      <div class="eq-ticker">2695.T</div>
+      <div class="eq-name">Kura Sushi, Inc.</div>
+      <div class="sr"><span class="sk">Exposure</span><span class="sv">Pure domestic rice</span></div>
+      <div class="sr"><span class="sk">Operating Leverage</span><span class="sv" style="color:var(--grn)">High (kaitenzushi)</span></div>
+      <div class="sr"><span class="sk">Note</span><span class="sv">US sub. has separate risks</span></div>
+      <div style="margin-top:10px;font-size:12px;color:var(--tm);">Pure-play exposure to domestic rice COGS. Even minor bulk procurement cost reductions produce non-linear net income improvement due to the high operating leverage inherent in conveyor-belt restaurant economics.</div>
+    </div>
+  </div>
+
+  <!-- Portfolio Summary Table -->
+  <div class="ch">
+    <div class="ct"><span>Fig. 14 — Portfolio Expected Risk/Return by Position</span></div>
+    <canvas id="cPortfolio" height="130"></canvas>
+  </div>
+</div>
+
+
+<!-- SECTION 8: MONITORING MATRIX -->
+<div class="sec" id="s8">
+  <div class="sn">Section 08</div>
+  <h2>High-Frequency Monitoring Matrix</h2>
+  <p>Continuous surveillance across three primary data vectors is required to actively manage the positions and validate the thesis assumption in real time. The following indicators are ranked by importance and update frequency.</p>
+
+  <h3>Primary Indicators (Weekly/Real-time)</h3>
+  <div class="ind-table">
+    <div class="ind-row ind-hdr">
+      <div>Indicator</div><div>Frequency</div><div>Current Reading</div><div>Importance</div>
+    </div>
+    <div class="ind-row" style="background:var(--s1);border-bottom:1px solid var(--bd);">
+      <div><strong style="color:#fff;">MAFF POS Blended Rice Volume Share</strong><br><span style="font-size:11px;color:var(--td);">Tracks expansion of sub-¥4,200 segment</span></div>
+      <div><span class="tg p">Weekly</span></div>
+      <div style="font-family:var(--mn);color:var(--teal);">28% share · ¥3,870/kg</div>
+      <div><div class="ind-importance"><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div></div></div>
+    </div>
+    <div class="ind-row" style="background:var(--s1);border-bottom:1px solid var(--bd);">
+      <div><strong style="color:#fff;">MAFF National Avg (¥/5kg)</strong><br><span style="font-size:11px;color:var(--td);">1,000 supermarket POS aggregate</span></div>
+      <div><span class="tg p">Weekly</span></div>
+      <div style="font-family:var(--mn);color:var(--gold);">¥4,335 (Dec 2025)</div>
+      <div><div class="ind-importance"><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div></div></div>
+    </div>
+    <div class="ind-row" style="background:var(--s1);border-bottom:1px solid var(--bd);">
+      <div><strong style="color:#fff;">Kitoku Shinryo (2700.T) Inventory Levels</strong><br><span style="font-size:11px;color:var(--td);">Wholesale silo days-on-hand buildup</span></div>
+      <div><span class="tg x">Monthly</span></div>
+      <div style="font-family:var(--mn);color:var(--red);">ELEVATED — tracking</div>
+      <div><div class="ind-importance"><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--bd2)"></div></div></div>
+    </div>
+    <div class="ind-row" style="background:var(--s1);border-bottom:1px solid var(--bd);">
+      <div><strong style="color:#fff;">Japan Chain Stores Association — Rice Sales Vol.</strong><br><span style="font-size:11px;color:var(--td);">Units sold, not revenue — detects substitution</span></div>
+      <div><span class="tg x">Monthly</span></div>
+      <div style="font-family:var(--mn);color:var(--or);">Declining volume</div>
+      <div><div class="ind-importance"><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--bd2)"></div></div></div>
+    </div>
+    <div class="ind-row" style="background:var(--s1);border-bottom:1px solid var(--bd);">
+      <div><strong style="color:#fff;">SBS Tender Results (MAFF)</strong><br><span style="font-size:11px;color:var(--td);">Monthly SBS import tender — tracks import pipeline</span></div>
+      <div><span class="tg x">Monthly</span></div>
+      <div style="font-family:var(--mn);color:var(--teal);">Quota exhausted 2025</div>
+      <div><div class="ind-importance"><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--bd2)"></div><div class="imp-dot" style="background:var(--bd2)"></div></div></div>
+    </div>
+    <div class="ind-row" style="background:var(--s1);border-bottom:1px solid var(--bd);">
+      <div><strong style="color:#fff;">USD/JPY Exchange Rate</strong><br><span style="font-size:11px;color:var(--td);">Determines import cost competitiveness</span></div>
+      <div><span class="tg p">Real-time</span></div>
+      <div style="font-family:var(--mn);color:var(--blue);">~148–152 · strengthening</div>
+      <div><div class="ind-importance"><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--bd2)"></div><div class="imp-dot" style="background:var(--bd2)"></div></div></div>
+    </div>
+    <div class="ind-row" style="background:var(--s1);border-bottom:1px solid var(--bd);">
+      <div><strong style="color:#fff;">BOJ Policy Rate Decision</strong><br><span style="font-size:11px;color:var(--td);">Next decision — any surprise hike tightens budgets further</span></div>
+      <div><span class="tg v">Quarterly</span></div>
+      <div style="font-family:var(--mn);color:var(--gold);">0.5% · hawkish</div>
+      <div><div class="ind-importance"><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--bd2)"></div><div class="imp-dot" style="background:var(--bd2)"></div></div></div>
+    </div>
+    <div class="ind-row" style="background:var(--s1);border-bottom:1px solid var(--bd);">
+      <div><strong style="color:#fff;">Tokyo CPI: Rice vs Cereals/Bread</strong><br><span style="font-size:11px;color:var(--td);">Measures substitution velocity in real time</span></div>
+      <div><span class="tg x">Monthly</span></div>
+      <div style="font-family:var(--mn);color:var(--red);">Food CPI: +7.2% vs Gen CPI: +3.3%</div>
+      <div><div class="ind-importance"><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--bd2)"></div><div class="imp-dot" style="background:var(--bd2)"></div></div></div>
+    </div>
+    <div class="ind-row" style="background:var(--s1);border-bottom:1px solid var(--bd);">
+      <div><strong style="color:#fff;">USDA WASDE — Global Wheat Stocks</strong><br><span style="font-size:11px;color:var(--td);">Global wheat supply anchors the rice price ceiling</span></div>
+      <div><span class="tg x">Monthly</span></div>
+      <div style="font-family:var(--mn);color:var(--teal);">1,097.8M tons · record high</div>
+      <div><div class="ind-importance"><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--bd2)"></div><div class="imp-dot" style="background:var(--bd2)"></div><div class="imp-dot" style="background:var(--bd2)"></div></div></div>
+    </div>
+    <div class="ind-row" style="background:var(--s1);border-bottom:1px solid var(--bd);">
+      <div><strong style="color:#fff;">JA-Zenchu Policy Announcements</strong><br><span style="font-size:11px;color:var(--td);">Agricultural cooperative lobbying — any intervention to support prices</span></div>
+      <div><span class="tg v">Ad hoc</span></div>
+      <div style="font-family:var(--mn);color:var(--tm);">Monitoring</div>
+      <div><div class="ind-importance"><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--bd2)"></div><div class="imp-dot" style="background:var(--bd2)"></div><div class="imp-dot" style="background:var(--bd2)"></div></div></div>
+    </div>
+    <div class="ind-row" style="background:var(--s1);border-bottom:1px solid var(--bd);">
+      <div><strong style="color:#fff;">Aeon / Major Retailer Discount Activity</strong><br><span style="font-size:11px;color:var(--td);">POS discount sticker frequency — leading indicator of fiscal clearing</span></div>
+      <div><span class="tg p">Weekly</span></div>
+      <div style="font-family:var(--mn);color:var(--gold);">20–30% stickers emerging</div>
+      <div><div class="ind-importance"><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--bd2)"></div><div class="imp-dot" style="background:var(--bd2)"></div></div></div>
+    </div>
+    <div class="ind-row" style="background:var(--s1);border-bottom:1px solid var(--bd);">
+      <div><strong style="color:#fff;">Japan Consumer Confidence Index</strong><br><span style="font-size:11px;color:var(--td);">Overall vs "living conditions" sub-index — measures budget pressure</span></div>
+      <div><span class="tg x">Monthly</span></div>
+      <div style="font-family:var(--mn);color:var(--or);">Improving overall; food anxiety persists</div>
+      <div><div class="ind-importance"><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--bd2)"></div><div class="imp-dot" style="background:var(--bd2)"></div><div class="imp-dot" style="background:var(--bd2)"></div></div></div>
+    </div>
+    <div class="ind-row" style="background:var(--s1);">
+      <div><strong style="color:#fff;">2026 Weather / Growing Season Alerts</strong><br><span style="font-size:11px;color:var(--td);">Any early 2026 climate anomaly that threatens next harvest</span></div>
+      <div><span class="tg v">Ad hoc</span></div>
+      <div style="font-family:var(--mn);color:var(--tm);">Normal conditions · watch</div>
+      <div><div class="ind-importance"><div class="imp-dot" style="background:var(--red)"></div><div class="imp-dot" style="background:var(--bd2)"></div><div class="imp-dot" style="background:var(--bd2)"></div><div class="imp-dot" style="background:var(--bd2)"></div><div class="imp-dot" style="background:var(--bd2)"></div></div></div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;font-family:var(--mn);font-size:10px;color:var(--tm);">
+    <div style="display:flex;align-items:center;gap:6px;"><div class="imp-dot" style="background:var(--red)"></div> Critical</div>
+    <div style="display:flex;align-items:center;gap:6px;"><div class="imp-dot" style="background:var(--or)"></div> High</div>
+    <div style="display:flex;align-items:center;gap:6px;"><div class="imp-dot" style="background:var(--gold)"></div> Medium</div>
+    <div style="display:flex;align-items:center;gap:6px;"><div class="imp-dot" style="background:var(--bd2)"></div> Low</div>
+  </div>
+
+  <!-- Monitoring Dashboard -->
+  <h3>Live Monitoring Dashboard</h3>
+  <div class="kpi-grid">
+    <div class="kpi-item">
+      <div class="kpi-name">Current Avg Price (Dec 2025)</div>
+      <div class="kpi-val" style="color:var(--red)">¥4,335</div>
+      <div class="kpi-sub">¥135 above ¥4,200 target (3.1% gap)</div>
+      <div class="kpi-bar"><div class="kpi-bfill" style="width:85%;background:var(--red)"></div></div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-name">Blended Rice Market Share</div>
+      <div class="kpi-val" style="color:var(--teal)">28%</div>
+      <div class="kpi-sub">Target for breach: ~52% share (or brand discounts)</div>
+      <div class="kpi-bar"><div class="kpi-bfill" style="width:28%;background:var(--teal)"></div></div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-name">Private Imports YoY Growth</div>
+      <div class="kpi-val" style="color:var(--gold)">+9,500%</div>
+      <div class="kpi-sub">96,834 MT in 2025 vs ~1,000 MT historically</div>
+      <div class="kpi-bar"><div class="kpi-bfill" style="width:100%;background:var(--gold)"></div></div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-name">Days to Fiscal Year-End (Feb)</div>
+      <div class="kpi-val" style="color:var(--blue)">~60</div>
+      <div class="kpi-sub">Aeon FYE: February 2026 — clearing pressure rising</div>
+      <div class="kpi-bar"><div class="kpi-bfill" style="width:72%;background:var(--blue)"></div></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- SECTION 9: ASSESSMENT -->
+<div class="sec" id="s9">
+  <div class="sn">Section 09</div>
+  <h2>Thesis Assessment: Strengths, Weaknesses &amp; Improvements</h2>
+
+  <h3>Structural Strengths</h3>
+  <div class="r2">
+    <div class="an t">
+      <strong>S1 — Multiple Independent Catalysts:</strong> The thesis does not depend on any single factor. The supply glut (harvest + reserves + imports), the fiscal year-end event, and the carbohydrate substitution are all independently operating. Even if one fails, the others likely suffice.
+    </div>
+    <div class="an t">
+      <strong>S2 — Low Bar to Clear:</strong> Only a 3.12% price decline from December levels is required. Given the magnitude of supply forces, this is a low-hurdle condition that is difficult to prevent even with active government intervention.
+    </div>
+    <div class="an t">
+      <strong>S3 — Hard Calendar Catalyst:</strong> The fiscal year-end mechanism is contractual, not discretionary. Aeon and other major retailers cannot simply choose to carry overpriced inventory into March without severe financial consequences.
+    </div>
+    <div class="an t">
+      <strong>S4 — Verifiable Data Sources:</strong> The supply injection numbers (MAFF harvest projections, USDA/FAS import data, government stockpile release volumes) are sourced from official government agencies — not estimates or models.
+    </div>
+  </div>
+
+  <h3>Key Weaknesses &amp; Assumptions</h3>
+  <div class="r2">
+    <div class="an r">
+      <strong>W1 — Price Stickiness Underestimation:</strong> Japanese retail markets have historically demonstrated extreme downward price rigidity. Supermarket managers may prefer to hold inventory at cost (accepting lower turnover) rather than discount publicly, particularly for a culturally sensitive staple. The fiscal year-end forcing mechanism may not be as powerful as modeled.
+    </div>
+    <div class="an r">
+      <strong>W2 — JA-Zenchu Political Intervention Risk:</strong> Japan Agricultural Cooperatives are politically powerful and historically successful at influencing MAFF policy. A coordinated refusal to lower wholesale prices, or political pressure to restrict imports or halt reserve releases, could extend the dislocation. This is a genuine tail risk.
+    </div>
+    <div class="an r">
+      <strong>W3 — Measurement Lag:</strong> The MAFF weekly average is a lagging indicator. Even if actual shelf prices breach ¥4,200 in supermarkets, the official data may not confirm this until weeks later. The March 9, 2026 deadline may be met at the shelf level but missed in the official data series.
+    </div>
+    <div class="an r">
+      <strong>W4 — Tourism Demand Remains Elevated:</strong> With 2025 arrivals projected at 42.7 million visitors, commercial rice demand from the hospitality sector remains above pre-crisis levels. This provides a partial offset to the supply glut — though the magnitude is insufficient to prevent the thesis from playing out.
+    </div>
+    <div class="an r">
+      <strong>W5 — Wholesale ≠ Retail Transmission:</strong> The model assumes that wholesale price declines will pass through to retail within the thesis window. Historical data shows this transmission can take 8–12 weeks. If wholesale prices fall in January, retail may not fully reflect this until March or April.
+    </div>
+    <div class="an r">
+      <strong>W6 — Single-Season Data Point:</strong> The 2025 harvest improvement is a one-year data point in a demographic declining-farmer context. If 2026 growing conditions worsen, the market may re-price structural agricultural risk upward — though this is irrelevant for the March 2026 deadline.
+    </div>
+  </div>
+
+  <h3>Specific Areas for Model Improvement</h3>
+  <div class="timeline" style="margin-left:0;padding-left:32px;">
+    <div class="tl-item gold">
+      <div class="tl-title">I1 — Granular POS Data by Region</div>
+      <div class="tl-body">The current model uses national average POS data. Regional granularity (Tokyo vs. rural Tohoku) would significantly improve forecast precision. Urban consumers in Tokyo tend to have higher willingness-to-pay for premium rice; rural consumers (closer to production) may already be seeing sub-¥4,200 prices. Disaggregated data would refine the probability estimate substantially.</div>
+    </div>
+    <div class="tl-item blue">
+      <div class="tl-title">I2 — Wholesale Price Index Construction</div>
+      <div class="tl-body">The thesis would benefit from a constructed wholesale price index that leads the retail data by the empirically measured 8–12 week transmission lag. If we had monthly Kitoku wholesale transaction data, we could forecast retail prices with 2–3 months of advance warning, rather than relying on the lagged MAFF POS release.</div>
+    </div>
+    <div class="tl-item teal">
+      <div class="tl-title">I3 — E-Commerce Price Scraping</div>
+      <div class="tl-body">Real-time scraping of Amazon Japan, Rakuten, and major retailer e-commerce platforms would provide a higher-frequency, lower-latency price signal than the weekly MAFF POS data. E-commerce prices typically move faster than in-store prices and act as leading indicators for physical retail discounting.</div>
+    </div>
+    <div class="tl-item red">
+      <div class="tl-title">I4 — JA-Zenchu Sentiment Index</div>
+      <div class="tl-body">The single largest political risk — cooperative intervention to support prices — is currently monitored via news alert only. A systematic sentiment analysis of JA-Zenchu press releases, Diet committee transcripts referencing agricultural policy, and LDP agricultural committee meeting minutes would provide early warning of potential policy reversals.</div>
+    </div>
+    <div class="tl-item gold">
+      <div class="tl-title">I5 — Monte Carlo Simulation with Full Uncertainty Quantification</div>
+      <div class="tl-body">The current scenario analysis assigns discrete probabilities to discrete scenarios. A proper Monte Carlo simulation would model stochastic harvest shock, import volume uncertainty, and retailer discounting intensity as continuous distributions, producing a full probability density function of March 2026 prices rather than point estimates.</div>
+    </div>
+  </div>
+
+  <!-- FINAL CONCLUSION -->
+  <div class="conc">
+    <h3>Quantitative Verdict</h3>
+    <p style="color:#c0c4d8;">Based on the systematic analysis of supply-side resolution, demand destruction mechanics, fiscal-year-end calendar forcing, and macroeconomic transmission via FX and global wheat dynamics, I assign a <strong style="color:var(--gold);">~72% probability</strong> that the MAFF national average retail rice price will breach the ¥4,200/5kg threshold before March 9, 2026.</p>
+    <p style="color:#c0c4d8;">The thesis is not predicated on an aggressive price collapse — it requires only a 3.12% decline from the December 2025 print of ¥4,335. The convergence of four independent deflationary forces (harvest glut + strategic reserve injection + WTO import surge + fiscal year-end discounting) makes this a high-conviction call.</p>
+    <p style="color:#c0c4d8;">The primary risk to the thesis is downward price stickiness in Japanese retail — a well-documented behavioral phenomenon — combined with the political power of JA-Zenchu to influence MAFF policy. Neither risk is sufficient to prevent breach given the low mathematical hurdle, but they could delay it beyond the March 9 deadline.</p>
+    <p style="color:#c0c4d8;margin-bottom:0;"><strong style="color:#fff;">Portfolio Expression:</strong> Long Food & Life (3563.T) + Zensho (7550.T) against short Kitoku Shinryo (2700.T) + selective short Aeon (8267.T) supermarket segment. Size positions asymmetrically: the long book has a shorter-term EPS catalyst; the short book requires tolerance for the "low-multiple value trap" dynamic that may persist until the write-down is publicly confirmed in Q4 earnings.</p>
+  </div>
+
+  <div style="font-family:var(--mn);font-size:10px;color:var(--td);margin-top:32px;padding-top:16px;border-top:1px solid var(--bd);">
+    QUANTITATIVE RESEARCH REPORT · PREPARED: DECEMBER 2025 · THIS DOCUMENT IS FOR INTERNAL PORTFOLIO ANALYSIS PURPOSES ONLY.
+    ALL DATA SOURCED FROM MAFF, USDA/FAS, BOJ, USDA WASDE, AND COMPANY FILINGS. THIS IS NOT INVESTMENT ADVICE.
+  </div>
+</div>
+
+</div><!-- /w -->
+
+<script>
+Chart.defaults.color = '#7a7f9a';
+Chart.defaults.font.family = "'IBM Plex Mono', monospace";
+Chart.defaults.font.size = 9;
+Chart.defaults.elements.point.radius = 2;
+Chart.defaults.elements.point.hoverRadius = 3;
+Chart.defaults.plugins.legend.labels.boxWidth = 8;
+Chart.defaults.plugins.legend.labels.padding = 8;
+
+const C = {
+  bg:'#0a0b0f', s1:'#111218', s2:'#1a1c26',
+  bd:'#252838', bd2:'#2e3250',
+  gold:'#d4a853', blue:'#5b8af5', teal:'#3ecfba',
+  red:'#e05c5c', vio:'#9b72f5', or:'#f5894b', grn:'#4caf7d', tm:'#7a7f9a'
+};
+
+// Animate probability meter
+setTimeout(()=>{document.getElementById('probFill').style.width='72%';},400);
+
+// ── FIG 1: PRICE HISTORY ──────────────────────────────────────
+const months = ['Jan 24','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan 25','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec 25'];
+const avgPrice = [2168,2185,2210,2240,2260,2290,2350,2750,3200,3400,3520,3550,3580,3650,3720,3820,3950,4050,4150,4200,4280,4310,4320,4335];
+const brandPrice = [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,4420,4480,4520,4551];
+const blendPrice = [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,4050,3960,3900,3870];
+
+new Chart(document.getElementById('cPriceHistory'),{
+  type:'line',
+  data:{
+    labels:months,
+    datasets:[
+      {label:'National Avg',data:avgPrice,borderColor:C.gold,backgroundColor:'rgba(212,168,83,.08)',borderWidth:2,tension:0.4,fill:true,pointRadius:1,pointHoverRadius:3},
+      {label:'Brand Rice',data:brandPrice,borderColor:C.blue,borderWidth:2,tension:0.3,fill:false,pointRadius:1,borderDash:[]},
+      {label:'Blended Rice',data:blendPrice,borderColor:C.teal,borderWidth:2,tension:0.3,fill:false,pointRadius:3},
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a1c26',borderColor:'#252838',borderWidth:1,callbacks:{label:ctx=>`${ctx.dataset.label}: ¥${ctx.parsed.y?.toLocaleString()??'N/A'}`}}},
+    scales:{
+      x:{grid:{color:'rgba(37,40,56,.5)'},ticks:{maxTicksLimit:7}},
+      y:{grid:{color:'rgba(37,40,56,.5)'},min:2000,max:5000,
+        ticks:{callback:v=>'¥'+v.toLocaleString()},
+        title:{display:true,text:'¥ per 5kg',color:C.tm}
+      }
+    },
+    plugins:{
+      annotation:{annotations:{
+        line1:{type:'line',yMin:4200,yMax:4200,borderColor:'rgba(224,92,92,0.7)',borderWidth:2,borderDash:[6,4]}
+      }}
+    }
+  }
+});
+
+// ── FIG 2: SEGMENT SPLIT ─────────────────────────────────────
+new Chart(document.getElementById('cSegmentSplit'),{
+  type:'bar',
+  data:{
+    labels:['Jun 25','Jul','Aug','Sep','Oct','Nov','Dec 25'],
+    datasets:[
+      {label:'Brand Rice (¥/5kg)',data:[4450,4480,4530,4540,4545,4548,4551],backgroundColor:'rgba(91,138,245,.4)',borderColor:C.blue,borderWidth:1},
+      {label:'Blended Rice (¥/5kg)',data:[4200,4100,4000,3960,3920,3890,3870],backgroundColor:'rgba(62,207,186,.4)',borderColor:C.teal,borderWidth:1},
+      {label:'¥4,200 threshold',data:[4200,4200,4200,4200,4200,4200,4200],type:'line',borderColor:'rgba(224,92,92,0.7)',borderWidth:2,borderDash:[5,4],fill:false,pointRadius:0},
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:true,position:'top',labels:{boxWidth:10,padding:12}}},
+    scales:{
+      x:{grid:{color:'rgba(37,40,56,.5)'}},
+      y:{grid:{color:'rgba(37,40,56,.5)'},min:3700,max:4700,ticks:{callback:v=>'¥'+v.toLocaleString()}}
+    }
+  }
+});
+
+// ── FIG 3: MARKET SHARE ─────────────────────────────────────
+new Chart(document.getElementById('cMarketShare'),{
+  type:'line',
+  data:{
+    labels:['Jun 25','Jul','Aug','Sep','Oct','Nov','Dec 25'],
+    datasets:[
+      {label:'Blended Rice % of Sales',data:[12,58,54,40,32,29,28],borderColor:C.teal,backgroundColor:'rgba(62,207,186,.1)',borderWidth:2,fill:true,tension:0.4,yAxisID:'y'},
+      {label:'Required for Breach (pure share)',data:[52,52,52,52,52,52,52],borderColor:'rgba(224,92,92,.5)',borderWidth:1.5,borderDash:[5,4],fill:false,pointRadius:0,yAxisID:'y'},
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:true,position:'top',labels:{boxWidth:10,padding:10}}},
+    scales:{
+      x:{grid:{color:'rgba(37,40,56,.5)'}},
+      y:{grid:{color:'rgba(37,40,56,.5)'},min:0,max:70,ticks:{callback:v=>v+'%'},title:{display:true,text:'% of retail volume',color:C.tm}}
+    }
+  }
+});
+
+// ── FIG 4: SUPPLY INJECTION ─────────────────────────────────
+new Chart(document.getElementById('cSupplyInjection'),{
+  type:'bar',
+  data:{
+    labels:['Domestic Table Rice\n(+10% YoY)','Strategic Reserve\nRelease','SBS Min Access\nQuota (Table)','Private Out-of-\nQuota Imports'],
+    datasets:[{
+      label:'Volume (Thousand MT)',
+      data:[6800,210,100,96.834],
+      backgroundColor:[
+        'rgba(212,168,83,.5)','rgba(91,138,245,.5)','rgba(62,207,186,.5)','rgba(224,92,92,.5)'
+      ],
+      borderColor:[C.gold,C.blue,C.teal,C.red],
+      borderWidth:2
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.raw.toLocaleString()} thousand MT`}}},
+    scales:{
+      x:{grid:{color:'rgba(37,40,56,.5)'}},
+      y:{grid:{color:'rgba(37,40,56,.5)'},type:'logarithmic',ticks:{callback:v=>v>=1000?v/1000+'k MT':v+' MT'}}
+    }
+  }
+});
+
+// ── FIG 5: IMPORTS ───────────────────────────────────────────
+new Chart(document.getElementById('cImports'),{
+  type:'bar',
+  data:{
+    labels:['Pre-2024\n(avg/yr)','2024','Jan 25','Feb','Mar','Apr','May','Jun','Jul 25','Aug','Sep','Oct','Nov','Dec 25 (est)'],
+    datasets:[{
+      label:'Private Out-of-Quota Imports (MT)',
+      data:[700,1018,3500,5200,6800,7400,9200,11000,26397,9500,8200,7100,6500,6034],
+      backgroundColor:d=>d.raw>20000?'rgba(224,92,92,.6)':'rgba(91,138,245,.4)',
+      borderColor:d=>d.raw>20000?C.red:C.blue,
+      borderWidth:1
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw.toLocaleString()+' MT'}}},
+    scales:{
+      x:{grid:{color:'rgba(37,40,56,.3)'},ticks:{font:{size:9}}},
+      y:{grid:{color:'rgba(37,40,56,.5)'},ticks:{callback:v=>v>=1000?v/1000+'k':v}}
+    }
+  }
+});
+
+// ── FIG 6: RICE CONSUMPTION ─────────────────────────────────
+new Chart(document.getElementById('cRiceConsumption'),{
+  type:'line',
+  data:{
+    labels:['1962','1965','1970','1975','1980','1985','1990','1995','2000','2005','2010','2011','2015','2020','2025E'],
+    datasets:[{
+      label:'Per capita consumption (kg/yr)',
+      data:[118,114,108,100,91,82,72,65,61,58,53.5,53,51.5,50.8,49.2],
+      borderColor:C.gold,
+      backgroundColor:'rgba(212,168,83,.08)',
+      borderWidth:2,fill:true,tension:0.4,
+      pointRadius:[3,2,2,2,2,2,2,2,2,2,2,5,2,3,4],
+      pointBackgroundColor:(ctx)=>ctx.dataIndex===11?C.blue:C.gold
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y} kg/capita/year`}},
+      annotation:{annotations:{
+        bread:{type:'point',xValue:'2011',yValue:53.5,radius:8,backgroundColor:'rgba(91,138,245,0.3)',borderColor:C.blue,borderWidth:2}
+      }}
+    },
+    scales:{
+      x:{grid:{color:'rgba(37,40,56,.5)'}},
+      y:{grid:{color:'rgba(37,40,56,.5)'},title:{display:true,text:'kg per capita per year',color:C.tm},min:40,max:125}
+    }
+  }
+});
+
+// ── FIG 7: INFLATION SPREAD ─────────────────────────────────
+new Chart(document.getElementById('cInflationSpread'),{
+  type:'bar',
+  data:{
+    labels:['Jan 24','Apr 24','Jul 24','Oct 24','Jan 25','Apr 25','Jul 25','Oct 25','Dec 25'],
+    datasets:[
+      {label:'Rice Price YoY %',data:[2.1,8.2,28.5,62.0,80.0,91.0,98.5,101.0,99.9],backgroundColor:'rgba(224,92,92,.5)',borderColor:C.red,borderWidth:1,yAxisID:'y'},
+      {label:'Bread Price YoY %',data:[7.2,6.8,5.8,5.5,5.0,4.5,4.2,4.0,4.0],backgroundColor:'rgba(91,138,245,.4)',borderColor:C.blue,borderWidth:1,yAxisID:'y'},
+      {label:'General CPI YoY %',data:[2.2,2.5,2.8,2.9,3.1,3.2,3.3,3.3,3.3],type:'line',borderColor:C.teal,borderWidth:2,fill:false,pointRadius:1,yAxisID:'y2'},
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:true,position:'top',labels:{boxWidth:10,padding:10}}},
+    scales:{
+      x:{grid:{color:'rgba(37,40,56,.3)'}},
+      y:{grid:{color:'rgba(37,40,56,.5)'},title:{display:true,text:'YoY Change %',color:C.tm}},
+      y2:{position:'right',grid:{display:false},title:{display:true,text:'General CPI %',color:C.teal},max:10}
+    }
+  }
+});
+
+// ── FIG 8: FISCAL CALENDAR ──────────────────────────────────
+new Chart(document.getElementById('cFiscalCalendar'),{
+  type:'bar',
+  data:{
+    labels:['Oct 25','Nov 25','Dec 25','Jan 26','Feb 26 ★','Mar 9 ★'],
+    datasets:[
+      {label:'Inventory Clearance Pressure (Index)',data:[20,30,40,65,95,60],backgroundColor:['rgba(37,40,56,.8)','rgba(37,40,56,.8)','rgba(212,168,83,.3)','rgba(212,168,83,.5)','rgba(224,92,92,.6)','rgba(62,207,186,.4)'],borderColor:['#252838','#252838',C.gold,C.gold,C.red,C.teal],borderWidth:1},
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`Pressure Index: ${ctx.raw}/100`}}},
+    scales:{
+      x:{grid:{display:false}},
+      y:{grid:{color:'rgba(37,40,56,.5)'},max:110,title:{display:true,text:'Pressure Index',color:C.tm}}
+    }
+  }
+});
+
+// ── FIG 9: BOJ RATES ────────────────────────────────────────
+new Chart(document.getElementById('cBOJRates'),{
+  type:'line',
+  data:{
+    labels:['Jan 23','Apr 23','Jul 23','Oct 23','Jan 24','Apr 24','Jul 24','Oct 24','Jan 25','Apr 25','Jul 25','Oct 25','Dec 25'],
+    datasets:[
+      {label:'BOJ Policy Rate (%)',data:[-0.1,-0.1,-0.1,0.0,0.0,0.0,0.1,0.25,0.25,0.25,0.5,0.5,0.5],borderColor:C.gold,borderWidth:2,tension:0.2,yAxisID:'y',fill:false,stepped:true},
+      {label:'USD/JPY',data:[130,134,141,150,148,155,158,152,155,152,148,150,150],borderColor:C.blue,borderWidth:2,tension:0.4,yAxisID:'y2',fill:false},
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:true,position:'top',labels:{boxWidth:10,padding:10}}},
+    scales:{
+      x:{grid:{color:'rgba(37,40,56,.3)'},ticks:{maxTicksLimit:7}},
+      y:{grid:{color:'rgba(37,40,56,.5)'},title:{display:true,text:'Policy Rate %',color:C.gold},min:-0.2,max:0.8},
+      y2:{position:'right',grid:{display:false},title:{display:true,text:'USD/JPY',color:C.blue},min:120,max:170}
+    }
+  }
+});
+
+// ── FIG 10: WHEAT/RICE INVERSE ──────────────────────────────
+new Chart(document.getElementById('cWheatRice'),{
+  type:'line',
+  data:{
+    labels:['Jan 23','Jul 23','Jan 24','Jul 24','Jan 25','Jul 25','Dec 25'],
+    datasets:[
+      {label:'Global Wheat Supply (M tons, index)',data:[980,995,1010,1040,1060,1080,1097.8],borderColor:C.teal,borderWidth:2,tension:0.4,yAxisID:'y',fill:false},
+      {label:'Japan Rice Retail (¥/5kg)',data:[2100,2140,2168,2750,3600,4150,4335],borderColor:C.red,borderWidth:2,tension:0.4,yAxisID:'y2',fill:false},
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:true,position:'top',labels:{boxWidth:10,padding:10}}},
+    scales:{
+      x:{grid:{color:'rgba(37,40,56,.3)'}},
+      y:{grid:{color:'rgba(37,40,56,.5)'},title:{display:true,text:'Wheat Supply (M tons)',color:C.teal},min:950,max:1150},
+      y2:{position:'right',grid:{display:false},title:{display:true,text:'Rice Price (¥/5kg)',color:C.red},min:1800,max:5000}
+    }
+  }
+});
+
+// ── FIG 11: FORECAST SCENARIOS ──────────────────────────────
+const forecastLabels = ['Dec 25','Jan 26','Feb 26','Mar 9'];
+let forecastChart;
+const scenarios = {
+  base:{name:'Base Case',rate:'−3.2% / month',prices:[4335,4196,4061,3970],catalyst:'Fiscal year-end clearing + blended rice share expansion',color:C.gold},
+  bull:{name:'Bull Thesis (Rapid Breach)',rate:'−5.1% / month',prices:[4335,4114,3904,3715],catalyst:'Aggressive POS discounting + blended reaches 45%+ share',color:C.teal},
+  bear:{name:'Bear Case (Slow Decline)',rate:'−1.4% / month',prices:[4335,4274,4215,4185],catalyst:'Sticky retail + delayed wholesale pass-through',color:C.or},
+  tail:{name:'Tail Risk (No Breach)',rate:'+0.5% / month',prices:[4335,4357,4379,4390],catalyst:'JA cooperative intervention + renewed demand shock',color:C.red},
+};
+
+function initForecast(){
+  const ctx=document.getElementById('cForecast');
+  forecastChart=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:forecastLabels,
+      datasets:[
+        {label:'Base Case',data:scenarios.base.prices,borderColor:C.gold,borderWidth:2.5,tension:0.3,fill:false,pointRadius:3,pointHoverRadius:7},
+        {label:'¥4,200 Threshold',data:[4200,4200,4200,4200],borderColor:'rgba(224,92,92,0.6)',borderWidth:2,borderDash:[8,5],fill:false,pointRadius:0},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'top',labels:{boxWidth:10}},tooltip:{backgroundColor:'#1a1c26',borderColor:'#252838',borderWidth:1,callbacks:{label:ctx=>`¥${ctx.parsed.y.toFixed(0)}`}}},
+      scales:{
+        x:{grid:{color:'rgba(37,40,56,.4)'}},
+        y:{grid:{color:'rgba(37,40,56,.5)'},min:3500,max:4500,ticks:{callback:v=>'¥'+v.toLocaleString()}}
+      }
+    }
+  });
+  updateOutput('base');
+}
+
+function setScenario(sc){
+  document.querySelectorAll('.sim-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  const s=scenarios[sc];
+  forecastChart.data.datasets[0].data=s.prices;
+  forecastChart.data.datasets[0].borderColor=s.color;
+  forecastChart.data.datasets[0].label=s.name;
+  forecastChart.data.datasets[0].pointBackgroundColor=s.color;
+  forecastChart.update();
+  updateOutput(sc);
+}
+
+function updateOutput(sc){
+  const s=scenarios[sc];
+  document.getElementById('sName').textContent=s.name;
+  document.getElementById('sRate').textContent=s.rate;
+  document.getElementById('sJan').textContent='¥'+s.prices[1].toFixed(0);
+  document.getElementById('sFeb').textContent='¥'+s.prices[2].toFixed(0);
+  document.getElementById('sMar').textContent='¥'+s.prices[3].toFixed(0);
+  const breaches=s.prices.some((p,i)=>i>0&&p<4200);
+  document.getElementById('sBreach').textContent=breaches?'YES — Breach Confirmed':'NO — Above ¥4,200';
+  document.getElementById('sBreach').style.color=breaches?C.teal:C.red;
+  document.getElementById('sCatalyst').textContent=s.catalyst;
+}
+
+initForecast();
+
+// ── FIG 12: PROBABILITY DISTRIBUTION ───────────────────────
+new Chart(document.getElementById('cProbDist'),{
+  type:'bar',
+  data:{
+    labels:['Bull Thesis\n(Rapid Breach)','Base Case\n(Breach by Feb)','Bear Case\n(Marginal)','Tail Risk\n(No Breach)'],
+    datasets:[{
+      data:[25,47,20,8],
+      backgroundColor:['rgba(62,207,186,.5)','rgba(212,168,83,.5)','rgba(245,137,75,.5)','rgba(224,92,92,.5)'],
+      borderColor:[C.teal,C.gold,C.or,C.red],
+      borderWidth:2
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`Probability: ${ctx.raw}%`}}},
+    scales:{
+      x:{grid:{display:false},ticks:{font:{size:9}}},
+      y:{grid:{color:'rgba(37,40,56,.5)'},max:60,ticks:{callback:v=>v+'%'}}
+    }
+  }
+});
+
+// ── SENSITIVITY SLIDER ────────────────────────────────────────
+let sensitivityChart;
+function initSensitivity(){
+  sensitivityChart=new Chart(document.getElementById('cSensitivity'),{
+    type:'line',
+    data:{
+      labels:['Dec 25','Jan 26','Feb 26','Mar 9'],
+      datasets:[
+        {label:'Adjusted Forecast',data:[4335,4196,4061,3970],borderColor:C.gold,borderWidth:2.5,fill:false,tension:0.3,pointRadius:5},
+        {label:'¥4,200 Threshold',data:[4200,4200,4200,4200],borderColor:'rgba(224,92,92,0.6)',borderWidth:1.5,borderDash:[6,4],fill:false,pointRadius:0}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{color:'rgba(37,40,56,.3)'}},
+        y:{grid:{color:'rgba(37,40,56,.5)'},min:3500,max:4600,ticks:{callback:v=>'¥'+v.toLocaleString()}}
+      }
+    }
+  });
+  updateSensitivity();
+}
+
+function updateSensitivity(){
+  const supply=parseInt(document.getElementById('supplySlider').value);
+  const sticky=parseInt(document.getElementById('stickySlider').value);
+  const fiscal=parseInt(document.getElementById('fiscalSlider').value);
+  const supplyLabels=['Minimal','Low','Medium','High','Maximum'];
+  const stickyLabels=['Very Low','Low','Medium','High','Very High'];
+  const fiscalLabels=['Weak','Moderate-Low','Moderate','Strong','Very Strong'];
+  document.getElementById('supplyVal').textContent=supplyLabels[supply-1];
+  document.getElementById('stickyVal').textContent=stickyLabels[sticky-1];
+  document.getElementById('fiscalVal').textContent=fiscalLabels[fiscal-1];
+
+  // Monthly decline: supply pushes price down, stickiness resists, fiscal creates pulse
+  const baseDecline=0.032;
+  const supplyFactor=0.015*(supply-3); // +/- 1.5% per unit
+  const stickyFactor=-0.010*(sticky-3); // stickiness reduces decline
+  const fiscalPulse=0.02*(fiscal-1); // extra feb discount
+
+  const monthlyRate=baseDecline+supplyFactor+stickyFactor;
+  const jan=(4335*(1-monthlyRate)).toFixed(0);
+  const feb=(4335*(1-monthlyRate)*(1-monthlyRate-fiscalPulse)).toFixed(0);
+  const mar=(4335*(1-monthlyRate)*(1-monthlyRate-fiscalPulse)*(1-monthlyRate*0.5)).toFixed(0);
+
+  sensitivityChart.data.datasets[0].data=[4335,parseFloat(jan),parseFloat(feb),parseFloat(mar)];
+  const clr=parseFloat(feb)<4200||parseFloat(mar)<4200?C.teal:C.red;
+  sensitivityChart.data.datasets[0].borderColor=clr;
+  sensitivityChart.update();
+
+  const breaches=parseFloat(jan)<4200||parseFloat(feb)<4200||parseFloat(mar)<4200;
+  document.getElementById('sensPrice').textContent='¥'+feb+' (Feb 2026)';
+  const p=Math.min(95,Math.max(5,Math.round(72+supply*5-sticky*6+fiscal*4)));
+  document.getElementById('sensProb').textContent=p+'%';
+  document.getElementById('sensPrice').style.color=parseFloat(feb)<4200?C.teal:C.or;
+}
+
+initSensitivity();
+
+// ── FIG 14: PORTFOLIO EXPECTED VALUE ────────────────────────
+new Chart(document.getElementById('cPortfolio'),{
+  type:'bar',
+  data:{
+    labels:['SHORT: Kitoku\n(2700.T)','SHORT: Aeon\n(8267.T)','LONG: Sushiro\n(3563.T)','LONG: Zensho\n(7550.T)','LONG: Kura\n(2695.T)'],
+    datasets:[
+      {label:'Expected Return if Thesis Correct (%)',data:[28,14,18,22,16],backgroundColor:'rgba(76,175,125,.4)',borderColor:'#4caf7d',borderWidth:1.5},
+      {label:'Expected Loss if Thesis Wrong (%)',data:[-18,-8,-12,-14,-11],backgroundColor:'rgba(224,92,92,.4)',borderColor:'#e05c5c',borderWidth:1.5},
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:true,position:'top',labels:{boxWidth:10,padding:10}}},
+    scales:{
+      x:{grid:{display:false},ticks:{font:{size:9}}},
+      y:{grid:{color:'rgba(37,40,56,.5)'},ticks:{callback:v=>v+'%'},title:{display:true,text:'Expected Return / Loss (%)',color:C.tm}}
+    }
+  }
+});
+
+// NAVIGATION ACTIVE STATE
+document.querySelectorAll('.nav a').forEach(a=>{
+  a.addEventListener('click',function(){
+    document.querySelectorAll('.nav a').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// Animate bars on load
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    document.querySelectorAll('.bc-fill,.p-bar').forEach(el=>{
+      const w=el.getAttribute('data-w');
+      if(w)el.style.width=w;
+    });
+  },300);
+});
+</script>
+</body>
+</html>
