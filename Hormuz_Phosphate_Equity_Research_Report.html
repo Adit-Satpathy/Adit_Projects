@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Fertilizer Equities — Supply Shock Alpha Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:#0a0b0f; --s1:#111218; --s2:#1a1c26; --s3:#22263a;
+  --bd:#252838; --bd2:#2e3250;
+  --tx:#e2e5f0; --tm:#7a7f9a; --td:#4a5268;
+  --gold:#d4a853; --gf:rgba(212,168,83,.12);
+  --blue:#5b8af5; --bf:rgba(91,138,245,.1);
+  --teal:#3ecfba; --tf:rgba(62,207,186,.1);
+  --red:#e05c5c; --rf:rgba(224,92,92,.1);
+  --vio:#9b72f5; --vf:rgba(155,114,245,.1);
+  --or:#f5894b; --orf:rgba(245,137,75,.1);
+  --grn:#4caf7d;
+  --hd:'Playfair Display',Georgia,serif;
+  --mn:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;font-size:14.5px;line-height:1.65;}
+.w{max-width:1040px;margin:0 auto;padding:0 32px 100px;}
+
+h1{font-family:var(--hd);font-size:46px;font-weight:900;line-height:1.1;margin-bottom:12px;color:#fff;}
+h1 em{font-style:italic;color:var(--gold);}
+h2{font-family:var(--hd);font-size:28px;font-weight:700;color:#fff;margin-bottom:16px;border-bottom:1px solid var(--bd);padding-bottom:8px;}
+h3{font-family:var(--hd);font-size:18px;font-weight:700;color:var(--tx);margin:28px 0 10px;}
+h4{font-family:var(--mn);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tm);margin:20px 0 8px;}
+p{color:#c0c4d8;margin-bottom:14px;max-width:840px;}
+.sub{font-size:16px;color:var(--tm);font-weight:300;margin-bottom:32px;max-width:800px;}
+.sec{margin-bottom:40px;padding-top:14px;}
+.sn{font-family:var(--mn);font-size:11px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:4px;}
+code{font-family:var(--mn);font-size:12px;color:var(--teal);background:rgba(62,207,186,.06);padding:2px 5px;border-radius:3px;}
+
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:40px;padding:16px 0;border-bottom:1px solid var(--bd);}
+.nav a{font-family:var(--mn);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tm);text-decoration:none;padding:4px 10px;border:1px solid var(--bd);border-radius:4px;transition:all 0.2s;}
+.nav a:hover,.nav a.active{color:var(--gold);border-color:rgba(212,168,83,.4);background:var(--gf);}
+
+.verdict{background:linear-gradient(135deg,rgba(212,168,83,.08),rgba(212,168,83,.02));border:1px solid var(--gold);border-radius:12px;padding:28px 32px;margin:32px 0;position:relative;overflow:hidden;}
+.verdict::before{content:'primary';position:absolute;top:0;right:0;width:200px;height:200px;background:radial-gradient(circle,rgba(212,168,83,.06) 0%,transparent 70%);pointer-events:none;}
+.verdict-label{font-family:var(--mn);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.verdict-q{font-family:var(--hd);font-size:22px;font-weight:700;color:#fff;margin-bottom:16px;font-style:italic;}
+.verdict-ans{display:flex;align-items:center;gap:16px;}
+.verdict-score{font-family:var(--mn);font-size:52px;font-weight:600;color:var(--gold);line-height:1;}
+.verdict-detail{color:#c0c4d8;font-size:14px;max-width:600px;}
+.prob-meter{margin-top:16px;background:var(--s2);border-radius:4px;height:8px;overflow:hidden;}
+.prob-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold),#f0c060);transition:width 1.5s ease;}
+
+.ch{background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:14px 16px;margin:14px 0;position:relative;}
+.ct{font-family:var(--mn);font-size:10px;letter-spacing:1px;color:var(--tm);text-transform:uppercase;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+canvas{width:100%!important;display:block;}
+.chart-container{position:relative;width:100%;}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0;}
+.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:18px 0;}
+.r4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;margin:18px 0;}
+.cd{background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:16px;}
+.cd .hd{font-family:var(--mn);font-size:10px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--bd);}
+.sr{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(37,40,56,.8);font-size:13px;}
+.sr:last-child{border-bottom:none;}
+.sr .sk{color:var(--tm);}.sr .sv{font-family:var(--mn);font-weight:500;color:#fff;}
+.sv.up{color:var(--red)!important;}.sv.dn{color:var(--grn)!important;}
+
+.fm{background:var(--s2);border:1px solid var(--bd2);border-radius:8px;padding:16px 20px;margin:16px 0;font-family:var(--mn);font-size:12.5px;line-height:2.1;color:#c8cee8;}
+.fm .fl{color:var(--tm);font-size:10px;letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:8px;}
+.fm .hi{color:var(--gold);font-weight:600;}.fm .hi2{color:var(--teal);font-weight:500;}.fm .hi3{color:var(--red);font-weight:500;}
+
+.an{border-left:3px solid;border-radius:0 6px 6px 0;padding:13px 17px;margin:16px 0;font-size:13.5px;line-height:1.65;}
+.an.g{border-color:var(--gold);background:var(--gf);color:#d4c49a;}
+.an.b{border-color:var(--blue);background:var(--bf);color:#95b8f5;}
+.an.r{border-color:var(--red);background:var(--rf);color:#e08080;}
+.an.t{border-color:var(--teal);background:var(--tf);color:#7dddcc;}
+.an.v{border-color:var(--vio);background:var(--vf);color:#c4aaf5;}
+.an.o{border-color:var(--or);background:var(--orf);color:#f5b47d;}
+.an strong{color:#fff;}
+
+.tbl{width:100%;border-collapse:collapse;margin:18px 0;font-size:13px;font-family:var(--mn);border:1px solid var(--bd);border-radius:8px;overflow:hidden;}
+.tbl th{padding:10px 14px;font-size:10px;letter-spacing:1px;color:var(--tm);text-transform:uppercase;text-align:left;font-weight:400;background:var(--s2);border-bottom:1px solid var(--bd2);}
+.tbl td{padding:9px 14px;border-bottom:1px solid var(--bd);color:#8b95b5;vertical-align:middle;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:rgba(255,255,255,.02);}
+.tg{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:600;font-family:var(--mn);text-transform:uppercase;}
+.tg.p{background:var(--tf);color:var(--teal);}.tg.n{background:var(--rf);color:var(--red);}.tg.g{background:var(--gf);color:var(--gold);}.tg.x{background:var(--s3);color:var(--tm);}
+.tg.v{background:var(--vf);color:var(--vio);}.tg.b{background:var(--bf);color:var(--blue);}
+
+.sim-btn{background:var(--s2);border:1px solid var(--gold);color:var(--gold);padding:6px 14px;border-radius:4px;font-family:var(--mn);font-size:9px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;}
+.sim-btn:hover{background:var(--gold);color:#000;}
+.sim-btn.active{background:var(--gold);color:#000;}
+.t-btn{background:var(--s2);border:1px solid var(--bd);color:var(--tm);padding:6px 16px;font-family:var(--mn);font-size:10px;text-transform:uppercase;border-radius:4px;cursor:pointer;transition:0.2s;}
+.t-btn.active{background:var(--bf);border-color:var(--blue);color:var(--blue);}
+.t-content{display:none;}.t-content.active{display:block;animation:fadeIn 0.3s;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+.timeline{position:relative;padding-left:32px;margin:24px 0;}
+.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--red),var(--gold),var(--teal),var(--blue));}
+.tl-item{position:relative;margin-bottom:24px;padding:14px 16px;background:var(--s1);border:1px solid var(--bd);border-radius:8px;}
+.tl-item::before{content:'';position:absolute;left:-28px;top:18px;width:10px;height:10px;border-radius:50%;border:2px solid;}
+.tl-item.gold::before{border-color:var(--gold);background:rgba(212,168,83,.3);}
+.tl-item.blue::before{border-color:var(--blue);background:rgba(91,138,245,.3);}
+.tl-item.red::before{border-color:var(--red);background:rgba(224,92,92,.3);}
+.tl-item.teal::before{border-color:var(--teal);background:rgba(62,207,186,.3);}
+.tl-item.or::before{border-color:var(--or);background:rgba(245,137,75,.3);}
+.tl-date{font-family:var(--mn);font-size:10px;color:var(--gold);letter-spacing:1px;margin-bottom:4px;}
+.tl-title{font-weight:600;color:#fff;margin-bottom:4px;}
+.tl-body{font-size:13px;color:var(--tm);}
+
+.slider-wrap{margin:16px 0;}
+.slider-label{display:flex;justify-content:space-between;font-family:var(--mn);font-size:11px;color:var(--tm);margin-bottom:6px;}
+input[type=range]{width:100%;accent-color:var(--gold);cursor:pointer;}
+
+.eq-card{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:20px;position:relative;overflow:hidden;}
+.eq-card.long{border-top:3px solid var(--grn);}
+.eq-ticker{font-family:var(--mn);font-size:22px;font-weight:600;color:#fff;}
+.eq-name{font-size:12px;color:var(--tm);margin-bottom:12px;}
+.eq-dir{position:absolute;top:16px;right:16px;font-family:var(--mn);font-size:10px;letter-spacing:1px;padding:3px 8px;border-radius:3px;}
+.eq-dir.long{background:rgba(76,175,125,.15);color:var(--grn);}
+
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0;}
+.kpi-item{background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:14px;}
+.kpi-name{font-family:var(--mn);font-size:10px;letter-spacing:1px;color:var(--tm);text-transform:uppercase;margin-bottom:6px;}
+.kpi-val{font-family:var(--mn);font-size:24px;font-weight:600;}
+.kpi-sub{font-size:11px;color:var(--td);margin-top:4px;}
+.kpi-bar{margin-top:10px;height:4px;background:var(--s3);border-radius:2px;overflow:hidden;}
+.kpi-bfill{height:100%;border-radius:2px;}
+
+.bar-chart-dom .bc-row{display:flex;align-items:center;margin-bottom:10px;}
+.bc-label{width:200px;font-family:var(--mn);font-size:11px;color:var(--tx);flex-shrink:0;}
+.bc-track{flex:1;background:var(--s2);height:22px;border-radius:3px;position:relative;overflow:hidden;}
+.bc-fill{height:100%;border-radius:3px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-family:var(--mn);font-size:10px;color:#fff;transition:width 1.2s ease;}
+
+.ind-table{background:var(--s1);border:1px solid var(--bd);border-radius:8px;overflow:hidden;margin:18px 0;}
+.ind-row{display:grid;grid-template-columns:2fr 1.2fr 1.5fr 1fr;gap:8px;padding:10px 14px;border-bottom:1px solid var(--bd);font-size:13px;align-items:center;}
+.ind-hdr{background:var(--s2);font-family:var(--mn);font-size:10px;letter-spacing:1px;color:var(--tm);text-transform:uppercase;}
+.ind-importance{display:flex;gap:3px;}
+.imp-dot{width:8px;height:8px;border-radius:50%;}
+
+.conc{background:linear-gradient(135deg,#141622,#0f111a);border:1px solid var(--gold);border-radius:12px;padding:28px 32px;margin:28px 0;position:relative;overflow:hidden;}
+.conc h3{color:var(--gold);margin-top:0;font-style:italic;}
+.conc::after{content:'';position:absolute;bottom:-20px;right:-20px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(212,168,83,.05),transparent);pointer-events:none;}
+
+.scenario-out{background:var(--s2);border:1px solid var(--bd2);border-radius:8px;padding:16px;margin-top:16px;font-family:var(--mn);font-size:12px;}
+.scenario-out .s-line{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--bd);}
+.scenario-out .s-line:last-child{border-bottom:none;}
+.scenario-out .s-k{color:var(--tm);}.scenario-out .s-v{color:#fff;font-weight:500;}
+
+/* allocation visual */
+.alloc-bar{display:flex;height:36px;border-radius:6px;overflow:hidden;margin:12px 0;}
+.alloc-seg{display:flex;align-items:center;justify-content:center;font-family:var(--mn);font-size:10px;font-weight:600;color:#000;transition:all 0.8s ease;}
+
+/* risk matrix */
+.risk-matrix{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--bd);border:1px solid var(--bd);border-radius:8px;overflow:hidden;margin:18px 0;}
+.rm-cell{background:var(--s1);padding:14px;font-size:13px;}
+.rm-cell.header{background:var(--s2);font-family:var(--mn);font-size:10px;letter-spacing:1px;color:var(--tm);text-transform:uppercase;}
+
+@media(max-width:720px){
+  h1{font-size:30px;}.r2,.r3,.r4{grid-template-columns:1fr;}
+  .bc-label{width:120px;}.kpi-grid{grid-template-columns:1fr;}
+  .ind-row{grid-template-columns:1fr 1fr;}.verdict-ans{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+<div class="w">
+
+<nav class="nav" style="border-bottom:none;margin-bottom:0;padding-top:32px;">
+  <a href="#">Home</a>
+  <a href="Japan_Rice_Price_Forecast_Report_1__1_.html">Japan Rice Forecast</a>
+  <a href="#" class="active">Fertilizer Supply-Shock</a>
+</nav>
+
+<div class="sec" style="padding-top:48px;">
+  <div class="sn">Quantitative Research · Global Agricultural Macro · May 2026</div>
+  <h1>Hormuz, Phosphates &amp;<br><em>Fertilizer Alpha</em></h1>
+  <div class="sub">A structured equity research report presenting the data analysis, model construction, and investment rationale for long positions in CF Industries (CF), ICL Group (ICL), and The Mosaic Company (MOS) — three direct expressions of a single macro thesis: the closure of the Strait of Hormuz is a permanent structural supply shock to global phosphate and nitrogen markets.</div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px;">
+    <span class="tg g">Report Date: 11 May 2026</span>
+    <span class="tg x">Universe: NYSE · CF · ICL · MOS</span>
+    <span class="tg p">Recommendation: LONG ×3</span>
+    <span class="tg b">Author: Quant Research Desk</span>
+  </div>
+</div>
+
+<div class="verdict">
+  <div class="verdict-label">Core Investment Thesis</div>
+  <div class="verdict-q">"The closure of the Strait of Hormuz is the tipping point that structurally inflates phosphate and nitrogen input costs — go long CF, ICL, and MOS with dynamic sizing."</div>
+  <div class="verdict-ans">
+    <div class="verdict-score">LONG</div>
+    <div class="verdict-detail">
+      <strong style="color:#fff;">High-Conviction Portfolio: CF 8% · ICL 6% · MOS 6%</strong><br>
+      The simultaneous blockade of the Strait of Hormuz (March 4), destruction of the Ras Laffan LNG complex (March 18), and China's sulfuric acid export ban (May 1) have removed an estimated 35% of global seaborne urea, 50% of seaborne sulfur, and 4.65 million tonnes of sulfuric acid from world markets. The resultant supply dislocation inflates fertilizer input costs non-linearly, creating a multi-year cost arbitrage for North American and Mediterranean producers — directly benefiting CF, ICL, and MOS.
+    </div>
+  </div>
+  <div class="prob-meter"><div class="prob-fill" id="probFill" style="width:0%"></div></div>
+  <div style="display:flex;justify-content:space-between;font-family:var(--mn);font-size:9px;color:var(--td);margin-top:4px;">
+    <span>De-escalation risk</span><span>Base case (sustained disruption)</span><span>Full escalation</span>
+  </div>
+</div>
+
+<nav class="nav">
+  <a href="#s1">§1 Causal Architecture</a>
+  <a href="#s2">§2 Supply Shock Model</a>
+  <a href="#s3">§3 Allocation Timeline</a>
+  <a href="#s4">§4 CF Industries</a>
+  <a href="#s5">§5 ICL Group</a>
+  <a href="#s6">§6 Mosaic (MOS)</a>
+  <a href="#s7">§7 Risk Framework</a>
+  <a href="#s8">§8 Thesis Assessment</a>
+  <a href="#s9">§9 Monitoring Matrix</a>
+</nav>
+
+<div class="sec" id="s1">
+  <div class="sn">Section 01</div>
+  <h2>Causal Architecture of the Disruption</h2>
+  <p>The thesis does not rest on a single shock. It is the product of three independent, structurally reinforcing events arriving within a 60-day window — each compounding the global supply deficit in nitrogen and phosphate markets. I will treat each as a node in the causal chain, because the allocation logic across the three equities depends on which shock most directly impairs which feedstock.</p>
+
+  <div class="timeline">
+    <div class="tl-item red">
+      <div class="tl-date">04 March 2026 — Node 1</div>
+      <div class="tl-title">Strait of Hormuz Effective Blockade ("Operation Epic Fury")</div>
+      <div class="tl-body">The 21-mile chokepoint historically carried ~20% of global seaborne crude, 20% of global LNG, and 20–30% of global fertilizer exports. Following Operation Epic Fury, commercial shipping effectively ceased. Lloyd's List data records over 1,550 vessels stranded; war risk insurance is revoked corridor-wide; insurance premiums jump from 1% to 10% of cargo value. A reported $2M "safe passage fee" is levied on coastline transits. <strong style="color:#fff;">Direct fertilizer impact: 35% of global seaborne urea, 23% of ammonia, and 50% of seaborne sulfur are now stranded behind this chokepoint.</strong></div>
+    </div>
+    <div class="tl-item gold">
+      <div class="tl-date">18 March 2026 — Node 2</div>
+      <div class="tl-title">Military Strike on Ras Laffan — Qatar LNG Capacity Offline</div>
+      <div class="tl-body">Targeted strikes destroyed cold boxes at the world's largest LNG complex, forcing QatarEnergy to declare force majeure. 80 million TPA of LNG capacity is removed — representing 17% of Qatar's export capacity and ~19% of global LNG supply. Cold box repair timelines are 3–5 years minimum, permanently altering the global energy matrix. <strong style="color:#fff;">Because natural gas constitutes 70–80% of ammonia cash costs (Haber-Bosch), European and Asian marginal nitrogen producers face structural cost-push inflation. CF Industries' Henry Hub-linked feedstock cost becomes an exclusive structural arbitrage.</strong></div>
+    </div>
+    <div class="tl-item or">
+      <div class="tl-date">01 May 2026 — Node 3</div>
+      <div class="tl-title">China NDRC Effective Ban on Sulfuric Acid Exports</div>
+      <div class="tl-body">China exported 4.65 million tonnes of sulfuric acid in 2025, a byproduct of copper and zinc smelting. The NDRC ban — compounding an earlier halt on high-concentration phosphate fertilizer exports through August 2026 — is driven by domestic battery sector demand (LFP batteries now consuming +4.4 million incremental tonnes of phosphate). Spot sulfur prices surge 70%+ to record highs above CNY 7,050/tonne; global copper treatment charges collapse to –$78/DMT. <strong style="color:#fff;">Sulfur/sulfuric acid account for 30–40% of phosphate fertilizer cash costs. The combined loss of Middle Eastern sulfur and Chinese sulfuric acid simultaneously attacks MOS's input cost structure from both flanks.</strong></div>
+    </div>
+    <div class="tl-item teal">
+      <div class="tl-date">Ongoing — Demand Floor</div>
+      <div class="tl-title">US Southern Plains Drought — Inelastic Agricultural Demand</div>
+      <div class="tl-body">The persistent drought from 2020–2025 has extended into the 2026 planting season. USDA data shows total US wheat planted area has fallen to 43.8 million acres — the lowest since 1919. Kansas crop stress is acute: 40%+ of the crop rated poor/very poor, yields projected below 35 bu/acre. Hard red winter futures push above $7.00/bu. <strong style="color:#fff;">Elevated crop prices mathematically guarantee that Midwest producers absorb higher fertilizer input costs to capture grain margins. Demand for nutrients is structurally inelastic through at least the 2027 planting cycle.</strong></div>
+    </div>
+  </div>
+
+  <h3>Global Fertilizer Supply Flow — Disruption Map</h3>
+  <div class="ch">
+    <div class="ct"><span>Fig. 1 — Global Seaborne Fertilizer Flow & Chokepoint Disruptions (2026)</span><span class="tg n">Supply Compressed</span></div>
+    <div class="chart-container" style="height: 200px;">
+      <canvas id="cSupplyShock"></canvas>
+    </div>
+    <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:6px;font-family:var(--mn);font-size:10px;color:var(--tm);"><div style="width:12px;height:3px;background:var(--grn);"></div>Pre-shock supply share</div>
+      <div style="display:flex;align-items:center;gap:6px;font-family:var(--mn);font-size:10px;color:var(--tm);"><div style="width:12px;height:3px;background:var(--red);"></div>Estimated supply after shock</div>
+    </div>
+  </div>
+
+  <div class="an r"><strong>The compounding mechanism:</strong> Node 1 removes Middle Eastern sulfur from maritime channels. Node 2 structurally inflates European gas prices, raising the marginal cost curve for all non-Henry Hub nitrogen producers. Node 3 eliminates the only alternative sulfuric acid supplier of meaningful scale. The three shocks act simultaneously on both nitrogen feedstocks (natural gas) and phosphate feedstocks (sulfur/H₂SO₄), ensuring there is no substitution path for affected producers.</div>
+</div>
+
+<div class="sec" id="s2">
+  <div class="sn">Section 02</div>
+  <h2>Supply Shock Quantification &amp; Cost Model</h2>
+  <p>The core analytical task is converting geopolitical events into cash cost impacts for each equity. The model starts from first principles: feedstock costs as a percentage of total production cash cost, and the magnitude of the price movement in those feedstocks.</p>
+
+  <h3>Nitrogen Cost Arbitrage Model (CF vs. European Peers)</h3>
+  <div class="fm">
+    <span class="fl">Model 01 — CF Industries Nitrogen Cost Arbitrage</span>
+    <span class="hi">CF Cash Cost</span> = f(Henry Hub gas price)<br>
+    <span class="hi2">European Peer Cash Cost</span> = f(TTF gas price + LNG import premium)<br><br>
+    Haber-Bosch feedstock share of ammonia cash cost: <span class="hi">70–80%</span><br>
+    Henry Hub spot (May 2026): <span class="hi2">~$2.80/MMBtu</span><br>
+    European TTF (post-Ras Laffan): <span class="hi3">~$18–22/MMBtu</span><br><br>
+    Implied European Cost Premium: <span class="hi">(TTF/HH − 1) × feedstock share × ammonia cash cost</span><br>
+    = <span class="hi3">(~7× gas price) × 75% × ~$200/tonne NH₃</span> ≈ <span class="hi">+$350–$450/tonne NH₃ structural cost disadvantage</span><br><br>
+    CF urea margin uplift vs. European marginal cost: <span class="hi">Captures full price uplift while paying ~20% of European feedstock cost</span>
+  </div>
+
+  <div class="r2">
+    <div>
+      <div class="ch">
+        <div class="ct"><span>Fig. 2A — Henry Hub vs. TTF Gas Price (2026 YTD)</span></div>
+        <div class="chart-container" style="height: 200px;">
+          <canvas id="cGasArb"></canvas>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="ch">
+        <div class="ct"><span>Fig. 2B — Sulfur Spot Price (CNY/tonne)</span></div>
+        <div class="chart-container" style="height: 200px;">
+          <canvas id="cSulfur"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Phosphate Margin Compression Model (MOS)</h3>
+  <div class="fm">
+    <span class="fl">Model 02 — Mosaic Stripping Margin Under Sulfur Shock</span>
+    Sulfur share of phosphate cash cost: <span class="hi">30–40%</span><br>
+    Pre-shock sulfur cost: <span class="hi2">~$110/tonne</span> → <span class="hi3">Q1 2026 sulfur avg: $379/tonne</span> (+245%)<br><br>
+    DAP finished product price: ~<span class="hi">$550/tonne</span><br>
+    Pre-shock stripping margin: <span class="hi2">~$400/tonne</span><br>
+    Q1 2026 realized stripping margin: <span class="hi3">≈$150–$180/tonne</span> (sulfur absorbs ~$220/tonne uplift)<br><br>
+    Q1 net loss attribution: $323M in <span class="hi3">notable items</span> (Araxá/Patrocínio idle charges: $442M pre-tax)<br>
+    Core operating miss: sulfur cost at <span class="hi3">$379/tonne avg</span> vs. modeled $140/tonne = <span class="hi3">+$239/tonne headwind</span><br><br>
+    Mean reversion trigger: sulfur normalization to $150/tonne → <span class="hi">full $400/tonne stripping margin restored to bottom line</span>
+  </div>
+
+  <h3>Interactive: Mosaic Margin Sensitivity to Sulfur Price</h3>
+  <div class="ch">
+    <div class="ct"><span>Fig. 3 — MOS Stripping Margin vs. Sulfur Spot Price (Interactive)</span><span class="tg g">Drag Slider</span></div>
+    <div class="slider-wrap">
+      <div class="slider-label"><span>Sulfur: <span id="sulfurVal">$379</span>/t</span><span>Margin: <span id="marginVal" style="color:var(--red);">$161/t</span></span></div>
+      <input type="range" id="sulfurSlider" min="80" max="450" value="379" oninput="updateMargin(this.value)">
+      <div style="display:flex;justify-content:space-between;font-family:var(--mn);font-size:9px;color:var(--td);margin-top:4px;"><span>$80 (normalized)</span><span>$200 (mid)</span><span>$450 (extreme)</span></div>
+    </div>
+    <div class="chart-container" style="height: 180px;">
+      <canvas id="cMarginSim"></canvas>
+    </div>
+    <div class="scenario-out" id="marginScenario">
+      <div class="s-line"><span class="s-k">Sulfur Input Cost</span><span class="s-v" id="so1">$379/t</span></div>
+      <div class="s-line"><span class="s-k">Phosphate Revenue (DAP)</span><span class="s-v">~$550/t</span></div>
+      <div class="s-line"><span class="s-k">Other Cash Costs</span><span class="s-v">~$210/t</span></div>
+      <div class="s-line"><span class="s-k">Stripping Margin</span><span class="s-v" id="so3" style="color:var(--red);">-$39/t</span></div>
+      <div class="s-line"><span class="s-k">Implied Annualized EBITDA Impact</span><span class="s-v" id="so4" style="color:var(--red);">–$296M</span></div>
+    </div>
+  </div>
+
+  <h3>Urea Price Surge: Hormuz Effect</h3>
+  <div class="ch">
+    <div class="ct"><span>Fig. 4 — Global Urea Spot Price & Allocation Overlay (Mar–May 2026)</span><span class="tg n">Supply Shock</span></div>
+    <div class="chart-container" style="height: 200px;">
+      <canvas id="cUrea"></canvas>
+    </div>
+  </div>
+
+  <div class="an g"><strong>Model limitation flagged:</strong> The nitrogen arbitrage model assumes a static Henry Hub price of ~$2.80/MMBtu and a TTF price of $18–22. In practice, Henry Hub has seasonal variance (±40%) and could spike if US winter demand or LNG export terminal demand rises. The model does not yet incorporate a scenario where domestic US gas demand crowds out CF's feedstock cost advantage.</div>
+</div>
+
+<div class="sec" id="s3">
+  <div class="sn">Section 03</div>
+  <h2>Dynamic Portfolio Allocation Timeline (1 Mar – 11 May 2026)</h2>
+  <p>The allocation across CF, ICL, and MOS was not static. Each causal node triggered a model update that changed the relative attractiveness of the three names. Below is the complete chronological record of position sizing decisions, the event that triggered each adjustment, and the model logic underpinning it.</p>
+
+  <div class="ch">
+    <div class="ct">
+      <span>Fig. 5 — Portfolio Allocation Over Time (% of Sector Assets)</span>
+      <div style="display:flex;gap:6px;">
+        <button class="sim-btn active" onclick="setView('alloc','stacked',this)">Stacked</button>
+        <button class="sim-btn" onclick="setView('alloc','line',this)">Line</button>
+      </div>
+    </div>
+    <div class="chart-container" style="height: 220px;">
+      <canvas id="cAlloc"></canvas>
+    </div>
+    <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:6px;font-family:var(--mn);font-size:10px;color:var(--tm);"><div style="width:12px;height:3px;background:#5b8af5;"></div>CF Industries</div>
+      <div style="display:flex;align-items:center;gap:6px;font-family:var(--mn);font-size:10px;color:var(--tm);"><div style="width:12px;height:3px;background:#3ecfba;"></div>ICL Group</div>
+      <div style="display:flex;align-items:center;gap:6px;font-family:var(--mn);font-size:10px;color:var(--tm);"><div style="width:12px;height:3px;background:#d4a853;"></div>MOS</div>
+    </div>
+  </div>
+
+  <h3>Event Log &amp; Allocation Rationale</h3>
+  <table class="tbl">
+    <thead><tr>
+      <th>Date</th><th>Event</th><th>CF</th><th>ICL</th><th>MOS</th><th>Model Trigger</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="color:#fff;font-family:var(--mn);">01 Mar</td><td>Baseline — equal weight, seasonal uptick model</td><td><span class="tg x">5%</span></td><td><span class="tg x">5%</span></td><td><span class="tg x">5%</span></td><td style="color:var(--tm);font-size:12px;">Mean reversion + low channel inventories</td></tr>
+      <tr><td style="color:#fff;font-family:var(--mn);">04 Mar</td><td>Hormuz blockade effective. 35% seaborne urea & 50% sulfur stranded</td><td><span class="tg b">8%</span></td><td><span class="tg p">6%</span></td><td><span class="tg n">4%</span></td><td style="color:var(--tm);font-size:12px;">CF nitrogen monopoly; MOS sulfur transit risk flagged</td></tr>
+      <tr><td style="color:#fff;font-family:var(--mn);">18 Mar</td><td>Ras Laffan strikes. 19% global LNG offline for 3–5 years</td><td><span class="tg b">10%</span></td><td><span class="tg p">7%</span></td><td><span class="tg n">3%</span></td><td style="color:var(--tm);font-size:12px;">CF arbitrage maximized; ICL Mediterranean moat elevated; MOS sulfur stranded</td></tr>
+      <tr><td style="color:#fff;font-family:var(--mn);">10 Apr</td><td>China NDRC sulfuric acid export ban announced (effective May 1)</td><td><span class="tg b">10%</span></td><td><span class="tg p">7%</span></td><td><span class="tg n">2%</span></td><td style="color:var(--tm);font-size:12px;">Sulfur dual-shock confirmed; MOS margin compression modeled as structural</td></tr>
+      <tr style="background:rgba(212,168,83,.04);"><td style="color:#fff;font-family:var(--mn);">11 May</td><td>CF Q1 blowout ($3.98 EPS, +59% surprise). MOS Q1 disaster (–$258M loss). Capitulation buy.</td><td><span class="tg g">8%</span></td><td><span class="tg p">6%</span></td><td><span class="tg g">6%</span></td><td style="color:var(--tm);font-size:12px;">CF profit harvest; MOS mean-reversion initiation at 52-week low</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Current Position Sizing (May 11, 2026)</h3>
+  <div class="ch">
+    <div class="ct"><span>Fig. 6 — Current Sector Asset Allocation by Equity</span></div>
+    <div style="margin:16px 0;">
+      <div class="bc-row bar-chart-dom" style="margin-bottom:14px;display:flex;align-items:center;">
+        <div class="bc-label">CF Industries (CF)</div>
+        <div class="bc-track"><div class="bc-fill" id="bCF" style="width:0%;background:var(--blue);">8.0%</div></div>
+      </div>
+      <div class="bc-row bar-chart-dom" style="margin-bottom:14px;display:flex;align-items:center;">
+        <div class="bc-label">ICL Group (ICL)</div>
+        <div class="bc-track"><div class="bc-fill" id="bICL" style="width:0%;background:var(--teal);">6.0%</div></div>
+      </div>
+      <div class="bc-row bar-chart-dom" style="margin-bottom:14px;display:flex;align-items:center;">
+        <div class="bc-label">The Mosaic Co. (MOS)</div>
+        <div class="bc-track"><div class="bc-fill" id="bMOS" style="width:0%;background:var(--gold);">6.0%</div></div>
+      </div>
+    </div>
+    <div class="alloc-bar" id="allocBar">
+      <div class="alloc-seg" style="width:0%;background:var(--blue);" id="abCF">CF 8%</div>
+      <div class="alloc-seg" style="width:0%;background:var(--teal);" id="abICL">ICL 6%</div>
+      <div class="alloc-seg" style="width:0%;background:var(--gold);" id="abMOS">MOS 6%</div>
+      <div class="alloc-seg" style="width:80%;background:var(--s3);color:var(--tm);" id="abRest">Other 80%</div>
+    </div>
+    <div style="font-family:var(--mn);font-size:10px;color:var(--td);margin-top:6px;">Total fertilizer sector concentration: 20% of portfolio</div>
+  </div>
+
+  <div class="an t"><strong>Phase logic:</strong> The allocation ran three distinct phases. Phase 1 (Mar 1–17): Hormuz shock detected; CF overweighted on nitrogen monopoly; MOS trimmed on sulfur transit risk. Phase 2 (Mar 18–May 10): Ras Laffan maximizes CF arbitrage thesis; ICL Mediterranean moat confirmed; MOS minimized as dual sulfur shock materializes. Phase 3 (May 11+): Profit harvest on CF post-blowout Q1; contrarian accumulation of MOS at capitulation trough; ICL maintained for income and geopolitical hedge.</div>
+</div>
+
+<div class="sec" id="s4">
+  <div class="sn">Section 04</div>
+  <h2>CF Industries Holdings — Equity Deep Dive</h2>
+
+  <div class="r3">
+    <div class="eq-card long">
+      <div class="eq-dir long">LONG</div>
+      <div class="eq-ticker">CF</div>
+      <div class="eq-name">CF Industries Holdings, Inc.</div>
+      <div class="sr"><div class="sk">Price</div><div class="sv">~$114.02</div></div>
+      <div class="sr"><div class="sk">Mkt Cap</div><div class="sv">~$18.5B</div></div>
+      <div class="sr"><div class="sk">EV/EBITDA</div><div class="sv">5.8x fwd</div></div>
+      <div class="sr"><div class="sk">Allocation</div><div class="sv" style="color:var(--blue);">8%</div></div>
+    </div>
+    <div class="eq-card long">
+      <div class="eq-dir long">LONG</div>
+      <div class="eq-ticker">ICL</div>
+      <div class="eq-name">ICL Group Ltd.</div>
+      <div class="sr"><div class="sk">Price</div><div class="sv">~$5.60–$6.00</div></div>
+      <div class="sr"><div class="sk">Mkt Cap</div><div class="sv">~$7.25B</div></div>
+      <div class="sr"><div class="sk">EV/EBITDA</div><div class="sv">6.6x fwd</div></div>
+      <div class="sr"><div class="sk">Allocation</div><div class="sv" style="color:var(--teal);">6%</div></div>
+    </div>
+    <div class="eq-card long">
+      <div class="eq-dir long">LONG</div>
+      <div class="eq-ticker">MOS</div>
+      <div class="eq-name">The Mosaic Company</div>
+      <div class="sr"><div class="sk">Price</div><div class="sv">~$21.33</div></div>
+      <div class="sr"><div class="sk">Mkt Cap</div><div class="sv">~$7.05B</div></div>
+      <div class="sr"><div class="sk">EV/EBITDA</div><div class="sv">&lt;5.5x fwd</div></div>
+      <div class="sr"><div class="sk">Allocation</div><div class="sv" style="color:var(--gold);">6%</div></div>
+    </div>
+  </div>
+
+  <h3>CF Industries: The Henry Hub Arbitrage</h3>
+  <p>CF Industries is the single most direct expression of the Ras Laffan destruction thesis. The company is the world's largest ammonia producer, operating 16 plants across North America with an average capacity utilization rate 8% above its peer group. The core thesis is geometrically simple: nitrogen fertilizer is essentially solidified natural gas; CF buys that gas at Henry Hub ($2.80/MMBtu); its European and Asian competitors now pay TTF-linked prices of $18–22/MMBtu. That 7× feedstock cost differential translates directly to structural margin superiority lasting 3–5 years minimum — the repair timeline for Ras Laffan's destroyed cold boxes.</p>
+
+  <div class="r2">
+    <div>
+      <div class="ch">
+        <div class="ct"><span>Fig. 7 — CF Q1 2026 Financial Performance</span></div>
+        <div class="chart-container" style="height: 200px;">
+          <canvas id="cCFEarnings"></canvas>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="kpi-grid">
+        <div class="kpi-item">
+          <div class="kpi-name">Q1 EPS</div>
+          <div class="kpi-val" style="color:var(--grn);">$3.98</div>
+          <div class="kpi-sub">vs $2.50 est. (+59% surprise)</div>
+          <div class="kpi-bar"><div class="kpi-bfill" style="width:79%;background:var(--grn);"></div></div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-name">Adj. EBITDA</div>
+          <div class="kpi-val" style="color:var(--grn);">$983M</div>
+          <div class="kpi-sub">Q1 2026</div>
+          <div class="kpi-bar"><div class="kpi-bfill" style="width:85%;background:var(--teal);"></div></div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-name">Revenue</div>
+          <div class="kpi-val" style="color:var(--blue);">$1.99B</div>
+          <div class="kpi-sub">+19% YoY</div>
+          <div class="kpi-bar"><div class="kpi-bfill" style="width:65%;background:var(--blue);"></div></div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-name">Capacity Util.</div>
+          <div class="kpi-val" style="color:var(--gold);">99%</div>
+          <div class="kpi-sub">Gross ammonia Q1 2026</div>
+          <div class="kpi-bar"><div class="kpi-bfill" style="width:99%;background:var(--gold);"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Operational Moat Quantification</h3>
+  <div class="ch">
+    <div class="ct"><span>Fig. 8 — CF vs. Global Nitrogen Peer Cost Position ($/tonne NH₃)</span></div>
+    <div class="bar-chart-dom" style="margin-top:8px;">
+      <div class="bc-row" style="display:flex;align-items:center;margin-bottom:10px;"><div class="bc-label">CF Industries (HH)</div><div class="bc-track"><div class="bc-fill" style="width:22%;background:var(--grn);">~$95/t</div></div></div>
+      <div class="bc-row" style="display:flex;align-items:center;margin-bottom:10px;"><div class="bc-label">CF (UK Ince plant)</div><div class="bc-track"><div class="bc-fill" style="width:55%;background:var(--blue);">~$230/t</div></div></div>
+      <div class="bc-row" style="display:flex;align-items:center;margin-bottom:10px;"><div class="bc-label">European Avg (TTF)</div><div class="bc-track"><div class="bc-fill" style="width:88%;background:var(--or);">~$370/t</div></div></div>
+      <div class="bc-row" style="display:flex;align-items:center;margin-bottom:10px;"><div class="bc-label">Asian LNG-linked</div><div class="bc-track"><div class="bc-fill" style="width:98%;background:var(--red);">~$410/t</div></div></div>
+    </div>
+    <div style="font-family:var(--mn);font-size:10px;color:var(--td);margin-top:6px;">Estimated cost ranges. European/Asian costs reflect post-Ras Laffan TTF pricing.</div>
+  </div>
+
+  <h3>Valuation: Re-Rating Thesis</h3>
+  <div class="fm">
+    <span class="fl">CF Valuation Framework</span>
+    Current EV/EBITDA: <span class="hi">5.8x</span> (FY26E) vs. Agriculture sector median: <span class="hi2">10.58x</span><br>
+    Discount to sector median: <span class="hi3">~45%</span> — market still pricing CF as a cyclical commodity producer<br><br>
+    Blue Point JV (JERA + Mitsui, $3.7B): Low-carbon autothermal reforming ammonia by 2029<br>
+    Incremental mid-cycle EBITDA target: <span class="hi">+$3B</span> | FCF target: <span class="hi">+$2B by 2030</span><br><br>
+    TTM Free Cash Flow: <span class="hi">$1.65B</span> | Share count reduction: <span class="hi2">–10%</span> in 2025 (16.6M shares/$1.34B)<br>
+    Dividend yield: <span class="hi2">1.6%</span> | Payout ratio: <span class="hi">18%</span> (ample buffer for buybacks)<br><br>
+    Re-rating trigger: market recognizes CF as <span class="hi">clean energy infrastructure</span>, not pure-cycle nitrogen
+  </div>
+
+  <div class="an b"><strong>Re-rating catalyst:</strong> The Blue Point JV fundamentally changes CF's earnings quality narrative. Blue ammonia sold to JERA for Japanese power generation at a green premium decouples a portion of CF's revenue from traditional agricultural cycles. If/when consensus models this as infrastructure cash flow rather than fertilizer cash flow, the appropriate multiple is significantly higher than 5.8x.</div>
+</div>
+
+<div class="sec" id="s5">
+  <div class="sn">Section 05</div>
+  <h2>ICL Group — Mediterranean Moat &amp; Specialty Hedge</h2>
+  <p>ICL functions as the portfolio's geopolitical hedge within the supply shock thesis. Unlike CF (pure nitrogen arbitrage) or MOS (phosphate mean reversion), ICL's value comes from what it <em>avoids</em>: it bypasses every disrupted maritime chokepoint by extracting 60% of its raw minerals directly from the Dead Sea via solar evaporation — a process that eliminates subterranean mining capital and maritime freight exposure entirely.</p>
+
+  <div class="r2">
+    <div>
+      <div class="ch">
+        <div class="ct"><span>Fig. 9 — ICL Revenue Segment Breakdown (FY2025)</span></div>
+        <div class="chart-container" style="height: 200px;">
+          <canvas id="cICLSeg"></canvas>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="cd">
+        <div class="hd" style="color:var(--teal);">ICL Key Financials (FY2025)</div>
+        <div class="sr"><div class="sk">Consolidated Sales</div><div class="sv">$7.15B</div></div>
+        <div class="sr"><div class="sk">Adj. EBITDA</div><div class="sv">$1.49B</div></div>
+        <div class="sr"><div class="sk">EBITDA Margin</div><div class="sv" style="color:var(--grn);">21%</div></div>
+        <div class="sr"><div class="sk">Operating Cash Flow</div><div class="sv">$1.06B</div></div>
+        <div class="sr"><div class="sk">Net Debt/EBITDA</div><div class="sv" style="color:var(--grn);">1.5×</div></div>
+        <div class="sr"><div class="sk">2026 EBITDA Guidance</div><div class="sv">$1.4–$1.6B</div></div>
+        <div class="sr"><div class="sk">Potash Sales (guided)</div><div class="sv">4.5–4.7M t</div></div>
+        <div class="sr"><div class="sk">Fitch Credit Rating</div><div class="sv" style="color:var(--grn);">BBB− Stable</div></div>
+        <div class="sr"><div class="sk">Dividend Yield</div><div class="sv">~2.5%</div></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Why the Mediterranean Moat Matters</h3>
+  <div class="ch">
+    <div class="ct"><span>Fig. 10 — Shipping Route Comparison: ICL vs. Persian Gulf Competitors</span></div>
+    <div class="chart-container" style="height: 180px;">
+      <canvas id="cShipping"></canvas>
+    </div>
+  </div>
+
+  <div class="an t"><strong>ICL's structural advantage:</strong> Saudi and Qatari fertilizer exporters serving Europe must now either transit the Hormuz blockade, reroute around Africa (+15,000km, +25 days), or pay war risk premiums. ICL ships directly from Haifa and other Mediterranean ports to Rotterdam, Antwerp, and Hamburg. The effective logistics cost differential is estimated at $40–$80/tonne for European deliveries — a margin tailwind that scales with every additional month the blockade persists.</div>
+
+  <h3>Bromine as a Natural Hedge</h3>
+  <p>ICL holds 30% global bromine market share at 280,000 metric tonnes of production capacity. As global energy exploration ramps to offset Middle Eastern disruptions, ICL's clear brine fluid division (used in oil & gas drilling) acts as a second-order beneficiary of the same geopolitical shock that drives fertilizer demand. This internal hedge is systematically undervalued by market consensus models that classify ICL purely as a fertilizer producer.</p>
+
+  <div class="r4">
+    <div class="kpi-item">
+      <div class="kpi-name">Bromine Market Share</div>
+      <div class="kpi-val" style="color:var(--teal);">30%</div>
+      <div class="kpi-sub">Global #1 producer</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-name">Dead Sea Extraction</div>
+      <div class="kpi-val" style="color:var(--teal);">60%</div>
+      <div class="kpi-sub">Raw mineral sourcing</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-name">EV/EBITDA</div>
+      <div class="kpi-val" style="color:var(--gold);">6.6×</div>
+      <div class="kpi-sub">FY26E vs 10.58× sector</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-name">P/E (Normalized)</div>
+      <div class="kpi-val" style="color:var(--blue);">15.5×</div>
+      <div class="kpi-sub">Attractive vs diversified peers</div>
+    </div>
+  </div>
+</div>
+
+<div class="sec" id="s6">
+  <div class="sn">Section 06</div>
+  <h2>The Mosaic Company — Capitulation Rebound Thesis</h2>
+  <p>MOS is the highest-risk, highest-optionality position in the portfolio. The Q1 2026 results were genuinely disastrous on the bottom line — but the analytical case for initiating a contrarian long at $21.33 rests on decomposing that disaster into its temporary and structural components. The market is conflating two very different things: a catastrophic input cost spike (potentially cyclical) and a collapse in product demand (not occurring). Volume was the highest in five years.</p>
+
+  <h3>Q1 2026 — Decomposing the Loss</h3>
+  <div class="ch">
+    <div class="ct"><span>Fig. 11 — MOS Q1 2026: Revenue Bridge vs. Net Loss Attribution (Waterfall)</span></div>
+    <div class="chart-container" style="height: 220px;">
+      <canvas id="cMOSWaterfall"></canvas>
+    </div>
+  </div>
+
+  <div class="fm">
+    <span class="fl">MOS Q1 2026 — Loss Attribution</span>
+    Total Q1 Revenue: <span class="hi2">$3.0B</span> (beat est. $2.89B — <strong>demand is NOT the problem</strong>)<br>
+    Phosphate volume: <span class="hi2">1.9M tonnes</span> — highest quarterly volume in 5 years<br><br>
+    Net loss: <span class="hi3">–$258M</span> | Adj. EPS: <span class="hi3">$0.05</span> (missed by 79%)<br>
+    Notable items: <span class="hi3">$323M pre-tax</span> (incl. $442M Araxá/Patrocínio idle charge)<br>
+    Core operating miss: sulfur at <span class="hi3">$379/t avg</span> vs. ~$140 modeled = <span class="hi3">+$239/t headwind</span><br><br>
+    <strong>Conclusion:</strong> The loss is a <span class="hi">100% input cost event</span>. Product demand and pricing power remain intact.
+  </div>
+
+  <div class="r2">
+    <div>
+      <div class="ch">
+        <div class="ct"><span>Fig. 12 — MOS Price vs. 52-Week Range (May 2026)</span></div>
+        <div class="chart-container" style="height: 200px;">
+          <canvas id="cMOSPrice"></canvas>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="cd">
+        <div class="hd" style="color:var(--gold);">Management Response — Capital Preservation</div>
+        <div class="sr"><div class="sk">Faustina, LA curtailment</div><div class="sv">–1.4M t annualized</div></div>
+        <div class="sr"><div class="sk">Bartow, FL curtailment</div><div class="sv">–2.0M t annualized</div></div>
+        <div class="sr"><div class="sk">Brazil (Araxá/Patrocínio)</div><div class="sv">Fully idled</div></div>
+        <div class="sr"><div class="sk">CapEx cut</div><div class="sv">–$250M → $1.25B</div></div>
+        <div class="sr"><div class="sk">Workforce reduction</div><div class="sv">$50M annualized saves</div></div>
+        <div class="sr"><div class="sk">WC release (guided)</div><div class="sv">$300–$500M H2 2026</div></div>
+        <div class="sr"><div class="sk">Current stock price</div><div class="sv" style="color:var(--red);">$21.33 (52-wk low)</div></div>
+        <div class="sr"><div class="sk">Enterprise Value</div><div class="sv">~$11.0B</div></div>
+        <div class="sr"><div class="sk">EV/EBITDA (depressed)</div><div class="sv" style="color:var(--gold);">&lt;5.5×</div></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Mean Reversion Scenario Analysis</h3>
+  <div class="ch">
+    <div class="ct">
+      <span>Fig. 13 — MOS EBITDA Sensitivity: Sulfur Mean Reversion Scenarios</span>
+      <div style="display:flex;gap:6px;">
+        <button class="t-btn active" onclick="showScenario('bear', this)">Bear</button>
+        <button class="t-btn" onclick="showScenario('base', this)">Base</button>
+        <button class="t-btn" onclick="showScenario('bull', this)">Bull</button>
+      </div>
+    </div>
+    <div class="chart-container" style="height: 200px;">
+      <canvas id="cMOSScenario"></canvas>
+    </div>
+    <div class="scenario-out" style="margin-top:12px;">
+      <div class="s-line"><span class="s-k">Scenario</span><span class="s-v" id="scName">Bear Case</span></div>
+      <div class="s-line"><span class="s-k">Sulfur Normalization</span><span class="s-v" id="scSulfur">$300/t (partial)</span></div>
+      <div class="s-line"><span class="s-k">Estimated FY26 EBITDA</span><span class="s-v" id="scEbitda">$1.2B</span></div>
+      <div class="s-line"><span class="s-k">Implied EV/EBITDA</span><span class="s-v" id="scMult">9.2×</span></div>
+      <div class="s-line"><span class="s-k">Implied Price Target</span><span class="s-v" id="scPT">$24–$28</span></div>
+      <div class="s-line"><span class="s-k">Upside from $21.33</span><span class="s-v" id="scUp" style="color:var(--grn);">+12–+31%</span></div>
+    </div>
+  </div>
+
+  <div class="an g"><strong>The asymmetry argument:</strong> At $21.33, the market is pricing MOS as if Q1 sulfur costs of $379/t are permanent. New Wales (the largest US phosphate facility) just completed a major turnaround — it is primed to run at maximum efficiency the moment input costs normalize. The stripping margin on finished DAP (~$400/t) is intact; it is simply being fully absorbed by the sulfur spike. Any diplomatic progress in the Middle East, Chinese export quota relaxation, or sulfur price mean reversion transfers that entire margin straight to MOS's P&amp;L.</div>
+</div>
+
+<div class="sec" id="s7">
+  <div class="sn">Section 07</div>
+  <h2>Risk Framework &amp; Structural Mitigants</h2>
+
+  <h3>Risk Matrix</h3>
+  <div class="ch">
+    <div class="ct"><span>Fig. 14 — Risk Probability vs. Impact Matrix</span></div>
+    <div class="chart-container" style="height: 260px;">
+      <canvas id="cRisk"></canvas>
+    </div>
+  </div>
+
+  <h3>Risk Register</h3>
+  <table class="tbl">
+    <thead><tr>
+      <th>Risk</th><th>Most Exposed</th><th>Probability</th><th>Impact</th><th>Mitigant</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="color:#fff;">Hormuz diplomatic resolution</td><td><span class="tg b">CF</span></td><td><span class="tg g">Low-Mid</span></td><td><span class="tg n">High</span></td><td style="color:var(--tm);font-size:12px;">CF Blue Point JV decouples from pure N cycle; ICL unaffected by Hormuz</td></tr>
+      <tr><td style="color:#fff;">China makes phosphate ban permanent</td><td><span class="tg g">MOS</span></td><td><span class="tg n">Mid</span></td><td><span class="tg n">High</span></td><td style="color:var(--tm);font-size:12px;">MOS curtailed uneconomic capacity; 6% position limits downside exposure</td></tr>
+      <tr><td style="color:#fff;">Henry Hub gas price spike (US demand)</td><td><span class="tg b">CF</span></td><td><span class="tg g">Low</span></td><td><span class="tg v">Mid</span></td><td style="color:var(--tm);font-size:12px;">CF's pipeline infrastructure and long-term contracts partially hedge spot exposure</td></tr>
+      <tr><td style="color:#fff;">Farm demand destruction (fertilizer unaffordable)</td><td><span class="tg x">All</span></td><td><span class="tg v">Mid</span></td><td><span class="tg v">Mid</span></td><td style="color:var(--tm);font-size:12px;">Elevated crop prices create mathematical necessity to apply nutrients; 70% of producers report affordability stress but cannot yield-sacrifice</td></tr>
+      <tr><td style="color:#fff;">ICL geopolitical exposure (Israel conflict escalation)</td><td><span class="tg p">ICL</span></td><td><span class="tg g">Low-Mid</span></td><td><span class="tg v">Mid</span></td><td style="color:var(--tm);font-size:12px;">Dead Sea extraction is domestically self-sufficient; Mediterranean port diversification</td></tr>
+      <tr><td style="color:#fff;">MOS sulfur structural (LFP battery demand permanent)</td><td><span class="tg g">MOS</span></td><td><span class="tg v">Mid</span></td><td><span class="tg n">High</span></td><td style="color:var(--tm);font-size:12px;">Position sizing is primary mitigant (6%); curtailment shows mgmt discipline</td></tr>
+    </tbody>
+  </table>
+
+  <div class="an r"><strong>Critical risk not fully modeled:</strong> The LFP battery demand for phosphate is potentially a structural demand shift, not a temporary export policy. If Chinese domestic battery manufacturers are permanently absorbing 4.4 million incremental tonnes of phosphate rock annually, the restoration of Chinese sulfuric acid exports may not fully normalize the phosphate input cost structure — the domestic demand floor for sulfur may simply be higher. This requires ongoing monitoring of Chinese battery production capacity expansion data.</div>
+</div>
+
+<div class="sec" id="s8">
+  <div class="sn">Section 08</div>
+  <h2>Thesis Assessment — Strengths, Weaknesses &amp; Improvement Areas</h2>
+
+  <div class="r2">
+    <div>
+      <h3 style="color:var(--grn);">Strengths</h3>
+      <div class="timeline" style="padding-left:20px;">
+        <div class="tl-item teal" style="margin-bottom:14px;">
+          <div class="tl-title">Multi-Layer Supply Shock Confirmation</div>
+          <div class="tl-body">Three independent, confirming events (Hormuz, Ras Laffan, China NDRC) arrived within 60 days. This is not a single-catalyst trade — each node independently validates the thesis from a different feedstock angle, making the trade structurally resilient.</div>
+        </div>
+        <div class="tl-item teal" style="margin-bottom:14px;">
+          <div class="tl-title">Inelastic Demand Floor</div>
+          <div class="tl-body">The Southern Plains drought and elevated grain futures create a structural demand floor that is mathematically verifiable: at $7.00/bu wheat, the fertilizer cost required per bushel of yield improvement is economically justified even at $379/t sulfur. Demand cannot be destroyed by input inflation when crop prices are simultaneously elevated.</div>
+        </div>
+        <div class="tl-item teal" style="margin-bottom:14px;">
+          <div class="tl-title">CF Q1 2026 Real-Time Validation</div>
+          <div class="tl-body">The $3.98 EPS (+59% surprise) and $983M EBITDA are empirical confirmation that the nitrogen arbitrage model is functioning exactly as modeled. This eliminates theoretical risk and establishes a data-based floor for the CF position.</div>
+        </div>
+        <div class="tl-item teal" style="margin-bottom:14px;">
+          <div class="tl-title">ICL Geographic Immunization</div>
+          <div class="tl-body">ICL's Dead Sea extraction model is one of the most defensible competitive moats in the materials sector. It is literally not possible for Middle Eastern maritime disruptions to affect ICL's raw material access — the extraction is solar and landlocked.</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h3 style="color:var(--red);">Weaknesses &amp; Assumptions at Risk</h3>
+      <div class="timeline" style="padding-left:20px;">
+        <div class="tl-item red" style="margin-bottom:14px;">
+          <div class="tl-title">Sulfur Cyclicality Assumption (MOS)</div>
+          <div class="tl-body">The MOS mean reversion thesis requires sulfur to normalize toward $100–$150/t. This assumes the China ban is temporary and Middle Eastern supply eventually returns. If LFP battery demand has permanently reset the sulfur demand floor, the "cyclical" input shock is actually structural — and MOS is a value trap, not a value opportunity.</div>
+        </div>
+        <div class="tl-item red" style="margin-bottom:14px;">
+          <div class="tl-title">Henry Hub Sensitivity Not Hedged</div>
+          <div class="tl-body">The CF thesis depends on a sustained Henry Hub/TTF spread. Any scenario where US domestic gas demand rises (cold winter, LNG terminal expansion, power sector demand), or where Hormuz reopens and TTF collapses, compresses the arbitrage from both sides simultaneously.</div>
+        </div>
+        <div class="tl-item red" style="margin-bottom:14px;">
+          <div class="tl-title">No Currency Overlay</div>
+          <div class="tl-body">For a UK-based portfolio manager, USD-denominated positions (CF, MOS) carry GBP/USD FX risk. A 5–10% GBP appreciation against USD (not unreasonable in a de-escalation scenario) would erode 5–10% of USD-denominated returns. No FX hedge is modeled.</div>
+        </div>
+        <div class="tl-item red" style="margin-bottom:14px;">
+          <div class="tl-title">Demand Destruction Underweighted</div>
+          <div class="tl-body">The Farm Bureau survey finding that 70% of producers report unaffordable fertilizer is treated as a static constraint by the model. In reality, crop switching (corn → soybean, which requires less nitrogen) is already measurable. The model's demand inelasticity assumption holds for wheat/corn but is less robust for nitrogen-intensive crops.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Specific Areas for Model Improvement</h3>
+  <table class="tbl">
+    <thead><tr><th>Area</th><th>Current State</th><th>Required Improvement</th><th>Priority</th></tr></thead>
+    <tbody>
+      <tr><td style="color:#fff;">FX Overlay</td><td style="color:var(--tm);">Not modeled</td><td>Model GBP/USD impact on USD-denominated position P&amp;L; quantify breakeven FX move vs. expected equity return</td><td><span class="tg n">High</span></td></tr>
+      <tr><td style="color:#fff;">Sulfur Price Path</td><td style="color:var(--tm);">Static scenario analysis</td><td>Build a mean-reversion probability distribution for sulfur using historical Vol, Chinese policy lag, and Hormuz resolution probability</td><td><span class="tg n">High</span></td></tr>
+      <tr><td style="color:#fff;">Henry Hub Forward Curve</td><td style="color:var(--tm);">Spot price used</td><td>Incorporate NYMEX Henry Hub futures curve (12-month strip) into CF cost model to capture forward margin visibility</td><td><span class="tg n">High</span></td></tr>
+      <tr><td style="color:#fff;">Crop Switching Model</td><td style="color:var(--tm);">Inelastic demand assumed</td><td>Quantify corn-to-soybean rotation probability as a function of fertilizer/corn price ratio; model volume impact on nitrogen demand</td><td><span class="tg v">Mid</span></td></tr>
+      <tr><td style="color:#fff;">LFP Battery Demand</td><td style="color:var(--tm);">Referenced but not modeled</td><td>Model Chinese battery sector phosphate rock demand growth vs. Chinese domestic P₂O₅ production capacity to determine structural floor</td><td><span class="tg v">Mid</span></td></tr>
+      <tr><td style="color:#fff;">ICL Israel Risk</td><td style="color:var(--tm);">Qualitatively dismissed</td><td>Scenario-weight a conflict escalation that disrupts Haifa port logistics; quantify impact on ICL Mediterranean shipping advantage</td><td><span class="tg x">Low-Mid</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="sec" id="s9">
+  <div class="sn">Section 09</div>
+  <h2>Ongoing Monitoring Matrix</h2>
+  <p>The thesis is event-driven. Position sizing must update as each indicator moves. Below is the complete monitoring framework, organized by indicator category, current status, update frequency, and the specific threshold that triggers a position review.</p>
+
+  <h3>Geopolitical & Macro Indicators</h3>
+  <div class="ind-table">
+    <div class="ind-row ind-hdr"><span>Indicator</span><span>Current Status</span><span>Trigger for Review</span><span>Urgency</span></div>
+    <div class="ind-row"><span style="color:#fff;font-weight:500;">Strait of Hormuz — commercial shipping volume</span><span><span class="tg n">Blocked</span></span><span style="color:var(--tm);font-size:12px;">Any resumption &gt;30% normal traffic → trim CF/ICL</span><span><div class="ind-importance"><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--red);"></div></div></span></div>
+    <div class="ind-row"><span style="color:#fff;font-weight:500;">US–Iran diplomatic negotiations (DoS/State Dept)</span><span><span class="tg n">No talks</span></span><span style="color:var(--tm);font-size:12px;">Official ceasefire announcement → immediate CF reduce</span><span><div class="ind-importance"><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--red);"></div></div></span></div>
+    <div class="ind-row"><span style="color:#fff;font-weight:500;">Ras Laffan repair progress (QatarEnergy releases)</span><span><span class="tg n">3–5 yr timeline</span></span><span style="color:var(--tm);font-size:12px;">Accelerated repair announcements → reassess CF TTF/HH spread</span><span><div class="ind-importance"><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--td);"></div></div></span></div>
+    <div class="ind-row"><span style="color:#fff;font-weight:500;">Lloyd's List — Persian Gulf maritime AIS data</span><span><span class="tg n">1,550 vessels stranded</span></span><span style="color:var(--tm);font-size:12px;">Vessel count declining &gt;200 over 2 weeks → blockade easing signal</span><span><div class="ind-importance"><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--red);"></div></div></span></div>
+    <div class="ind-row"><span style="color:#fff;font-weight:500;">War risk insurance premiums (Lloyd's/BIMCO)</span><span><span class="tg n">~8–10% cargo value</span></span><span style="color:var(--tm);font-size:12px;">Premium drop below 3% → commercial viability of transit restoring</span><span><div class="ind-importance"><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--td);"></div></div></span></div>
+  </div>
+
+  <h3>Commodity & Feedstock Indicators</h3>
+  <div class="ind-table">
+    <div class="ind-row ind-hdr"><span>Indicator</span><span>Current Status</span><span>Trigger for Review</span><span>Urgency</span></div>
+    <div class="ind-row"><span style="color:#fff;font-weight:500;">Sulfur spot price (CNY/tonne — Trading Economics)</span><span><span class="tg n">&gt;CNY 7,050/t</span></span><span style="color:var(--tm);font-size:12px;">Below CNY 4,000 → MOS margin recovery, increase MOS</span><span><div class="ind-importance"><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--red);"></div></div></span></div>
+    <div class="ind-row"><span style="color:#fff;font-weight:500;">Henry Hub / TTF natural gas spread</span><span><span class="tg g">~7× in CF's favor</span></span><span style="color:var(--tm);font-size:12px;">Spread compression to &lt;3× → CF arbitrage degrades, trim</span><span><div class="ind-importance"><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--red);"></div></div></span></div>
+    <div class="ind-row"><span style="color:#fff;font-weight:500;">Global urea spot price ($/tonne — Green Markets)</span><span><span class="tg n">Elevated +85% regional hubs</span></span><span style="color:var(--tm);font-size:12px;">Sharp decline (&gt;20% in 4 weeks) → N supply normalizing</span><span><div class="ind-importance"><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--td);"></div></div></span></div>
+    <div class="ind-row"><span style="color:#fff;font-weight:500;">DAP/MAP phosphate price ($/tonne — Fertecon)</span><span><span class="tg p">Supported</span></span><span style="color:var(--tm);font-size:12px;">DAP below $450/t → MOS stripping margin under pressure even at normal sulfur</span><span><div class="ind-importance"><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--td);"></div></div></span></div>
+    <div class="ind-row"><span style="color:#fff;font-weight:500;">Copper smelter TCs (treatment charges, Fastmarkets)</span><span><span class="tg n">–$78/DMT</span></span><span style="color:var(--tm);font-size:12px;">TC recovery above $30/DMT → China copper/sulfuric acid economics normalizing</span><span><div class="ind-importance"><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--td);"></div><div class="imp-dot" style="background:var(--td);"></div></div></span></div>
+  </div>
+
+  <h3>Chinese Regulatory Indicators</h3>
+  <div class="ind-table">
+    <div class="ind-row ind-hdr"><span>Indicator</span><span>Current Status</span><span>Trigger for Review</span><span>Urgency</span></div>
+    <div class="ind-row"><span style="color:#fff;font-weight:500;">NDRC sulfuric acid export ban status</span><span><span class="tg n">Active (May 1+)</span></span><span style="color:var(--tm);font-size:12px;">Any relaxation or quota announcement → MOS input cost relief</span><span><div class="ind-importance"><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--red);"></div></div></span></div>
+    <div class="ind-row"><span style="color:#fff;font-weight:500;">China high-concentration phosphate fertilizer exports</span><span><span class="tg n">Halted through Aug 2026</span></span><span style="color:var(--tm);font-size:12px;">Extension beyond Aug 2026 → phosphate supply tightness structural</span><span><div class="ind-importance"><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--td);"></div></div></span></div>
+    <div class="ind-row"><span style="color:#fff;font-weight:500;">Chinese LFP battery production capacity (CNIA monthly)</span><span><span class="tg n">Consuming +4.4M t/yr phosphate</span></span><span style="color:var(--tm);font-size:12px;">&gt;6M t/yr → structural sulfur floor elevated; adjust MOS thesis</span><span><div class="ind-importance"><div class="imp-dot" style="background:var(--red);"></div><div class="imp-dot" style="background:var(--td);"></div><div class="imp-dot" style="background:var(--td);"></div></div></span></div>
+    <div class="ind-row"><span style="color:#fff;font-weight:500;">China domestic food security posture (MOFCOM)</span><span><span class="tg n">Protectionist</span></span><span style="color:var(--tm);font-size:12px;">Policy shift toward export normalization → phosphate supply pressure eases</span><span><div class="ind-importance"><div class="imp-dot" style="background:var(--or);"></div><div class="imp-dot" style="background:var(--td);"></div><div class="imp-dot" style="background:var(--td);"></div></div></span></div>
+  </div>
+
+  <h3>Equity-Specific Earnings Catalysts</h3>
+  <div class="ind-table">
+    <div class="ind-row ind-hdr"><span>Event</span><span>Timing</span><span>What to Watch</span><span>Impact</span></div>
+    <div class="ind-row"><span style="color:#fff;font-weight:500;">CF Industries Q2 2026 Earnings</span><span style="color:var(--gold);font-family:var(--mn);">~Aug 2026</span><span style="color:var(--tm);font-size:12px;">Nitrogen realized price, Henry Hub avg, India urea import demand, Blue Point JV update</span><span><div class="ind-importance"><div class="imp-dot" style="background:var(--blue);"></div><div class="imp-dot" style="background:var(--blue);"></div><div class="imp-dot" style="background:var(--blue);"></div></div></span></div>
+    <div class="ind-row"><span style="color:#fff;font-weight:500;">MOS Q2 2026 Earnings</span><span style="color:var(--gold);font-family:var(--mn);">~Aug 2026</span><span style="color:var(--tm);font-size:12px;">Sulfur cost realized vs. Q1 $379/t; phosphate volume guidance; WC release progress vs. $300–500M target</span><span><div class="ind-importance"><div class="imp-dot" style="background:var(--gold);"></div><div class="imp-dot" style="background:var(--gold);"></div><div class="imp-dot" style="background:var(--gold);"></div></div></span></div>
+    <div class="ind-row"><span style="color:#fff;font-weight:500;">ICL Q2 2026 Earnings</span><span style="color:var(--gold);font-family:var(--mn);">~Aug 2026</span><span style="color:var(--tm);font-size:12px;">Potash volume vs. 4.5–4.7M t guidance; bromine margin; European delivery pricing vs. Persian Gulf competitors</span><span><div class="ind-importance"><div class="imp-dot" style="background:var(--teal);"></div><div class="imp-dot" style="background:var(--teal);"></div><div class="imp-dot" style="background:var(--td);"></div></div></span></div>
+    <div class="ind-row"><span style="color:#fff;font-weight:500;">USDA World Agricultural Supply/Demand (WASDE)</span><span style="color:var(--gold);font-family:var(--mn);">Monthly</span><span style="color:var(--tm);font-size:12px;">US wheat yield revisions; corn/soybean planted area; global fertilizer demand proxy</span><span><div class="ind-importance"><div class="imp-dot" style="background:var(--or);"></div><div class="imp-dot" style="background:var(--or);"></div><div class="imp-dot" style="background:var(--td);"></div></div></span></div>
+    <div class="ind-row"><span style="color:#fff;font-weight:500;">US Southern Plains drought monitor (NOAA/USDA)</span><span style="color:var(--gold);font-family:var(--mn);">Weekly</span><span style="color:var(--tm);font-size:12px;">Drought category improvement → grain price softening → fertilizer demand inelasticity thesis weakens</span><span><div class="ind-importance"><div class="imp-dot" style="background:var(--teal);"></div><div class="imp-dot" style="background:var(--teal);"></div><div class="imp-dot" style="background:var(--td);"></div></div></span></div>
+  </div>
+
+  <div class="conc" style="margin-top:40px;">
+    <h3>Strategic Summary</h3>
+    <p style="color:#c0c4d8;">The Hormuz closure is not merely a shipping disruption — it is a structural reconfiguration of the global fertilizer supply chain that will take years to unwind. The Ras Laffan attack extended that timeline by 3–5 years. China's sulfuric acid ban removed the only realistic alternative sulfur supply source of scale. These three events, arriving within 60 days, have permanently altered the marginal cost curve for nitrogen and phosphate production globally.</p>
+    <p style="color:#c0c4d8;margin-bottom:0;">The portfolio expresses this macro view through three complementary positions: <strong style="color:#5b8af5;">CF Industries</strong> captures the nitrogen arbitrage directly — maximum overweight, now modestly harvested after Q1 validation. <strong style="color:#3ecfba;">ICL Group</strong> provides geographic immunization from maritime disruption plus diversified specialty chemicals exposure. <strong style="color:#d4a853;">Mosaic (MOS)</strong> is the contrarian trade — a company whose product demand is at a five-year high, whose management is executing capital preservation correctly, and whose equity has been priced as if the sulfur shock is permanent and irreversible. The asymmetry at $21.33 is significant. The single greatest risk to this entire thesis is a sudden diplomatic resolution in the Middle East; the single greatest validation is continued execution from CF's management and any sign of sulfur cost normalization for MOS.</p>
+  </div>
+</div>
+
+</div><script>
+// ── Helpers ──────────────────────────────────────────────────────────────────
+const C = s => document.getElementById(s);
+const gv = (id) => getComputedStyle(document.documentElement).getPropertyValue(id).trim();
+
+// Animate on load
+setTimeout(() => {
+  C('probFill').style.width = '72%';
+  setTimeout(() => {
+    C('bCF').style.width = '80%';
+    C('bICL').style.width = '60%';
+    C('bMOS').style.width = '60%';
+    C('abCF').style.width = '8%';
+    C('abICL').style.width = '6%';
+    C('abMOS').style.width = '6%';
+    C('abRest').style.width = '80%';
+  }, 400);
+}, 300);
+
+const baseChartOpts = (yLabel = '', xLabel = '') => ({
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      backgroundColor: '#1a1c26',
+      borderColor: '#2e3250',
+      borderWidth: 1,
+      titleFont: { family: 'IBM Plex Mono', size: 10 },
+      bodyFont: { family: 'IBM Plex Mono', size: 11 },
+      titleColor: '#7a7f9a',
+      bodyColor: '#e2e5f0',
+      padding: 10
+    }
+  },
+  scales: {
+    x: {
+      ticks: { color: '#4a5268', font: { family: 'IBM Plex Mono', size: 9 } },
+      grid: { color: 'rgba(37,40,56,0.5)' },
+      border: { color: '#252838' }
+    },
+    y: {
+      ticks: { color: '#4a5268', font: { family: 'IBM Plex Mono', size: 9 } },
+      grid: { color: 'rgba(37,40,56,0.5)' },
+      border: { color: '#252838' },
+      title: {
+        display: !!yLabel,
+        text: yLabel,
+        color: '#4a5268',
+        font: { family: 'IBM Plex Mono', size: 9 }
+      }
+    }
+  }
+});
+
+// ── Fig 1: Supply Shock ──────────────────────────────────────────────────────
+new Chart(C('cSupplyShock'), {
+  type: 'bar',
+  data: {
+    labels: ['Global Seaborne Urea', 'Global LNG', 'Global Sulfur (seaborne)', 'Ammonia', 'Phosphate Exports', 'Qatar LNG Capacity'],
+    datasets: [
+      { label: 'Pre-shock', data: [100, 100, 100, 100, 100, 100], backgroundColor: 'rgba(76,175,125,0.5)', borderColor: '#4caf7d', borderWidth: 1 },
+      { label: 'Post-shock', data: [65, 81, 50, 77, 75, 81], backgroundColor: 'rgba(224,92,92,0.5)', borderColor: '#e05c5c', borderWidth: 1 }
+    ]
+  },
+  options: {
+    ...baseChartOpts('% of Normal Supply'),
+    plugins: {
+      legend: { display: true, labels: { color: '#7a7f9a', font: { family: 'IBM Plex Mono', size: 9 } } },
+      tooltip: { backgroundColor: '#1a1c26', borderColor: '#2e3250', borderWidth: 1, titleFont: { family: 'IBM Plex Mono', size: 10 }, bodyFont: { family: 'IBM Plex Mono', size: 11 }, titleColor: '#7a7f9a', bodyColor: '#e2e5f0', padding: 10 }
+    },
+    scales: {
+      x: { ticks: { color: '#4a5268', font: { family: 'IBM Plex Mono', size: 9 } }, grid: { color: 'rgba(37,40,56,0.5)' }, border: { color: '#252838' } },
+      y: { ticks: { color: '#4a5268', font: { family: 'IBM Plex Mono', size: 9 } }, grid: { color: 'rgba(37,40,56,0.5)' }, border: { color: '#252838' }, min: 0, max: 110 }
+    }
+  }
+});
+
+// ── Fig 2A: Gas Arb ──────────────────────────────────────────────────────────
+{
+  const labels = ['Jan 1', 'Jan 15', 'Feb 1', 'Feb 15', 'Mar 1', 'Mar 4', 'Mar 18', 'Apr 1', 'Apr 15', 'May 1', 'May 11'];
+  const hub = [2.65, 2.70, 2.72, 2.75, 2.78, 2.80, 2.83, 2.80, 2.82, 2.79, 2.80];
+  const ttf = [9.2, 9.5, 9.8, 10.1, 11.0, 12.5, 16.5, 18.2, 19.8, 20.5, 21.2];
+  new Chart(C('cGasArb'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Henry Hub ($/MMBtu)', data: hub, borderColor: '#3ecfba', backgroundColor: 'rgba(62,207,186,0.08)', pointRadius: 2, tension: 0.3, fill: true },
+        { label: 'EU TTF ($/MMBtu)', data: ttf, borderColor: '#e05c5c', backgroundColor: 'rgba(224,92,92,0.08)', pointRadius: 2, tension: 0.3, fill: true }
+      ]
+    },
+    options: {
+      ...baseChartOpts('$/MMBtu'),
+      plugins: {
+        legend: { display: true, labels: { color: '#7a7f9a', font: { family: 'IBM Plex Mono', size: 9 } } },
+        tooltip: { backgroundColor: '#1a1c26', borderColor: '#2e3250', borderWidth: 1, titleFont: { family: 'IBM Plex Mono', size: 10 }, bodyFont: { family: 'IBM Plex Mono', size: 11 }, titleColor: '#7a7f9a', bodyColor: '#e2e5f0', padding: 10 }
+      }
+    }
+  });
+}
+
+// ── Fig 2B: Sulfur ──────────────────────────────────────────────────────────
+{
+  const labels = ['Jan', 'Feb', 'Mar 1', 'Mar 4', 'Mar 18', 'Apr 1', 'Apr 10', 'May 1', 'May 11'];
+  const sulfur = [3200, 3400, 3600, 4100, 5200, 5800, 6300, 7000, 7050];
+  new Chart(C('cSulfur'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Sulfur (CNY/t)',
+          data: sulfur,
+          borderColor: '#d4a853',
+          backgroundColor: 'rgba(212,168,83,0.1)',
+          pointRadius: 3,
+          tension: 0.3,
+          fill: true,
+          pointBackgroundColor: sulfur.map((v, i) => i >= 7 ? '#e05c5c' : '#d4a853')
+        }
+      ]
+    },
+    options: {
+      ...baseChartOpts('CNY/tonne')
+    }
+  });
+}
+
+// ── Fig 3: Margin Sim ────────────────────────────────────────────────────────
+let marginChart;
+function buildMarginChart(sulfurVal) {
+  const labels = ['$80', '$120', '$160', '$200', '$240', '$280', '$320', '$360', '$400', '$440'];
+  const sulfurPrices = [80, 120, 160, 200, 240, 280, 320, 360, 400, 440];
+  const margins = sulfurPrices.map(s => Math.max(-100, 550 - s * 0.35 - 210));
+  const colors = margins.map(m => m > 0 ? 'rgba(76,175,125,0.5)' : 'rgba(224,92,92,0.5)');
+  const borderColors = margins.map(m => m > 0 ? '#4caf7d' : '#e05c5c');
+  if (marginChart) marginChart.destroy();
+  marginChart = new Chart(C('cMarginSim'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ label: 'Stripping Margin ($/t)', data: margins, backgroundColor: colors, borderColor: borderColors, borderWidth: 1 }]
+    },
+    options: {
+      ...baseChartOpts('$/tonne'),
+      plugins: {
+        legend: { display: false },
+        tooltip: { backgroundColor: '#1a1c26', borderColor: '#2e3250', borderWidth: 1, titleFont: { family: 'IBM Plex Mono', size: 10 }, bodyFont: { family: 'IBM Plex Mono', size: 11 }, titleColor: '#7a7f9a', bodyColor: '#e2e5f0', padding: 10 }
+      },
+      scales: {
+        x: { ticks: { color: '#4a5268', font: { family: 'IBM Plex Mono', size: 9 } }, grid: { color: 'rgba(37,40,56,0.5)' }, border: { color: '#252838' } },
+        y: { ticks: { color: '#4a5268', font: { family: 'IBM Plex Mono', size: 9 } }, grid: { color: 'rgba(37,40,56,0.5)' }, border: { color: '#252838' } }
+      }
+    }
+  });
+}
+buildMarginChart(379);
+
+function updateMargin(v) {
+  const s = parseInt(v);
+  C('sulfurVal').textContent = '$' + s;
+  const margin = Math.round(550 - s * 0.35 - 210);
+  const ebitdaImpact = Math.round(margin * 7.6);
+  C('marginVal').textContent = margin > 0 ? '+$' + margin + '/t' : '-$' + Math.abs(margin) + '/t';
+  C('marginVal').style.color = margin > 0 ? 'var(--grn)' : 'var(--red)';
+  C('so1').textContent = '$' + s + '/t';
+  C('so3').textContent = (margin > 0 ? '+' : '') + '$' + margin + '/t';
+  C('so3').style.color = margin > 0 ? 'var(--grn)' : 'var(--red)';
+  C('so4').textContent = (ebitdaImpact > 0 ? '+' : '') + ebitdaImpact + 'M implied';
+  C('so4').style.color = ebitdaImpact > 0 ? 'var(--grn)' : 'var(--red)';
+  buildMarginChart(s);
+}
+
+// ── Fig 4: Urea Price ─────────────────────────────────────────────────────────
+{
+  const labels = ['Mar 1', 'Mar 4', 'Mar 10', 'Mar 18', 'Mar 25', 'Apr 1', 'Apr 10', 'Apr 20', 'May 1', 'May 11'];
+  const urea = [310, 370, 420, 510, 550, 570, 610, 620, 640, 660];
+  const cf = [5.0, 8.0, 8.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 8.0];
+  new Chart(C('cUrea'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Urea Spot ($/t, LHS)', data: urea, borderColor: '#d4a853', backgroundColor: 'rgba(212,168,83,0.1)', tension: 0.3, pointRadius: 3, fill: true, yAxisID: 'y' },
+        { label: 'CF Allocation % (RHS)', data: cf, borderColor: '#5b8af5', backgroundColor: 'rgba(91,138,245,0.05)', tension: 0.1, pointRadius: 4, pointStyle: 'triangle', borderDash: [4, 4], yAxisID: 'y1' }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: true, labels: { color: '#7a7f9a', font: { family: 'IBM Plex Mono', size: 9 } } },
+        tooltip: { backgroundColor: '#1a1c26', borderColor: '#2e3250', borderWidth: 1, titleFont: { family: 'IBM Plex Mono', size: 10 }, bodyFont: { family: 'IBM Plex Mono', size: 11 }, titleColor: '#7a7f9a', bodyColor: '#e2e5f0', padding: 10 }
+      },
+      scales: {
+        x: { ticks: { color: '#4a5268', font: { family: 'IBM Plex Mono', size: 9 } }, grid: { color: 'rgba(37,40,56,0.5)' }, border: { color: '#252838' } },
+        y: { ticks: { color: '#4a5268', font: { family: 'IBM Plex Mono', size: 9 } }, grid: { color: 'rgba(37,40,56,0.5)' }, border: { color: '#252838' }, title: { display: true, text: 'Urea $/t', color: '#d4a853', font: { family: 'IBM Plex Mono', size: 9 } } },
+        y1: { position: 'right', ticks: { color: '#5b8af5', font: { family: 'IBM Plex Mono', size: 9 } }, grid: { display: false }, title: { display: true, text: 'CF Alloc %', color: '#5b8af5', font: { family: 'IBM Plex Mono', size: 9 } }, min: 0, max: 15 }
+      }
+    }
+  });
+}
+
+// ── Fig 5: Allocation Chart ───────────────────────────────────────────────────
+let allocChart;
+let allocMode = 'stacked';
+const allocLabels = ['Mar 1', 'Mar 4', 'Mar 18', 'Apr 10', 'May 11'];
+const cfData = [5, 8, 10, 10, 8];
+const iclData = [5, 6, 7, 7, 6];
+const mosData = [5, 4, 3, 2, 6];
+
+function buildAllocChart(mode) {
+  if (allocChart) allocChart.destroy();
+  if (mode === 'stacked') {
+    allocChart = new Chart(C('cAlloc'), {
+      type: 'bar',
+      data: {
+        labels: allocLabels,
+        datasets: [
+          { label: 'CF', data: cfData, backgroundColor: 'rgba(91,138,245,0.7)', borderColor: '#5b8af5', borderWidth: 1, stack: 's' },
+          { label: 'ICL', data: iclData, backgroundColor: 'rgba(62,207,186,0.7)', borderColor: '#3ecfba', borderWidth: 1, stack: 's' },
+          { label: 'MOS', data: mosData, backgroundColor: 'rgba(212,168,83,0.7)', borderColor: '#d4a853', borderWidth: 1, stack: 's' }
+        ]
+      },
+      options: {
+        ...baseChartOpts('% Sector Assets'),
+        plugins: {
+          legend: { display: true, labels: { color: '#7a7f9a', font: { family: 'IBM Plex Mono', size: 9 } } },
+          tooltip: { backgroundColor: '#1a1c26', borderColor: '#2e3250', borderWidth: 1, titleFont: { family: 'IBM Plex Mono', size: 10 }, bodyFont: { family: 'IBM Plex Mono', size: 11 }, titleColor: '#7a7f9a', bodyColor: '#e2e5f0', padding: 10 }
+        }
+      }
+    });
+  } else {
+    allocChart = new Chart(C('cAlloc'), {
+      type: 'line',
+      data: {
+        labels: allocLabels,
+        datasets: [
+          { label: 'CF', data: cfData, borderColor: '#5b8af5', backgroundColor: 'rgba(91,138,245,0.08)', tension: 0.1, pointRadius: 5, fill: false },
+          { label: 'ICL', data: iclData, borderColor: '#3ecfba', backgroundColor: 'rgba(62,207,186,0.08)', tension: 0.1, pointRadius: 5, fill: false },
+          { label: 'MOS', data: mosData, borderColor: '#d4a853', backgroundColor: 'rgba(212,168,83,0.08)', tension: 0.1, pointRadius: 5, fill: false }
+        ]
+      },
+      options: {
+        ...baseChartOpts('% Sector Assets'),
+        plugins: {
+          legend: { display: true, labels: { color: '#7a7f9a', font: { family: 'IBM Plex Mono', size: 9 } } },
+          tooltip: { backgroundColor: '#1a1c26', borderColor: '#2e3250', borderWidth: 1, titleFont: { family: 'IBM Plex Mono', size: 10 }, bodyFont: { family: 'IBM Plex Mono', size: 11 }, titleColor: '#7a7f9a', bodyColor: '#e2e5f0', padding: 10 }
+        }
+      }
+    });
+  }
+}
+buildAllocChart('stacked');
+
+function setView(type, mode, btn) {
+  document.querySelectorAll('.sim-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  buildAllocChart(mode);
+}
+
+// ── Fig 7: CF Earnings ────────────────────────────────────────────────────────
+new Chart(C('cCFEarnings'), {
+  type: 'bar',
+  data: {
+    labels: ['Revenue ($B)', 'Net Earnings ($M)', 'Adj. EBITDA ($M)', 'EPS vs Est.'],
+    datasets: [
+      { label: 'Actual', data: [1.99, 615, 983, 3.98], backgroundColor: ['rgba(91,138,245,0.6)', 'rgba(76,175,125,0.6)', 'rgba(76,175,125,0.6)', 'rgba(76,175,125,0.6)'], borderColor: ['#5b8af5', '#4caf7d', '#4caf7d', '#4caf7d'], borderWidth: 1 },
+      { label: 'Estimate', data: [1.67, 515, 820, 2.50], backgroundColor: 'rgba(74,82,104,0.4)', borderColor: '#4a5268', borderWidth: 1 }
+    ]
+  },
+  options: {
+    ...baseChartOpts(),
+    plugins: {
+      legend: { display: true, labels: { color: '#7a7f9a', font: { family: 'IBM Plex Mono', size: 9 } } },
+      tooltip: { backgroundColor: '#1a1c26', borderColor: '#2e3250', borderWidth: 1, titleFont: { family: 'IBM Plex Mono', size: 10 }, bodyFont: { family: 'IBM Plex Mono', size: 11 }, titleColor: '#7a7f9a', bodyColor: '#e2e5f0', padding: 10 }
+    }
+  }
+});
+
+// ── Fig 9: ICL Segment ────────────────────────────────────────────────────────
+new Chart(C('cICLSeg'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Phosphate Solutions', 'Potash', 'Industrial Products (Bromine)', 'Growing Solutions'],
+    datasets: [{ data: [32, 28, 22, 18], backgroundColor: ['rgba(91,138,245,0.7)', 'rgba(62,207,186,0.7)', 'rgba(212,168,83,0.7)', 'rgba(155,114,245,0.7)'], borderColor: ['#5b8af5', '#3ecfba', '#d4a853', '#9b72f5'], borderWidth: 2, hoverOffset: 8 }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '60%',
+    plugins: {
+      legend: { display: true, position: 'right', labels: { color: '#7a7f9a', font: { family: 'IBM Plex Mono', size: 9 }, padding: 12 } },
+      tooltip: { backgroundColor: '#1a1c26', borderColor: '#2e3250', borderWidth: 1, titleFont: { family: 'IBM Plex Mono', size: 10 }, bodyFont: { family: 'IBM Plex Mono', size: 11 }, titleColor: '#7a7f9a', bodyColor: '#e2e5f0', padding: 10 }
+    }
+  }
+});
+
+// ── Fig 10: Shipping Routes ───────────────────────────────────────────────────
+new Chart(C('cShipping'), {
+  type: 'bar',
+  data: {
+    labels: ['ICL (Haifa→Rotterdam)', 'Saudi (AG→Rotterdam, rerouted)', 'Qatar (AG→Rotterdam, rerouted)', 'Persian Gulf (pre-blockade)'],
+    datasets: [
+      { label: 'Distance (km)', data: [3500, 22000, 23000, 8000], backgroundColor: ['rgba(62,207,186,0.6)', 'rgba(224,92,92,0.5)', 'rgba(224,92,92,0.5)', 'rgba(212,168,83,0.4)'], borderColor: ['#3ecfba', '#e05c5c', '#e05c5c', '#d4a853'], borderWidth: 1 },
+      { label: 'Transit Days', data: [7, 45, 47, 18], backgroundColor: 'transparent', borderColor: 'transparent', type: 'line', yAxisID: 'y1', pointRadius: 6, pointBackgroundColor: ['#3ecfba', '#e05c5c', '#e05c5c', '#d4a853'], pointBorderColor: ['#3ecfba', '#e05c5c', '#e05c5c', '#d4a853'] }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true, labels: { color: '#7a7f9a', font: { family: 'IBM Plex Mono', size: 9 } } },
+      tooltip: { backgroundColor: '#1a1c26', borderColor: '#2e3250', borderWidth: 1, titleFont: { family: 'IBM Plex Mono', size: 10 }, bodyFont: { family: 'IBM Plex Mono', size: 11 }, titleColor: '#7a7f9a', bodyColor: '#e2e5f0', padding: 10 }
+    },
+    scales: {
+      x: { ticks: { color: '#4a5268', font: { family: 'IBM Plex Mono', size: 9 } }, grid: { color: 'rgba(37,40,56,0.5)' }, border: { color: '#252838' } },
+      y: { ticks: { color: '#4a5268', font: { family: 'IBM Plex Mono', size: 9 } }, grid: { color: 'rgba(37,40,56,0.5)' }, border: { color: '#252838' }, title: { display: true, text: 'km', color: '#4a5268', font: { family: 'IBM Plex Mono', size: 9 } } },
+      y1: { position: 'right', ticks: { color: '#3ecfba', font: { family: 'IBM Plex Mono', size: 9 } }, grid: { display: false }, title: { display: true, text: 'Days', color: '#3ecfba', font: { family: 'IBM Plex Mono', size: 9 } } }
+    }
+  }
+});
+
+// ── Fig 11: MOS Waterfall ─────────────────────────────────────────────────────
+new Chart(C('cMOSWaterfall'), {
+  type: 'bar',
+  data: {
+    labels: ['Revenue', 'Gross Margin (ex-sulfur)', 'Sulfur Cost Spike', 'SG&A/D&A', 'Notable Items', 'Net Loss'],
+    datasets: [{
+      data: [3000, 850, -410, -82, -323, -258],
+      backgroundColor: ['rgba(91,138,245,0.6)', 'rgba(76,175,125,0.6)', 'rgba(224,92,92,0.6)', 'rgba(212,168,83,0.4)', 'rgba(224,92,92,0.6)', 'rgba(224,92,92,0.7)'],
+      borderColor: ['#5b8af5', '#4caf7d', '#e05c5c', '#d4a853', '#e05c5c', '#e05c5c'],
+      borderWidth: 1
+    }]
+  },
+  options: {
+    ...baseChartOpts('$M'),
+    plugins: {
+      legend: { display: false },
+      tooltip: { backgroundColor: '#1a1c26', borderColor: '#2e3250', borderWidth: 1, titleFont: { family: 'IBM Plex Mono', size: 10 }, bodyFont: { family: 'IBM Plex Mono', size: 11 }, titleColor: '#7a7f9a', bodyColor: '#e2e5f0', padding: 10 }
+    }
+  }
+});
+
+// ── Fig 12: MOS Price ────────────────────────────────────────────────────────
+{
+  const labels = ['52-wk High', 'Mar 1', 'Mar 4', 'Mar 18', 'Apr 10', 'May 11\n(Now)'];
+  const prices = [48.5, 38.2, 36.5, 31.0, 25.8, 21.33];
+  new Chart(C('cMOSPrice'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'MOS Price ($)', data: prices, borderColor: '#d4a853', backgroundColor: 'rgba(212,168,83,0.08)', tension: 0.3, pointRadius: [4, 4, 4, 4, 4, 8], pointBackgroundColor: prices.map((v, i) => i === 5 ? '#e05c5c' : '#d4a853'), fill: true }
+      ]
+    },
+    options: {
+      ...baseChartOpts('Price ($)'),
+      plugins: {
+        legend: { display: false },
+        tooltip: { backgroundColor: '#1a1c26', borderColor: '#2e3250', borderWidth: 1, titleFont: { family: 'IBM Plex Mono', size: 10 }, bodyFont: { family: 'IBM Plex Mono', size: 11 }, titleColor: '#7a7f9a', bodyColor: '#e2e5f0', padding: 10 }
+      }
+    }
+  });
+}
+
+// ── Fig 13: MOS Scenarios ─────────────────────────────────────────────────────
+let scenarioChart;
+const scenarios = {
+  bear: { label: 'Bear', sulfur: '$300/t (partial relief)', ebitda: '$1.2B', mult: '9.2×', pt: '$24–$28', up: '+12–+31%', color: '#e05c5c', data: [416, 600, 900, 1200] },
+  base: { label: 'Base', sulfur: '$160/t (mean reversion)', ebitda: '$2.1B', mult: '5.2×', pt: '$32–$38', up: '+50–+78%', color: '#d4a853', data: [416, 900, 1600, 2100] },
+  bull: { label: 'Bull', sulfur: '$100/t (full normalization)', ebitda: '$3.0B', mult: '3.7×', pt: '$45–$55', up: '+111–+158%', color: '#4caf7d', data: [416, 1200, 2200, 3000] }
+};
+
+function showScenario(s, btn) {
+  document.querySelectorAll('.t-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const sc = scenarios[s];
+  C('scName').textContent = sc.label + ' Case';
+  C('scSulfur').textContent = sc.sulfur;
+  C('scEbitda').textContent = sc.ebitda;
+  C('scMult').textContent = sc.mult;
+  C('scPT').textContent = sc.pt;
+  C('scUp').textContent = sc.up;
+  C('scUp').style.color = s === 'bear' ? 'var(--or)' : 'var(--grn)';
+
+  if (scenarioChart) scenarioChart.destroy();
+  scenarioChart = new Chart(C('cMOSScenario'), {
+    type: 'bar',
+    data: {
+      labels: ['Q1 Actual', 'Q2E', 'Q3E', 'FY26E'],
+      datasets: [{ label: 'EBITDA ($M)', data: sc.data, backgroundColor: sc.color + '99', borderColor: sc.color, borderWidth: 1 }]
+    },
+    options: {
+      ...baseChartOpts('EBITDA $M'),
+      plugins: {
+        legend: { display: false },
+        tooltip: { backgroundColor: '#1a1c26', borderColor: '#2e3250', borderWidth: 1, titleFont: { family: 'IBM Plex Mono', size: 10 }, bodyFont: { family: 'IBM Plex Mono', size: 11 }, titleColor: '#7a7f9a', bodyColor: '#e2e5f0', padding: 10 }
+      }
+    }
+  });
+}
+
+// Ensure the initial scenario renders on load securely
+document.addEventListener('DOMContentLoaded', () => {
+  const activeBtn = document.querySelector('.t-btn.active') || document.querySelector(`button[onclick^="showScenario('bear'"]`);
+  showScenario('bear', activeBtn);
+});
+
+// ── Fig 14: Risk Matrix ───────────────────────────────────────────────────────
+new Chart(C('cRisk'), {
+  type: 'scatter',
+  data: {
+    datasets: [
+      { label: 'Hormuz resolution', data: [{ x: 35, y: 85 }], backgroundColor: '#e05c5c', pointRadius: 16, pointStyle: 'circle' },
+      { label: 'China ban permanent', data: [{ x: 50, y: 80 }], backgroundColor: '#d4a853', pointRadius: 14, pointStyle: 'circle' },
+      { label: 'HH gas spike', data: [{ x: 20, y: 55 }], backgroundColor: '#5b8af5', pointRadius: 11, pointStyle: 'circle' },
+      { label: 'Farm demand destruction', data: [{ x: 45, y: 50 }], backgroundColor: '#9b72f5', pointRadius: 12, pointStyle: 'circle' },
+      { label: 'ICL Israel escalation', data: [{ x: 30, y: 45 }], backgroundColor: '#3ecfba', pointRadius: 10, pointStyle: 'circle' },
+      { label: 'MOS structural sulfur floor', data: [{ x: 50, y: 75 }], backgroundColor: '#f5894b', pointRadius: 13, pointStyle: 'circle' },
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true, position: 'right', labels: { color: '#7a7f9a', font: { family: 'IBM Plex Mono', size: 9 }, pointStyle: 'circle', usePointStyle: true, padding: 10 } },
+      tooltip: {
+        backgroundColor: '#1a1c26', borderColor: '#2e3250', borderWidth: 1, titleFont: { family: 'IBM Plex Mono', size: 10 }, bodyFont: { family: 'IBM Plex Mono', size: 11 }, titleColor: '#7a7f9a', bodyColor: '#e2e5f0', padding: 10,
+        callbacks: { label: ctx => `${ctx.dataset.label}: P=${ctx.parsed.x}% | Impact=${ctx.parsed.y}%` }
+      }
+    },
+    scales: {
+      x: { ticks: { color: '#4a5268', font: { family: 'IBM Plex Mono', size: 9 } }, grid: { color: 'rgba(37,40,56,0.5)' }, border: { color: '#252838' }, title: { display: true, text: 'Probability (%)', color: '#4a5268', font: { family: 'IBM Plex Mono', size: 9 } }, min: 0, max: 100 },
+      y: { ticks: { color: '#4a5268', font: { family: 'IBM Plex Mono', size: 9 } }, grid: { color: 'rgba(37,40,56,0.5)' }, border: { color: '#252838' }, title: { display: true, text: 'Impact on Thesis (%)', color: '#4a5268', font: { family: 'IBM Plex Mono', size: 9 } }, min: 0, max: 100 }
+    }
+  }
+});
+</script>
+</body>
+</html>
